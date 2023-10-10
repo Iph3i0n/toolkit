@@ -1,16 +1,14 @@
 import { Schema, StateReader, StateWriter } from "@ipheion/fs-db";
 import PureRequest from "./pure-request";
-import { ReadonlyRecord } from "./util-types.js";
-import * as Jsx from "./jsx";
-import { SetCookie } from "./set-cookies.js";
+import { ReadonlyRecord } from "./util-types";
+import { SetCookie } from "./set-cookies";
 
-export type PureResponse =
-  | ({
-      readonly status: number;
-      readonly headers?: ReadonlyRecord<string, string>;
-      readonly cookies?: Record<string, SetCookie>;
-    } & ({ readonly body?: unknown } | { readonly jsx: Jsx.Node }))
-  | Response;
+export type PureResponse = {
+  readonly status: number;
+  readonly headers?: ReadonlyRecord<string, string>;
+  readonly cookies?: Record<string, SetCookie>;
+  readonly body?: unknown;
+};
 
 export type ServerResponse<TState extends Schema> =
   | {

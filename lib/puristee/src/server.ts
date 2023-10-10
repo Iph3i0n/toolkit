@@ -5,12 +5,12 @@ import {
   StateReader,
   StateWriter,
 } from "@ipheion/fs-db";
+import Http, { IncomingMessage } from "node:http";
 import Send from "./response-applier";
 import HandlerFactory, { Middleware } from "./handler";
 import { HandlerStore } from "./handler-store";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
-import TestRequest, { TestRequestInit } from "./test-request";
 import Provider from "./providers";
 
 export default function CreateServer<
@@ -23,10 +23,13 @@ export default function CreateServer<
 ) {
   const store = new HandlerStore<TSchema, TProviders>();
 
-  async function Run(request: Request, current_state: StateReader<TSchema>) {
+  async function Run(
+    request: IncomingMessage,
+    current_state: StateReader<TSchema>
+  ) {
     try {
-      const url = new URL(request.url);
-      const target = store.Get(url, request.method);
+      const url = new URL(request.url ?? "/");
+      const target = store.Get(url, request.method?.toLowerCase() ?? "get");
       if (!target) {
         console.log(`No handler found for ${request.url}`);
         return { response: { status: 404 } };
@@ -58,34 +61,14 @@ export default function CreateServer<
     },
     async Listen(port: number) {
       const state_manager = new Directory(schema, state_dir);
-      async function serve_http(conn: Deno.Conn) {
-        const connection = Deno.serveHttp(conn);
-        for await (const event of connection) {
-          const { response, state } = await Run(
-            event.request,
-            state_manager.Model
-          );
-          if (state) state_manager.Write(state);
+      const server = Http.createServer(async (req, res) => {
+        const { response, state } = await Run(req, state_manager.Model);
+        if (state) state_manager.Write(state);
 
-          event.respondWith(await Send(response));
-        }
-      }
+        await Send(response, res);
+      });
 
-      const server = Deno.listen({ port });
-      console.log(`Server listening on ${port}`);
-      for await (const conn of server) {
-        serve_http(conn);
-      }
-    },
-    async Test(request: TestRequestInit, input_state: StateWriter<TSchema>) {
-      const mocked_data = new MockedDirectory<TSchema>();
-      mocked_data.Write(input_state);
-      const result = await Run(new TestRequest(request), mocked_data.Model);
-      return {
-        response: result.response,
-        state: result.state,
-        full_state: DeepMerge(input_state, result.state ?? {}),
-      };
+      server.listen(port, () => console.log(`Server listening on ${port}`));
     },
     CreateMiddleware<
       TContext extends Record<never, never>,

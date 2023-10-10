@@ -1,27 +1,38 @@
+import type { IncomingMessage } from "node:http";
 import Pattern from "./pattern";
-import { ReadonlyRecord } from "./util-types.js";
-import { ParseMimeType } from "./mime-type";
+import { ReadonlyRecord } from "./util-types";
 import Cookies from "./cookies";
 
-async function GetJson(request: Request) {
-  try {
-    return await request[
-      ParseMimeType(request.headers.get("Content-Type") ?? "")
-    ]();
-  } catch {
-    return undefined;
-  }
+async function GetJson(request: IncomingMessage) {
+  return new Promise<unknown>((res) => {
+    let body = "";
+    request.on("data", (chunk) => {
+      body += chunk;
+    });
+
+    request.on("end", () => {
+      try {
+        res(JSON.parse(body));
+      } catch {
+        res(undefined);
+      }
+    });
+
+    request.on("error", () => {
+      res(undefined);
+    });
+  });
 }
 
 export default class PureRequest {
   private readonly url_object: URL;
 
   private constructor(
-    private readonly request: Request,
+    private readonly request: IncomingMessage,
     private readonly pattern: Pattern,
     private readonly body_data: unknown
   ) {
-    this.url_object = new URL(request.url);
+    this.url_object = new URL(request.url ?? "/");
   }
 
   public get url() {
@@ -34,7 +45,7 @@ export default class PureRequest {
 
   public get headers() {
     let result: ReadonlyRecord<string, string> = {};
-    for (const [key, value] of this.request.headers)
+    for (const [key, value] of Object.entries(this.request.headers))
       result = Object.assign(result, {
         get [key]() {
           return value;
@@ -56,13 +67,9 @@ export default class PureRequest {
     return Cookies(this.request);
   }
 
-  public static async Init(request: Request, pattern: Pattern) {
+  public static async Init(request: IncomingMessage, pattern: Pattern) {
     const body = await GetJson(request);
 
     return new PureRequest(request, pattern, body);
-  }
-
-  public get IsUpgradable() {
-    return this.request.headers.get("upgrade") === "websocket";
   }
 }

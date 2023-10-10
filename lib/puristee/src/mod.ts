@@ -1,6 +1,4 @@
-import * as Jsx from "./jsx";
-
-export { default } from "./server.js";
+export { default } from "./server";
 export type { PureResponse, Middleware } from "./handler";
 export {
   RequireBody,
@@ -8,6 +6,5 @@ export {
   ServeFile,
   ServeDirectory,
 } from "./middleware";
-export { Jsx };
 export { default as PureRequest } from "./pure-request";
 export { default as Provider } from "./providers";

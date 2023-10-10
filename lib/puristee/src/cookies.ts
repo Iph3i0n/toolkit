@@ -1,7 +1,8 @@
+import type { IncomingMessage } from "node:http";
 import ArrayableRecord from "./arrayable-record";
 
-export default function Cookies(request: Request) {
-  const header = request.headers.get("Cookie");
+export default function Cookies(request: IncomingMessage) {
+  const header = request.headers.cookie;
   if (!header) return {};
 
   const result = new ArrayableRecord<string>();
