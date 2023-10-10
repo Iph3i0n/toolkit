@@ -9,10 +9,6 @@
     "prepublish": "npm run test && tsc --declaration",
     "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Iph3i0n/safe-type.git"
-  },
   "keywords": [
     "safe-type",
     "type",
@@ -20,12 +16,6 @@
     "type-check",
     "assert"
   ],
-  "author": "paulpopat",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Iph3i0n/safe-type/issues"
-  },
-  "homepage": "https://github.com/Iph3i0n/safe-type#readme",
   "devDependencies": {
     "@types/jest": "^29.5.3",
     "jest": "^29.6.2",

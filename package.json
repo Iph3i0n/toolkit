@@ -2,9 +2,7 @@
   "name": "ipheion-toolkit",
   "version": "0.0.1",
   "description": "The monorepo for the ipheion tools",
-  "scripts": {
-    "build": "npm run -w @ipheion/safe-type build && npm run -w @ipheion/wholemeal build && npm run -w @ipheion/bakery build"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Iph3i0n/toolkit.git"
@@ -18,5 +16,11 @@
   "workspaces": [
     "lib/*",
     "app/*"
-  ]
+  ],
+  "devDependencies": {
+    "yargs": "^17.7.2"
+  },
+  "bin": {
+    "ipheion": "./scripts/index.js"
+  }
 }
