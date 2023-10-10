@@ -74,12 +74,12 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
 
   if (options.typings) {
     this.emitFile(
-      local_path.replace(".std", ".std.instance.d.ts"),
+      local_path.replace(".std", ".std.instance.d"),
       typings_template.Typings.join(";")
     );
 
     this.emitFile(
-      local_path.replace(".std", ".std.d.ts"),
+      local_path.replace(".std", ".std.d"),
       typings_template.WrapperTypings.join(";")
     );
   }
