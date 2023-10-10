@@ -1,0 +1,34 @@
+@js const theme = require("../theme");
+@insert ./help-text.pss;
+
+:host {
+  display: block;
+  text-align: left;
+}
+
+:host(:focus) {
+  outline: none;
+}
+
+:host(:focus) .label {
+  theme.border("body", "contrast");
+}
+
+.label {
+  position: relative;
+  display: block;
+  theme.colour("surface");
+  theme.shadow("small");
+  theme.transition("fast", "border-color");
+  cursor: text;
+  theme.border("body");
+}
+
+.label.disabled {
+  theme.colour("body");
+  cursor: unset;
+}
+
+.label.error {
+  theme.border("body", "warning");
+}

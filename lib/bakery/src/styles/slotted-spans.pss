@@ -1,0 +1,37 @@
+@js const spec = require("../spec");
+@js const theme = require("../theme");
+
+::slotted(t-link), ::slotted(span), ::slotted(l-row) {
+  theme.colour("surface");
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  theme.text("body", "no-margin");
+  theme.padding("small_block");
+}
+
+::slotted(t-link), ::slotted(span) {
+  display: block;
+}
+
+::slotted(t-link) {
+  cursor: pointer;
+  text-decoration: none;
+  theme.transition("fast", "color", "background-color");
+}
+
+::slotted(t-link:hover),
+::slotted(t-link:focus) {
+  outline: none;
+  theme.colour("surface", 0.9);
+}
+
+@for const colour in spec.colours {
+  ":`::slotted(t-link.${colour}), ::slotted(span.${colour}), ::slotted(l-row.${colour})`" {
+    theme.colour(colour);
+  }
+
+  ":`::slotted(t-link.${colour}:hover), ::slotted(a.${colour}:focus)`" {
+    theme.colour(colour, 0.9);
+  }
+}

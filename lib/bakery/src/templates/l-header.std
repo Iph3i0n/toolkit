@@ -1,0 +1,267 @@
+<s:meta name="l-header">
+  A header for your site. A logo is a must if you are using this.
+
+  <attr name="logo">
+    The URL for the company logo. Best if it is rather small and mostly square.
+  </attr>
+  <attr name="logo-alt" optional>
+    The alt text for if the company logo can not be loaded.
+  </attr>
+  <attr name="bg" type="colour" default="primary">
+    The background colour for the header.
+  </attr>
+  <attr name="flush" type="boolean">
+    If true then the header will span the width of the screen. Use if using a
+    flush container or not using a container for your page body.
+  </attr>
+
+  <slot>
+    The left hand content of the banner. Should primerally have anchors as
+    children.
+  </slot>
+  <slot name="right">
+    The right hand content of the banner. Could have anchors or a form as the
+    children.
+  </slot>
+  <aria role="banner" />
+  <base use="BakeryBase" from="../base-classes/main" default />
+</s:meta>
+
+<script>
+  let has_right = false;
+  function on_right(e) {
+    has_right = e.currentTarget.assignedNodes().length > 0;
+  }
+
+  let open = false;
+  function on_toggle() {
+    open = !open;
+  }
+</script>
+
+<style>
+  @js const theme = require("../theme");
+  @js const spec = require("../spec");
+
+  @insert ../styles/custom-scrollbar.pss;
+
+  @js const bg = self.bg ?? 'primary';
+  :host {
+    position: sticky;
+    top: 0;
+    left: 0;
+    display: block;
+    theme.colour(bg);
+    theme.border("body", undefined, "bottom");
+    theme.margin("block", "bottom");
+    z-index: ":spec.z_indexes.header";
+  }
+
+  .content {
+    margin: auto;
+  }
+
+  .logo-col {
+    theme.colour(bg);
+    theme.padding("block");
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo-col .logo-container {
+    display: block;
+    max-height: 3rem;
+    theme.border("small");
+    theme.shadow("small");
+    overflow: hidden;
+  }
+
+  .logo-col img {
+    display: block;
+    max-height: 3rem;
+  }
+
+  .logo-col .expand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform: scale(1);
+    theme.padding("badge");
+    theme.colour(bg);
+    theme.transition("fast", "background-color", "transform");
+  }
+
+  .logo-col .expand-button:hover,
+  .logo-col .expand-button:focus {
+    outline: none;
+    transform: scale(1.1);
+    theme.colour(bg, 0.9);
+  }
+
+  .main-links {
+    max-height: 0;
+    overflow: hidden;
+    theme.transition("slow", "max-height");
+  }
+
+  @if open {
+    .main-links {
+      max-height: 12rem;
+    }
+  }
+
+  .main-content {
+    box-sizing: border-box;
+    max-height: 12rem;
+    overflow-y: auto;
+  }
+
+  ::slotted(t-link),
+  ::slotted(span) {
+    display: block;
+    theme.text("body", "no-margin");
+    theme.padding("small_block");
+    theme.border("body", "contrast", "bottom");
+    text-decoration: none;
+    border-radius: 0;
+  }
+
+  .main-content ::slotted(t-link),
+  .main-content ::slotted(span) {
+    theme.colour("surface");
+  }
+
+  ::slotted(t-link:last-child),
+  ::slotted(span:last-child) {
+    border-bottom: none;
+  }
+
+  .main-content ::slotted(a) {
+    cursor: pointer;
+  }
+
+  ::slotted(t-link:hover),
+  ::slotted(t-link:focus) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .main-content ::slotted(t-link:hover),
+  .main-content ::slotted(t-link:focus) {
+    theme.colour("surface", 0.9);
+  }
+
+  .right-actions {
+    display: block;
+    theme.padding("small_block");
+    theme.colour("primary");
+    theme.border("body", undefined, "top");
+  }
+
+  .right-actions ::slotted(t-link),
+  .right-actions ::slotted(span) {
+    display: inline-block;
+  }
+
+  .right-actions ::slotted(form) {
+    display: grid;
+    grid-template-columns: auto fit-content(8ch);
+    gap: ":spec.spacings.small_block[1]";
+  }
+
+  @if !has_right {
+    .right-actions {
+      display: none;
+    }
+  }
+
+  @if self.use_spec_query("lg", self.parentElement ?? document.body) {
+    .content {
+      display: flex;
+      align-items: center;
+      theme.padding("block", "left", "right");
+    }
+
+    .logo-col .expand-button {
+      display: none;
+    }
+
+    .main-links {
+      flex: 1;
+      max-height: 100%;
+    }
+
+    .main-content {
+      display: flex;
+      theme.padding("small_block");
+      overflow: hidden;
+    }
+
+    ::slotted(t-link),
+    ::slotted(span) {
+      border: none;
+      color: inherit !important;
+      background-color: transparent !important;
+      transform: scale(1);
+      theme.transition("fast", "transform");
+    }
+
+    .right-actions {
+      color: inherit;
+      border-top: none;
+      background-color: transparent;
+      flex: 1;
+      text-align: right;
+    }
+
+    ::slotted(t-link:hover),
+    ::slotted(t-link:focus) {
+      background-color: transparent;
+      color: inherit;
+      text-decoration: underline;
+    }
+  }
+
+  @if !self.flush {
+    @if self.use_spec_query("lg", self.parentElement ?? document.body)  {
+      .content {
+        max-width: ":spec.screen_sizes.lg.width + 'px'";
+      }
+    }
+
+    @if self.use_spec_query("xl", self.parentElement ?? document.body)  {
+      .content {
+        max-width: ":spec.screen_sizes.xl.width + 'px'";
+      }
+    }
+  }
+</style>
+
+<div class="content">
+  <div class="logo-col">
+    <div class="logo-container">
+      <img src=":self.logo" alt=":self['logo-alt']" />
+    </div>
+
+    <div class="expand-button" on:click="on_toggle" tabindex="0">
+      <t-icon
+        name="menu-3"
+        size="body_large"
+        colour=":self.bg ?? 'primary'"
+        text
+      ></t-icon>
+    </div>
+  </div>
+
+  <div class="main-links">
+    <div class="main-content scrollable">
+      <slot></slot>
+    </div>
+  </div>
+
+  <div class="right-actions">
+    <slot name="right" on:slotchange="on_right"></slot>
+  </div>
+</div>

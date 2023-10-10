@@ -1,0 +1,42 @@
+@js const spec = require("../spec");
+@js const theme = require("../theme");
+
+:host {
+  cursor: pointer;
+}
+
+.label {
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+.dropdown-container {
+  max-height: 0;
+  overflow: hidden;
+  theme.transition("fast", "max-height");
+  z-index: ":spec.z_indexes.popup";
+}
+
+.dropdown-container.open {
+  theme.border("body", "contrast", "top");
+}
+
+.dropdown-body {
+  theme.text("body", "no-margin");
+  box-sizing: border-box;
+}
+
+.input-content {
+  position: relative;
+  theme.padding("input");
+  theme.colour("surface");
+  theme.transition("fast", "color", "background-color");
+}
+
+:host(:focus) .input-content {
+  theme.colour("body");
+}
+
+@insert ./custom-scrollbar.pss;

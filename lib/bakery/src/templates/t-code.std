@@ -1,0 +1,177 @@
+<s:meta name="t-code">
+  A code highlighter. It uses highlight.js to correctly colour code.
+  <attr name="language">
+    The name of a language as listed in highlight.js.
+    <ref url="https://highlightjs.org/static/demo/">
+      Highlight.js Language Demo
+    </ref>
+  </attr>
+  <attr name="use" type="string | { code: string }" property>
+    A JavaScript snippet to extract the data from the `u-` namespace. If an
+    object, then the `code` property will be used to set the code rather than
+    using the `u-` context.
+  </attr>
+  <attr name="file">
+    A file name to provide the user with a bit of context. Display only and does
+    not change functionality.
+  </attr>
+  <attr name="flush" type="boolean">
+    If true then no padding or borders will be applied.
+  </attr>
+  <base use="ContextFetcher" from="../base-classes/context-fetcher" default />
+</s:meta>
+
+<script>
+  import slotted from "../toggleable-slot";
+  import hljs from "highlight.js";
+  const container = slotted();
+
+  const preceding_whitespace = (l) => {
+    const tester = l.split(" ");
+    for (let i = 0; i < tester.length; i++) if (tester[i].trim()) return i;
+    return l.length;
+  };
+
+  const raw_code = () => {
+    const data = self.use_string_context("use");
+    if (!data) return self.innerHTML;
+    if (typeof data === "string") return data;
+    return data.code;
+  };
+
+  const code = () => {
+    const code =
+      raw_code()
+        ?.replace(/&gt;/gm, ">")
+        .replace(/&lt;/gm, "<")
+        .replace(/&quot;/gm, '"') ?? "";
+    let level = -1;
+    return code
+      .replace("<!-- prettier-ignore -->", "")
+      .split("\n")
+      .map((l) => {
+        if (level === -1 && l.trim()) level = preceding_whitespace(l);
+        if (level === -1) return l;
+
+        return l.replace(
+          Array.apply(null, Array(level))
+            .map(() => " ")
+            .join(""),
+          ""
+        );
+      })
+      .join("\n")
+      .trim();
+  };
+
+  function build_code() {
+    const result = hljs.highlight(code(), {
+      language: self.language,
+    }).value;
+
+    const cont = container.current;
+    if (!cont) return;
+    cont.innerHTML = result;
+  }
+
+  build_code();
+
+  $after: {
+    build_code();
+  }
+</script>
+
+<style>
+  @js const theme = require("../theme");
+
+  :host {
+    display: block;
+    theme.colour("surface");
+    theme.text("code");
+    overflow: hidden;
+  }
+
+  @if self.flush {
+    :host {
+      background-color: transparent !important;
+    }
+  }
+
+  .hljs-keyword {
+    theme.textcolour("rainbow_0");
+  }
+
+  .hljs-subst {
+    theme.textcolour("rainbow_1");
+  }
+
+  .hljs-params {
+    theme.textcolour("rainbow_2");
+  }
+
+  .hljs-property {
+    theme.textcolour("rainbow_3");
+  }
+
+  .hljs-name {
+    theme.textcolour("rainbow_4");
+  }
+
+  .hljs-attr {
+    theme.textcolour("rainbow_5");
+  }
+
+  .hljs-string,
+  .hljs-section,
+  .hljs-selector-class,
+  .hljs-template-variable,
+  .hljs-deletion {
+    theme.textcolour("rainbow_6");
+  }
+
+  .hljs-variable {
+    theme.textcolour("rainbow_7");
+  }
+
+  .hljs-title {
+    theme.textcolour("rainbow_9");
+  }
+
+  .file-name {
+    theme.colour("body");
+    theme.padding("block");
+    theme.border("body", "contrast", "bottom");
+  }
+
+  @if !self.file {
+    .file-name {
+      display: none;
+    }
+  }
+
+  @insert ../styles/custom-scrollbar.pss;
+
+  #container {
+    theme.padding("block");
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  @if !self.flush {
+    :host {
+      theme.border("body");
+      theme.shadow("body");
+    }
+  }
+</style>
+
+<div style="display: none">
+  <slot on:slotchange="container.on_change"></slot>
+</div>
+
+<s:if check=":self.file">
+  <div class="file-name">
+    <s:text use=":self.file"></s:text>
+  </div>
+</s:if>
+<div id="container" class="scrollable" s:ref="container"></div>

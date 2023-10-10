@@ -1,0 +1,20 @@
+{
+  "name": "ipheion-toolkit",
+  "version": "0.0.1",
+  "description": "The monorepo for the ipheion tools",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iph3i0n/toolkit.git"
+  },
+  "author": "Ipheion",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Iph3i0n/toolkit/issues"
+  },
+  "homepage": "https://github.com/Iph3i0n/toolkit#readme",
+  "workspaces": [
+    "lib/*",
+    "sample/*"
+  ]
+}

@@ -1,0 +1,176 @@
+<s:meta name="f-toggle">
+  A box to toggle between two options. Must be placed within a `form` tag.
+  <attr name="prefill" optional>
+    Set to `on` if the item should be toggled on by default.
+  </attr>
+  <attr name="disabled" type="boolean">If set then the field is readonly.</attr>
+  <attr name="name">
+    The name of the value field in the form data. Should be unique.
+  </attr>
+  <attr name="required" type="boolean">
+    If set then the form will not be submittable until the element field has the
+    value of `on`.
+  </attr>
+  <member name="value" type="string | File | File[] | boolean | undefined">
+    The value of the element. What is submitted.
+  </member>
+  <event name="ValueChanged" type="ToggleValueChangedEvent">
+    Fired when the input value is changed. Does not fire if the value changes
+    because the `prefill` value changes.
+    <key name="Value" type="string | boolean | File | File[] | undefined">
+      The current value of the form element.
+    </key>
+    <key name="Name" type="string">The name of the input.</key>
+  </event>
+  <slot>The label text</slot>
+  <slot name="on">The text for the active state</slot>
+  <slot name="off">The text for the inactive state</slot>
+  <slot name="help">The small help text at the bottom of the input.</slot>
+  <slot name="empty">
+    The error text for if the slot is empty and required is true.
+  </slot>
+  <slot name="invalid">
+    The error text for if validate is set and the RegExp does not match
+  </slot>
+  <base use="FormElement" from="../base-classes/form" default />
+  <import use="c" from="../html/classes" default />
+  <import use="slotted" from="../toggleable-slot" default />
+  <import use="on_key_handler" from="../events/keyboard" />
+  <aria role="select" />
+  <form />
+</s:meta>
+
+<script>
+  const slot = slotted();
+
+  self.addEventListener("click", () => {
+    self.value = self.value === "on" ? "" : "on";
+  });
+
+  self.addEventListener(
+    "keydown",
+    on_key_handler({
+      Enter: () => {
+        self.value = self.value === "on" ? "" : "on";
+      },
+    })
+  );
+</script>
+<style>
+  @js const theme = require("../theme");
+  @js const spec = require("../spec");
+  @insert ../styles/input.pss;
+
+  .label {
+    display: flex;
+    theme.text("body");
+    cursor: default;
+    align-items: center;
+    user-select: none;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .question {
+    white-space: nowrap;
+    theme.padding("small_block");
+  }
+
+  .options {
+    position: relative;
+    flex: 1;
+    align-self: stretch;
+  }
+
+  .option {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    theme.padding("small_block");
+    cursor: pointer;
+    theme.colour("body");
+    theme.transition("fast", "color", "background-color", "top");
+    theme.border("body", "contrast", "left");
+  }
+
+  .option:hover {
+    theme.colour("body", 0.9);
+  }
+
+  .option:active {
+    theme.colour("body", 0.7);
+  }
+
+  .option:last-child {
+    top: -100%;
+    theme.colour("primary");
+  }
+
+  .option:last-child:hover {
+    theme.colour("primary", 0.9);
+  }
+
+  .option:last-child:active {
+    theme.colour("primary", 0.7);
+  }
+
+  .option.active {
+    top: 0;
+  }
+
+  @if self.use_breakpoint(500, "px", self, true) {
+    .label {
+      display: block;
+    }
+
+    .question {
+      theme.border("body", "contrast", "bottom");
+    }
+
+    .options {
+      height: 2.1em;
+      overflow: hidden;
+    }
+
+    .option {
+      border: none;
+    }
+  }
+</style>
+
+<div class=":self.label_class">
+  <div class="question">
+    <slot></slot>
+  </div>
+
+  <div class="options">
+    <div class=":c('option', ['active', self.value !== 'on'])">
+      <slot name="off"></slot>
+    </div>
+    <div class=":c('option', ['active', self.value === 'on'])">
+      <slot name="on"></slot>
+    </div>
+  </div>
+</div>
+
+<s:if check=":self.should_show_validation">
+  <s:if check=":self.is_bad_empty">
+    <div class="error-text">
+      <slot name="empty"></slot>
+    </div>
+  </s:if>
+  <s:if check=":!self.is_bad_empty && self.is_invalid">
+    <div class="error-text">
+      <slot name="invalid"></slot>
+    </div>
+  </s:if>
+</s:if>
+<s:if check=":!self.should_show_validation">
+  <div class=":c('help-text', ['empty', !slot.has_children])">
+    <slot name="help" on:slotchange="slot.on_change"></slot>
+  </div>
+</s:if>

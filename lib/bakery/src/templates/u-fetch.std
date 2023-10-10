@@ -1,0 +1,92 @@
+<s:meta name="u-fetch">
+  Fetches data from a URL and adds them to the context.
+  <attr name="url">
+    The main URL to use. May include parameters like `{{ locale }}` to customise
+    the URL for the user.
+  </attr>
+  <attr name="name">The name given to the result in the context.</attr>
+  <attr name="fallback">
+    The fallback URL for if the fetch fails. Useful for when fetching locale
+    specific data from a CMS.
+  </attr>
+  <attr name="no-cache" type="boolean">
+    By default all data is cached on the users machine. If set then that cache
+    is disabled. Only use if you have to.
+  </attr>
+  <import use="is_visible" from="../html/is-visible" />
+  <import use="PaginationEvent" from="../pagination" default />
+  <base use="UrlBuilder" from="../base-classes/router" />
+</s:meta>
+
+<script>
+  import { SetContextEventKey } from "../events/context";
+
+  let skip = 0;
+  let take = 50;
+
+  const DATA_KEY = () => "__BAKERY_DATA__" + this.Render(self.url);
+
+  self.addEventListener(PaginationEvent.Key, (e) => {
+    skip = e.Skip;
+    take = e.Take;
+    self.dispatchEvent(new ShouldRender());
+  });
+
+  let existing_route = window.location.pathname;
+
+  const rendered_url = () => {
+    if (!is_visible(self)) return undefined;
+
+    return this.Render(self.url);
+  };
+
+  $after: {
+    const next = rendered_url();
+    if (!next || next === existing_route) return;
+    existing_route = next;
+
+    if (!self["no-cache"]) {
+      const cached = window.localStorage.getItem(DATA_KEY());
+      if (cached) self.provide_context(self.name, JSON.parse(cached));
+    }
+
+    const r = await fetch(next);
+    let final;
+
+    if (!r.ok)
+      if (self.fallback) {
+        console.error(r);
+        const res = await fetch(this.Render(self.fallback));
+
+        if (!res.ok) throw res;
+
+        final = await res.json();
+      } else throw r;
+    else final = await r.json();
+
+    self.provide_context(self.name, final);
+    if (!self["no-cache"])
+      window.localStorage.setItem(DATA_KEY(), JSON.stringify(final));
+  }
+
+  const handler = () => {
+    self.dispatchEvent(new ShouldRender());
+  };
+
+  document.addEventListener("NavigationEvent", handler);
+  document.addEventListener("data-invalidated", () => {
+    existing_route = "";
+    handler();
+  });
+  window.addEventListener("popstate", handler);
+
+  self.addEventListener(SetContextEventKey, (event) => {
+    if (event.Key !== self.name) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    self.provide_context(self.name, event.Data);
+  });
+</script>
+
+<slot></slot>

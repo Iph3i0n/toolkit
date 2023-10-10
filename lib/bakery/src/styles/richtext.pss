@@ -1,0 +1,63 @@
+@js const theme = require("../theme");
+@js const spec = require("../spec");
+
+.content p {
+  theme.text("body");
+}
+
+.content h1 {
+  theme.text("h1");
+}
+
+.content h2 {
+  theme.text("h2");
+}
+
+.content h3 {
+  theme.text("h3");
+}
+
+.content h4 {
+  theme.text("h4");
+}
+
+.content h5 {
+  theme.text("h5");
+}
+
+.content h6 {
+  theme.text("h6");
+}
+
+.content pre {
+  display: block;
+  theme.text("code");
+  theme.colour("body");
+  theme.padding('small_block');
+  border-radius: ":spec.borders.small.radius";
+  white-space: pre-wrap;
+}
+
+.content blockquote {
+  theme.padding("block");
+  theme.text("body");
+  theme.border("body", "contrast", "left");
+  white-space: pre-wrap;
+}
+
+.content ul,
+.content ol  {
+  theme.text("body", "no-margin");
+  theme.margin("small_block", "top", "bottom");
+  padding: 0 0 0 1.5em;
+}
+
+.content a {
+  theme.textcolour("primary");
+}
+
+.content img {
+  theme.border("body");
+  theme.shadow("body");
+  max-width: 100%;
+}

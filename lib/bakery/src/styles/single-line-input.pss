@@ -1,0 +1,46 @@
+@js const theme = require("../theme");
+@js const spec = require("../spec");
+@insert ../styles/input.pss;
+
+.label {
+  theme.padding("input");
+}
+
+.label-text {
+  position: absolute;
+  theme.text("body", "no-margin");
+  theme.transition("fast", "font-size", "top", "margin");
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  height: ":spec.text_styles.body.font_size";
+  line-height: 1;
+}
+
+.label-text.populated {
+  theme.text("badge", "no-margin");
+  height: ":spec.text_styles.badge.font_size";
+  margin-top: 5px;
+}
+
+.content {
+  theme.text("body", "no-margin");
+  theme.colour("body");
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent !important;
+  overflow: visible;
+  line-height: 1;
+}
+
+.content br {
+  display: none;
+}
+
+.content:focus,
+.content:active {
+  outline: none;
+}

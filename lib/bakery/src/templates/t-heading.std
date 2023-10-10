@@ -1,0 +1,37 @@
+<s:meta name="t-heading">
+  A HTML heading tag.
+  <attr name="level" type="heading_level" default="h1">The heading level.</attr>
+  <attr name="display" type="boolean">
+    If true then larger but thinner fonts will be used to make the text stand
+    out.
+  </attr>
+  <aria role="heading" />
+  <base use="BakeryBase" from="../base-classes/main" default />
+</s:meta>
+
+<script>
+  self.addEventListener(LoadedEvent.Key, () => {
+    self.internals.ariaLevel = self.level;
+  });
+
+  self.addEventListener(PropsEvent.Key, () => {
+    self.internals.ariaLevel = self.level;
+  });
+
+  const type = () => self.level + (self.display ? "_display" : "");
+</script>
+
+<style>
+  @js const theme = require("../theme");
+
+  :host {
+    display: block;
+    theme.text(type());
+  }
+
+  :host(:last-child) {
+    margin-bottom: 0;
+  }
+</style>
+
+<slot></slot>

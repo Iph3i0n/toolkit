@@ -1,0 +1,59 @@
+<s:meta name="d-alert">
+  A simple coloured alert to display update information to the user. Commonly
+  used to display error or success messages after a submission or interaction.
+  <attr name="colour" type="colour" default="warning">
+    A the colour to fill the alert with.
+  </attr>
+  <attr name="closeable" type="boolean">
+    If true, a close button is displayed and the element will be removed when it
+    is clicked. A close event Will be fired which can be prevented.
+  </attr>
+  <event name="CloseRequested" type="AlertCloseEvent">
+    When the user closes the modal. Prevent default to stop the element from
+    being destroyed.
+  </event>
+  <aria role="alert" />
+  <base use="BakeryBase" from="../base-classes/main" default />
+</s:meta>
+
+<script>
+  function close() {
+    const event = new CustomEvent("CloseRequested", { cancelable: true });
+    self.dispatchEvent(event);
+    if (event.defaultPrevented) return;
+    self.remove();
+  }
+</script>
+<style>
+  @js const theme = require("../theme");
+  @js const spec = require("../spec");
+
+  :host {
+    position: relative;
+    display: flex;
+    theme.colour(self.colour ?? "warning", 1.6);
+    theme.border("body", self.colour);
+    theme.padding("block");
+    theme.text("body_large");
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .close-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<slot></slot>
+<s:if check=":self.closeable">
+  <div class="close-button" role="button" on:click="close">
+    <t-icon
+      name="close"
+      colour=":self.colour ?? 'warning'"
+      size="body_large"
+      text
+    ></t-icon>
+  </div>
+</s:if>

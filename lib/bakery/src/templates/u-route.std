@@ -1,0 +1,36 @@
+<s:meta name="u-route">
+  Only displays the children if the browser matches the particular route.
+  Provided routes are relative to the route used below, even if they start with
+  a /.
+  <attr name="path" type="string">
+    The current path to match. Will be relative to the current URL. Use `:` at
+    the start of a segment to use it as a parameter. The parameters will be
+    available to any `u-fetch` tag that is a child.
+  </attr>
+  <attr name="exact" type="boolean">
+    If set then only exact matches will be allowed. Useful for home pages and
+    landing pages.
+  </attr>
+  <member name="params" type="Record<string, string>" readonly>
+    Readonly property to get the current params from a match.
+  </member>
+  <member name="Push" type="(url: string) => void" readonly>
+    Navigate to a URL.
+  </member>
+  <member name="Replace" type="(url: string) => void" readonly>
+    Navigate to a URL without adding to the history.
+  </member>
+  <event name="MatchChanged" type="RouterMatchChangedEvent">
+    Fired when the URL changes, causing the match state to change.
+    <key name="Matches" type="boolean">Whether the current router matches</key>
+    <key name="Params" type="Record<string, string>">
+      If there is a match and the router contains parameters then the parameters
+      are here. If not then an empty object.
+    </key>
+  </event>
+  <base use="Router" from="../base-classes/router" default />
+</s:meta>
+
+<s:if check=":self.Matches.match">
+  <slot></slot>
+</s:if>

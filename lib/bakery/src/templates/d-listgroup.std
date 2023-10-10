@@ -1,0 +1,26 @@
+<s:meta name="d-listgroup">
+  Uses the children to display a list of items. Each one a block with a standard
+  border. Only `span` and `a` tags as children are supported. The children may
+  have a theme colour as a class name in order to style them.
+
+  <aria role="list" />
+  <base use="BakeryBase" from="../base-classes/main" default />
+</s:meta>
+
+<style>
+  @js const theme = require("../theme");
+  @js const spec = require("../spec");
+  :host {
+    display: block;
+    theme.border("body");
+    theme.shadow("body");
+    overflow: hidden;
+  }
+
+  @insert ../styles/slotted-spans.pss;
+
+  ::slotted(t-link:not(:last-child)), ::slotted(span:not(:last-child)), ::slotted(l-row:not(:last-child)) {
+    theme.border("body", undefined, "bottom");
+  }
+</style>
+<slot></slot>
