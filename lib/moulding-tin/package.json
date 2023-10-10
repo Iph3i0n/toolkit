@@ -1,0 +1,13 @@
+{
+  "name": "@ipheion/moulding-tin",
+  "version": "0.0.1",
+  "description": "Easy type serialisation",
+  "main": "dist/mod.js",
+  "types": "dist/mod.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

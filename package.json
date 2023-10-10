@@ -2,7 +2,10 @@
   "name": "ipheion-toolkit",
   "version": "0.0.1",
   "description": "The monorepo for the ipheion tools",
-  "scripts": {},
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Iph3i0n/toolkit.git"
@@ -21,9 +24,40 @@
     "@types/jest": "^29.5.5",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2",
     "yargs": "^17.7.2"
   },
   "bin": {
     "ipheion": "./scripts/index.js"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "safe-type",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/lib/safe-type/**/*.test.ts"
+        ],
+        "transform": {
+          "^.+\\.tsx?$": [
+            "ts-jest",
+            {}
+          ]
+        }
+      },
+      {
+        "displayName": "",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/lib/moulding-tin/**/*.test.ts"
+        ],
+        "transform": {
+          "^.+\\.tsx?$": [
+            "ts-jest",
+            {}
+          ]
+        }
+      }
+    ]
   }
 }
