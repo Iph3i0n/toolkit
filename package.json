@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Iph3i0n/toolkit#readme",
   "workspaces": [
     "lib/*",
+    "service/*",
     "app/*"
   ],
   "devDependencies": {
