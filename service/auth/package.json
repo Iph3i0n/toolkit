@@ -1,0 +1,16 @@
+{
+  "name": "@ipheion/auth-service",
+  "version": "0.0.1",
+  "description": "Easy type serialisation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "private": true,
+  "devDependencies": {},
+  "requires": [
+    "../../lib/safe-type",
+    "../../lib/puristee",
+    "../../lib/moulding-tin"
+  ]
+}
