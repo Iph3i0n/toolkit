@@ -41,12 +41,14 @@
         "transform": {
           "^.+\\.tsx?$": [
             "ts-jest",
-            {}
+            {
+              "tsconfig": "<rootDir>/lib/safe-type/tsconfig.json"
+            }
           ]
         }
       },
       {
-        "displayName": "",
+        "displayName": "moulding-tin",
         "testEnvironment": "node",
         "testMatch": [
           "<rootDir>/lib/moulding-tin/**/*.test.ts"
@@ -54,7 +56,24 @@
         "transform": {
           "^.+\\.tsx?$": [
             "ts-jest",
-            {}
+            {
+              "tsconfig": "<rootDir>/lib/moulding-tin/tsconfig.json"
+            }
+          ]
+        }
+      },
+      {
+        "displayName": "fs-db",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/lib/fs-db/**/*.test.ts"
+        ],
+        "transform": {
+          "^.+\\.tsx?$": [
+            "ts-jest",
+            {
+              "tsconfig": "<rootDir>/lib/fs-db/tsconfig.json"
+            }
           ]
         }
       }
