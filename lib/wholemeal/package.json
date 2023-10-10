@@ -27,6 +27,6 @@
     "access": "public"
   },
   "requires": [
-    "../safe-type"
+    "@ipheion/safe-type"
   ]
 }

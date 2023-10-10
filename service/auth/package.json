@@ -9,8 +9,8 @@
   "private": true,
   "devDependencies": {},
   "requires": [
-    "../../lib/safe-type",
-    "../../lib/puristee",
-    "../../lib/moulding-tin"
+    "@ipheion/safe-type",
+    "@ipheion/puristee",
+    "@ipheion/moulding-tin"
   ]
 }

@@ -7,6 +7,9 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "lib/*/dist": true,
-    "node_modules": true
+    "app/*/dist": true,
+    "service/*/dist": true,
+    "node_modules": true,
+    ".vscode": true
   }
 }

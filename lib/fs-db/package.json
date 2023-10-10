@@ -11,7 +11,7 @@
     "access": "public"
   },
   "requires": [
-    "../moulding-tin",
-    "../safe-type"
+    "@ipheion/moulding-tin",
+    "@ipheion/safe-type"
   ]
 }

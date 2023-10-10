@@ -1,4 +1,4 @@
-const { run, read_json } = require("./utils");
+const { run, read_json, get_packages } = require("./utils");
 const path = require("path");
 
 const already = [];
@@ -22,7 +22,8 @@ module.exports = {
       const requires = package.requires;
       if (Array.isArray(requires)) {
         for (const item of requires)
-          await internal(path.resolve(loc, item), cmd);
+          for await (const [name, loc] of get_packages())
+            if (name === item) await internal(loc, cmd);
       }
 
       already.push(loc);

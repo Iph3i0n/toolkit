@@ -2,8 +2,9 @@ const { spawn } = require("node:child_process");
 const fs = require("node:fs/promises");
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
+const path = require("node:path");
 
-module.exports = {
+const result = {
   /**
    * Runs the given command as shell and pipes the output to stdio
    * @param {string} cwd The current working directory
@@ -37,4 +38,32 @@ module.exports = {
   get yargs() {
     return yargs(hideBin(process.argv));
   },
+  /**
+   * @returns {AsyncGenerator<[string, string]>}
+   */
+  async *get_packages() {
+    const start = path.resolve(__dirname, "..");
+    for (const item of await fs.readdir(path.resolve(start, "app"))) {
+      const package = await result.read_json(
+        path.resolve(start, "app", item, "package.json")
+      );
+      yield [package.name, path.resolve(start, "app", item)];
+    }
+
+    for (const item of await fs.readdir(path.resolve(start, "lib"))) {
+      const package = await result.read_json(
+        path.resolve(start, "lib", item, "package.json")
+      );
+      yield [package.name, path.resolve(start, "lib", item)];
+    }
+
+    for (const item of await fs.readdir(path.resolve(start, "service"))) {
+      const package = await result.read_json(
+        path.resolve(start, "service", item, "package.json")
+      );
+      yield [package.name, path.resolve(start, "service", item)];
+    }
+  },
 };
+
+module.exports = result;
