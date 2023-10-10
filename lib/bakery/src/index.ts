@@ -1,5 +1,5 @@
 import GlobalCss from "./global.pss";
-import RenderSheet from "@ipheion/wholemeal/dist/runner/css";
+import { RenderSheet } from "@ipheion/wholemeal";
 
 export * from "./area/display";
 export * from "./area/form";
