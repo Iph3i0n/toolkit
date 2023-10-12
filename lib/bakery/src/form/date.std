@@ -1,0 +1,284 @@
+<s:meta name="f-date">
+  A form data picker. Must be placed within a `form` tag.
+  <attr name="prefill" optional>
+    The initial date to display to the user. Defaults to the current date.
+    Should be in `yyyy-mm-dd` format.
+  </attr>
+  <attr name="disabled" type="boolean">If set then the field is readonly.</attr>
+  <attr name="name">
+    The name of the value field in the form data. Should be unique.
+  </attr>
+  <attr name="required" type="boolean">
+    If set then the form will not be submittable until the element field has a
+    value.
+  </attr>
+  <attr name="validate" optional>
+    A RegExp string used to evaluate the input. If there are no matches then the
+    field will be considered invalid and the form will not be submittable.
+    Remember that the value is in the format of `yyyy-mm-dd`.
+  </attr>
+  <member name="value" type="import('./types').FormElementValue">
+    The value of the element. What is submitted.
+  </member>
+  <event name="ValueChanged" type="import('./events').ValueChangedEvent">
+    Fired when the input value is changed. Does not fire if the value changes
+    because the `prefill` value changes.
+    <key name="Value" type="import('./types').FormElementValue">
+      The current value of the form element.
+    </key>
+    <key name="Name" type="string">The name of the input.</key>
+  </event>
+  <slot>The label text</slot>
+  <slot name="help">The small help text at the bottom of the input.</slot>
+  <slot name="empty">
+    The error text for if the slot is empty and required is true.
+  </slot>
+  <slot name="invalid">
+    The error text for if validate is set and the RegExp does not match
+  </slot>
+  <base use="FormElement" from="./base" default />
+  <aria role="select" />
+  <form />
+</s:meta>
+
+<script>
+  import c from "../utils/html/classes";
+  import slotted from "../utils/toggleable-slot";
+  import DateFunctions from "../utils/date-functions";
+  import { on_key_handler } from "../global/events/keyboard";
+
+  const current = () => {
+    return self.value ? new DateFunctions(self.value).start_of_day : undefined;
+  };
+  const current_formatted = () => current()?.date_string ?? "\xa0";
+
+  function select(value) {
+    return () => {
+      self.value = value;
+      self.blur();
+    };
+  }
+
+  self.addEventListener(
+    "keydown",
+    on_key_handler({
+      ArrowDown: () => {
+        const input = current().plus("day", 7);
+        if (input.month !== current().month)
+          open_month = input.start_of_day.start_of_month;
+        self.value = input.date_string;
+      },
+      ArrowUp: () => {
+        const input = current().plus("day", -7);
+        if (input.month !== current().month)
+          open_month = input.start_of_day.start_of_month;
+        self.value = input.date_string;
+      },
+      ArrowLeft: () => {
+        const input = current().plus("day", -1);
+        if (input.month !== current().month)
+          open_month = input.start_of_day.start_of_month;
+        self.value = input.date_string;
+      },
+      ArrowRight: () => {
+        const input = current().plus("day", 1);
+        if (input.month !== current().month)
+          open_month = input.start_of_day.start_of_month;
+        self.value = input.date_string;
+      },
+    })
+  );
+
+  let open_month;
+
+  $load: {
+    if (!self.value) self.value = new DateFunctions(new Date()).value_string;
+    open_month = current().start_of_day.start_of_month;
+    self.dispatchEvent(new ShouldRender());
+  }
+
+  const slot = slotted();
+</script>
+<style>
+  @js const { theme, spec } = require("../global/theme");
+  @insert ../styles/single-line-input.pss;
+  @insert ../styles/dropdown.pss;
+
+  .dropdown-container {
+    display: flex;
+  }
+
+  .dropdown-container.open {
+    max-height: 40rem;
+  }
+
+  .dropdown-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    theme.padding("block");
+    width: 100%;
+  }
+
+  .content + t-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    theme.padding("input", "left", "right");
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    theme.border("body", "headline", "bottom");
+  }
+
+  .month-nav,
+  .month-name {
+    theme.padding("small_block");
+    theme.colour("surface");
+    theme.transition("fast", "background-color");
+  }
+
+  .month-nav:hover {
+    theme.colour("body");
+  }
+
+  .dates {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .day.option {
+    theme.colour("surface");
+    theme.transition("fast", "background-color", "color");
+  }
+
+  .day.option:hover {
+    theme.colour("surface", 0.9);
+  }
+
+  .day.wrong-month {
+    opacity: 0.5;
+  }
+
+  .day.weekend {
+    theme.colour("headline");
+  }
+
+  .day.option.weekend:hover {
+    theme.colour("headline", 0.9);
+  }
+
+  .dates .day.current,
+  .dates .day.current:hover {
+    theme.colour("primary");
+  }
+
+  .dropdown-content {
+    width: 21rem;
+    overflow: hidden;
+    theme.border("small");
+    theme.shadow("small");
+  }
+
+  @if self.use_breakpoint(400, "px", self, true) {
+    .day {
+      width: 100%;
+      height: 2.25rem;
+    }
+
+    .dropdown-content {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .dropdown-body {
+      padding: 0;
+    }
+  }
+</style>
+
+<s:if check=":current() && open_month">
+  <div class=":self.label_class">
+    <div class="input-content">
+      <div class=":c('label-text', ['populated', self.focused || self.value])">
+        <slot></slot>
+      </div>
+
+      <div class="content">
+        <s:text use=":current_formatted()"></s:text>
+      </div>
+
+      <t-icon name="calendar-2" size="body_large" text></t-icon>
+    </div>
+
+    <div class=":c('dropdown-container', ['open', self.focused])">
+      <div class="dropdown-body">
+        <div class="dropdown-content">
+          <div class="top-bar">
+            <div
+              class="month-nav"
+              on:click="() => (open_month = open_month.plus('month', -1))"
+            >
+              <t-icon name="arrow-left-s" size="body_large" text></t-icon>
+            </div>
+
+            <div class="month-name">
+              <s:text use=":open_month.month_string"></s:text>
+            </div>
+
+            <div
+              class="month-nav"
+              on:click="() => (open_month = open_month.plus('month', 1))"
+            >
+              <t-icon name="arrow-right-s" size="body_large" text></t-icon>
+            </div>
+          </div>
+          <div class="dates">
+            <s:for subject=":DateFunctions.DaysOfTheWeek" key="day">
+              <div
+                class=":c('day', ['weekend', day.day_of_week === 0 || day.day_of_week === 6])"
+              >
+                <s:text use=":day.day_of_week_string.substring(0, 1)"></s:text>
+              </div>
+            </s:for>
+
+            <s:for subject=":open_month.month_model(self.value)" key="day">
+              <div class=":day.class" on:click="select(day.data.value_string)">
+                <s:text use=":day.data.day_of_month.toString()"></s:text>
+              </div>
+            </s:for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <s:if check=":self.should_show_validation">
+    <s:if check=":self.is_bad_empty">
+      <div class="error-text">
+        <slot name="empty"></slot>
+      </div>
+    </s:if>
+    <s:if check=":!self.is_bad_empty && self.is_invalid">
+      <div class="error-text">
+        <slot name="invalid"></slot>
+      </div>
+    </s:if>
+  </s:if>
+  <s:if check=":!self.should_show_validation">
+    <div class=":c('help-text', ['empty', !slot.has_children])">
+      <slot name="help" on:slotchange="slot.on_change"></slot>
+    </div>
+  </s:if>
+</s:if>

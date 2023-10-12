@@ -1,0 +1,43 @@
+<s:meta name="f-form">
+  The form container to replace the existing `form` tag.
+
+  <attr name="url" type="string" optional>
+    The URL to submit to. Can include parameters like the `u-fetch` tag.
+  </attr>
+  <attr name="method" type="import('./types').RequestMethod" default="post">
+    The method for the submission request.
+  </attr>
+  <attr
+    name="submit"
+    type="import('./types').SubmissionType"
+    default="ajax-json"
+  >
+    The form type. Should be AJAX if doing a SPA model.
+  </attr>
+  <attr name="success-url" type="string" optional>
+    Used if the submission type is an AJAX type. The current URL with current
+    URL will be used if nothing is set. The form will provide the response JSON
+    to the `u-` context if it is still rendered after submission.
+  </attr>
+  <attr name="credentials" type="RequestCredentials" default="same-origin">
+    Only used for AJAX submission types. Set how crednetials are sent to the
+    client.
+  </attr>
+  <event name="Submitted" type="import('./events').SubmittedEvent">
+    Fired when the form is submitted and the validation event is not prevented.
+    <key name="FormData" type="import('./types').FormValue">
+      The key value pairs of the form.
+    </key>
+  </event>
+  <event name="AfterSubmit" type="import('./events').AfterSubmitEvent">
+    Fired after the submission is complete. Cannot effect anything but useful
+    for handling.
+    <key name="FormData" type="import('./types').FormValue">
+      The key value pairs of the form.
+    </key>
+  </event>
+
+  <base use="FormManagerElement" from="./base" />
+</s:meta>
+
+<slot />

@@ -1,5 +1,4 @@
-@js const spec = require("../spec");
-@js const theme = require("../theme");
+@js const { theme, spec } = require("../global/theme");
 
 ::slotted(t-link), ::slotted(span), ::slotted(l-row) {
   theme.colour("surface");

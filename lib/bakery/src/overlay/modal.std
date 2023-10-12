@@ -1,0 +1,176 @@
+<s:meta name="o-modal">
+  A modal dialogue to be triggered by another element on the screen.
+  <attr name="trigger" optional>
+    A CSS selector to listen to for opening the dialogue. Will listen for clicks
+    of any elements matching the selector.
+  </attr>
+  <attr name="size" type="size" default="medium">
+    The size of the modal on the screen.
+  </attr>
+  <attr name="path" type="string" optional>
+    If set then the modal will be treated like a `u-router` and show if the
+    route matches. In this case then the modal will replace the state when
+    closed so make sure that it only routes modal specific things.
+  </attr>
+  <attr name="open" type="boolean">
+    If set then overrides all other behaviour to open the modal.
+  </attr>
+
+  <event name="CloseRequested" type="CloseRequestedEvent">
+    When the user closes the modal. Good for frameworks.
+  </event>
+  <event name="MatchChanged" type="MatchEvent">
+    When the current match status changes if the modal is attached to a route
+  </event>
+  <slot name="title">The top of the modal.</slot>
+  <slot name="footer">The bottom of the modal, will be hidden if empty.</slot>
+  <aria role="dialog" />
+  <base use="Router" from="../global/base-classes/router" default />
+</s:meta>
+
+<script>
+  import "wicg-inert";
+  import { on_key_handler } from "../global/events/keyboard";
+  import { On } from "../utils/events";
+  import { MatchEvent } from "../global/events/routing";
+  import { CloseRequestedEvent } from "./events";
+
+  let open = false;
+  let width = "0";
+  let height = "0";
+  let has_footer = false;
+
+  switch (self.size) {
+    case "small":
+      height = "12rem";
+      width = "15rem";
+      break;
+    case "medium":
+      height = "25rem";
+      width = "30rem";
+      break;
+    case "large":
+      height = "40rem";
+      width = "50rem";
+      break;
+  }
+
+  function close() {
+    self.dispatchEvent(new CloseRequestedEvent());
+
+    if (self.trigger) {
+      open = false;
+    } else if (self.path) {
+      const target = window.location.pathname
+        .split("/")
+        .slice(0, (self.state.route?.used ?? 0) + 1)
+        .filter((p) => p)
+        .join("/");
+      self.Replace("/" + target);
+    }
+  }
+
+  const on_close_enter = on_key_handler({
+    Enter: () => close(),
+  });
+
+  function is_open() {
+    if (self.open) return true;
+    if (self.trigger) return open;
+    if (self.path) return self.Matches.match;
+    return false;
+  }
+
+  function on_footer(e) {
+    has_footer = e.currentTarget.assignedNodes().length > 0;
+  }
+
+  $after: {
+    self.inert = !is_open();
+  }
+
+  $load: {
+    if (self.trigger) {
+      const off_click = On("click", self.trigger, () => {
+        if (typeof self === "undefined") {
+          off_click();
+          return;
+        }
+
+        open = true;
+        self.dispatchEvent(new ShouldRender());
+      });
+    }
+  }
+</script>
+<style>
+  @js const { theme, spec } = require("../global/theme");
+
+  @insert ../styles/overlay.pss;
+
+  @if is_open() {
+    @insert ../styles/overlay-open.pss;
+  }
+
+  .container {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    max-width: ":width";
+    max-height: ":height";
+    width: 100%;
+    height: 100%;
+  }
+
+  @insert ../styles/custom-scrollbar.pss;
+
+  .modal {
+    transform: translateY(0);
+    theme.transition("slow", "transform");
+    theme.border("body");
+    theme.margin("small_block");
+    width: 100%;
+    height: 100%;
+  }
+
+  @if !is_open() {
+    .modal {
+      transform: translateY(-10px);
+    }
+  }
+
+  @if !has_footer {
+    .footer {
+      display: none;
+    }
+  }
+</style>
+
+<div class="overlay" on:click="close"></div>
+<div class="container">
+  <div class="modal">
+    <div class="title">
+      <slot name="title"></slot>
+      <div
+        class="close-button"
+        tabindex="0"
+        on:click="close"
+        on:keyup="on_close_enter"
+      >
+        <t-icon name="close" colour="body" size="body_large" text></t-icon>
+      </div>
+    </div>
+    <div class="body scrollable">
+      <s:if check=":is_open()">
+        <slot></slot>
+      </s:if>
+    </div>
+    <div class="footer">
+      <slot name="footer" on:slotchange="on_footer"></slot>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,221 @@
+<s:meta name="f-image">
+  A upload box for images. Must be placed within a `form` tag.
+  <attr name="disabled" type="boolean">If set then the field is readonly.</attr>
+  <attr name="name">
+    The name of the value field in the form data. Should be unique.
+  </attr>
+  <attr name="required" type="boolean">
+    If set then the form will not be submittable until the element field a
+    value.
+  </attr>
+  <attr name="height" type="string" default="12rem">
+    Height of the input element on screen. Useful for when uploading large
+    images.
+  </attr>
+  <attr name="prefill" type="string | File" optional>
+    The default value for the image. May be a URL or a File object. May also be
+    computed.
+  </attr>
+  <member name="value" type="import('./types').FormElementValue">
+    The value of the element. What is submitted.
+  </member>
+  <event name="ValueChanged" type="import('./events').ValueChangedEvent">
+    Fired when the input value is changed. Does not fire if the value changes
+    because the `prefill` value changes.
+    <key name="Value" type="import('./types').FormElementValue">
+      The current value of the form element.
+    </key>
+    <key name="Name" type="string">The name of the input.</key>
+  </event>
+  <event name="FileAdded" type="import('./events').FileEvent">
+    Fired when the user uploads a file. If the URL property is set to a promise
+    of a string then that will be used to set the URL. If not then a data URL
+    will be generated.
+    <key name="URL" type="Promise<string> | string | undefined">
+      The promise of the data URL of the image. A data URL will be generated if
+      this is not set.
+    </key>
+    <key name="File" type="File">The file that has been uploaded.</key>
+  </event>
+  <slot>The label text</slot>
+  <slot name="help">The small help text at the bottom of the input.</slot>
+  <slot name="empty">
+    The error text for if the slot is empty and required is true.
+  </slot>
+  <slot name="invalid">
+    The error text for if validate is set and the RegExp does not match
+  </slot>
+  <base use="FormElement" from="./base" default />
+  <aria role="input" />
+  <form />
+</s:meta>
+
+<script>
+  import c from "../utils/html/classes";
+  import slotted from "../utils/toggleable-slot";
+  import { on_key_handler } from "../global/events/keyboard";
+  import { get_file } from "../utils/html/file";
+  import { FileEvent } from "./events";
+
+  let preview = self.value ?? "";
+  let dragging = false;
+  const slot = slotted();
+
+  const to_data_url = (file) => {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        res(reader.result);
+      });
+    });
+  };
+
+  const process_file = async (file) => {
+    const event = new FileEvent(file);
+    self.dispatchEvent(event);
+    if (event.URL) {
+      const url = await event.URL;
+      preview = url;
+      self.value = url;
+    } else {
+      if (file) preview = await to_data_url(file);
+      self.value = file;
+    }
+  };
+
+  $on_drop: {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    process_file(file);
+  }
+
+  $on_dragover: {
+    event.preventDefault();
+    const old = dragging;
+    dragging = true;
+    if (old !== dragging) self.should_render();
+    clear();
+  }
+
+  $on_click: {
+    const file = await get_file();
+    process_file(file);
+  }
+
+  $on_ValueChanged: {
+    if (typeof self.value === "string" && preview !== self.value) {
+      preview = self.value;
+      self.should_render();
+    }
+  }
+
+  function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+
+  const clear = debounce(() => {
+    dragging = false;
+    self.dispatchEvent(new ShouldRender());
+  });
+
+  self.addEventListener(
+    "keydown",
+    on_key_handler({
+      Enter: async () => {
+        const file = await get_file();
+        self.value = file;
+        if (file) reader.readAsDataURL(file);
+      },
+    })
+  );
+</script>
+
+<style>
+  @js const { theme, spec } = require("../global/theme");
+  @insert ../styles/input.pss;
+
+  :host {
+    cursor: pointer;
+  }
+
+  .label {
+    overflow: hidden;
+  }
+
+  .textarea-label {
+    display: block;
+    theme.padding("small_block");
+    theme.colour("body");
+    theme.text("body", "no-margin");
+    theme.border("body", "contrast", "bottom");
+    border-top-left-radius: ":spec.borders.body.radius";
+    border-top-right-radius: ":spec.borders.body.radius";
+  }
+
+  span:not(.caret) {
+    animation-play-state: paused;
+  }
+
+  .droparea {
+    position: relative;
+    min-height: ":self.height";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    theme.colour("surface");
+    theme.transition("slow", "background-color");
+  }
+
+  @if dragging {
+    .droparea {
+      theme.colour("body");
+    }
+  }
+
+  .droparea img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    max-height: 100%;
+  }
+
+  .droparea t-icon {
+    opacity: 0.7;
+  }
+</style>
+
+<div class=":self.label_class">
+  <div class="textarea-label">
+    <slot></slot>
+  </div>
+  <div class="droparea">
+    <img src=":preview" />
+    <t-icon name="upload-2" colour="body" size="h1_display" text></t-icon>
+  </div>
+</div>
+<s:if check=":self.should_show_validation">
+  <s:if check=":self.is_bad_empty">
+    <div class="error-text">
+      <slot name="empty"></slot>
+    </div>
+  </s:if>
+  <s:if check=":!self.is_bad_empty && self.is_invalid">
+    <div class="error-text">
+      <slot name="invalid"></slot>
+    </div>
+  </s:if>
+</s:if>
+<s:if check=":!self.should_show_validation">
+  <div class=":c('help-text', ['empty', !slot.has_children])">
+    <slot name="help" on:slotchange="slot.on_change"></slot>
+  </div>
+</s:if>

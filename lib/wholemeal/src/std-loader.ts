@@ -9,7 +9,6 @@ import {
   IsLiteral,
   IsObject,
   IsOneOf,
-  IsString,
   Optional,
   PatternMatch,
 } from "@ipheion/safe-type";
@@ -62,7 +61,6 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
   const template = new js_constructor(component, this.resourcePath);
   const typings_template = new typings_constructor(
     component,
-    extra_types,
     this.resourcePath
   );
 

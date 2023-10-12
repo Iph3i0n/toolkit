@@ -1,0 +1,30 @@
+<s:meta name="u-global">
+  Accesses data from the `window` object and adds it to the context.
+  <attr name="var">The key used on the `window` object</attr>
+  <attr name="default">The default value if it is empty</attr>
+  <attr name="name">The name given to the result in the context.</attr>
+  <base use="BakeryBase" from="../global/base-classes/main" default />
+</s:meta>
+
+<script>
+  import { SetContextEventKey } from "../global/events/context";
+
+  const default_value = new Function("return " + self.default)();
+
+  self.provide_context(self.name, window[self.var] ?? default_value);
+
+  $props: {
+    const default_value = new Function("return " + self.default)();
+    self.provide_context(self.name, window[self.var] ?? default_value);
+  }
+
+  self.addEventListener(SetContextEventKey, (event) => {
+    if (event.Key !== self.name) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    self.provide_context(self.name, event.Data);
+  });
+</script>
+
+<slot />

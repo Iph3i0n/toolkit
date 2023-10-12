@@ -1,0 +1,170 @@
+<s:meta name="o-toast">
+  A small window to display notification information to the user.
+  <slot name="title">The top of the toast</slot>
+  <attr name="icon" optional>Image URL for the icon.</attr>
+  <attr name="metric" type="number">
+    Numeric information for relevant metrics such as how long ago or distance.
+  </attr>
+  <attr name="unit" type="import('../global/types/unit').Unit" default="minute">
+    The unit for the metric. Conforms to the `Intl.NumberFormat` constructor.
+    <ref
+      url="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#options"
+    >
+      MDN Reference
+    </ref>
+  </attr>
+  <attr
+    name="unit-display"
+    type="import('../global/types/unit').UnitDisplay"
+    default="short"
+  >
+    The length of display for the unit. Conforms to the `Intl.NumberFormat`
+    constructor.
+    <ref
+      url="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#options"
+    >
+      MDN Reference
+    </ref>
+  </attr>
+  <attr
+    name="position"
+    type="import('../global/types/unit').Position"
+    default="bottom right"
+  >
+    Where on the screen shall it render?
+  </attr>
+  <event name="CloseRequested" type="CloseRequestedEvent">
+    When the user closes the modal. Prevent default to stop the element from
+    being destroyed.
+  </event>
+  <base use="BakeryBase" from="../global/base-classes/main" default />
+</s:meta>
+
+<script>
+  import { on_key_handler } from "../global/events/keyboard";
+  import { CloseRequestedEvent } from "./events";
+
+  function close() {
+    const event = new CloseRequestedEvent();
+    self.dispatchEvent(event);
+    if (event.defaultPrevented) return;
+    self.remove();
+  }
+
+  const on_close_key = on_key_handler({
+    Enter: () => close(),
+  });
+
+  const metric_text = () => {
+    const formatter = new Intl.NumberFormat(undefined, {
+      style: "unit",
+      unit: self.unit,
+      unitDisplay: self["unit-display"],
+    });
+    return formatter.format(parseFloat(self.metric));
+  };
+</script>
+<style>
+  @js const { theme, spec } = require("../global/theme");
+
+  :host {
+    display: block;
+    theme.border("body");
+    theme.shadow("body");
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20rem;
+  }
+
+  @if self.position.includes("top") {
+    :host {
+      top: 0;
+    }
+  }
+
+  @if self.position.includes("bottom") {
+    :host {
+      bottom: 0;
+    }
+  }
+
+  @if self.position.includes("left") {
+    :host {
+      left: 0;
+    }
+  }
+
+  @if self.position.includes("right") {
+    :host {
+      right: 0;
+    }
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    theme.colour("body");
+    theme.padding("small_block");
+    theme.border("body", "contrast", "bottom");
+    theme.text("body", "no-margin");
+  }
+
+  .title .spacer {
+    flex: 1;
+  }
+
+  .title img {
+    theme.border("small");
+    theme.margin("small_block", "right");
+    max-height: 1em;
+  }
+
+  .close {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transform: scale(1);
+    theme.border("small");
+    theme.transition("fast", "transform", "color", "background-color");
+  }
+
+  .close:hover,
+  .close:focus {
+    outline: none;
+    transform: scale(1.2);
+    theme.colour("surface");
+  }
+
+  .body {
+    theme.colour("surface");
+    theme.padding("small_block");
+  }
+
+  .metric {
+    theme.text("small", "no-margin");
+    theme.margin("small_block", "left", "right");
+  }
+</style>
+
+<div class="title">
+  <s:if check=":self.icon">
+    <img src=":self.icon" alt="" />
+  </s:if>
+  <slot name="title"></slot>
+  <div class="spacer"></div>
+  <s:if check=":self.metric">
+    <div class="metric">
+      <s:text use=":metric_text()"></s:text>
+    </div>
+  </s:if>
+  <div class="close" tabindex="0" on:click="close">
+    <t-icon name="close" colour="body" size="body" text></t-icon>
+  </div>
+</div>
+
+<div class="body">
+  <slot></slot>
+</div>

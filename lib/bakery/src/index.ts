@@ -1,10 +1,10 @@
 import GlobalCss from "./global.pss";
 import { RenderSheet } from "@ipheion/wholemeal";
 
-export * from "./area/display";
+export * from "./display";
 export * from "./area/form";
-export * from "./area/layout";
-export * from "./area/overlay";
+export * from "./layout";
+export * from "./overlay";
 export * from "./area/text";
 export * from "./area/unit";
 

@@ -1,5 +1,4 @@
-@js const theme = require("../theme");
-@js const spec = require("../spec");
+@js const { theme, spec } = require("../global/theme");
 
 .content p {
   theme.text("body");

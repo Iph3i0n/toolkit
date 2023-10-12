@@ -25,15 +25,4 @@ export namespace Runner {
         | undefined;
     }[];
   }[];
-
-  export type Project = {
-    templates: Array<string>;
-    global_css: string;
-    description: string;
-    docs: {
-      value_sets: ValueSets;
-    };
-    package: Record<string, unknown>;
-    namespace?: string;
-  };
 }

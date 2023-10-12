@@ -11,5 +11,9 @@
     "service/*/dist": true,
     "node_modules": true,
     ".vscode": true
+  },
+  "files.associations": {
+    "*.std": "html",
+    "*.pss": "css"
   }
 }

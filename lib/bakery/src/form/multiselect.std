@@ -1,0 +1,159 @@
+<s:meta name="f-multiselect">
+  A list of items, of which the user can select any number.
+  <attr name="prefill" optional>
+    The default selected items. Should be comma separated with no whitespace
+    between.
+  </attr>
+  <attr name="disabled" type="boolean">If set then the field is readonly.</attr>
+  <attr name="name">
+    The name of the value field in the form data. Should be unique.
+  </attr>
+  <attr name="options" type="string" optional>
+    Pull the options from the context. Must be in the format of ``` { text:
+    string, value: string, disabled?: boolean }[] ```
+  </attr>
+  <attr name="required" type="boolean">
+    If set then the form will not be submittable until the element field has a
+    value.
+  </attr>
+  <attr name="validate" optional>
+    A RegExp string used to evaluate the input. If there are no matches then the
+    field will be considered invalid and the form will not be submittable.
+    Remember that the value is a comma separated string of all of the selected
+    options.
+  </attr>
+  <member name="value" type="import('./types').FormElementValue">
+    The value of the element. What is submitted.
+  </member>
+  <event name="ValueChanged" type="import('./events').ValueChangedEvent">
+    Fired when the input value is changed. Does not fire if the value changes
+    because the `prefill` value changes.
+    <key name="Value" type="import('./types').FormElementValue">
+      The current value of the form element.
+    </key>
+    <key name="Name" type="string">The name of the input.</key>
+  </event>
+  <slot>The options for select. Should be an `option` element.</slot>
+  <slot name="label">The label for the input</slot>
+  <slot name="help">The small help text at the bottom of the input.</slot>
+  <slot name="empty">
+    The error text for if the slot is empty and required is true.
+  </slot>
+  <slot name="invalid">
+    The error text for if validate is set and the RegExp does not match
+  </slot>
+  <base use="FormElement" from="./base" default />
+  <aria role="select" />
+  <form />
+</s:meta>
+
+<script>
+  import c from "../utils/html/classes";
+  import slotted from "../utils/toggleable-slot";
+  import { on_key_handler } from "../global/events/keyboard";
+  import options from "../utils/options";
+
+  const items = options(self);
+
+  const slot = slotted();
+
+  function toggle(option) {
+    return () => {
+      if (self.value?.includes(option.value))
+        self.value = (self.value?.split(",") ?? [])
+          .filter((v) => v !== option.value)
+          .join(",");
+      else
+        self.value = [...(self.value?.split(",") ?? []), option.value].join(
+          ","
+        );
+    };
+  }
+
+  function active(option) {
+    return self.value?.includes(option.value);
+  }
+
+  let open = "";
+  self.addEventListener(
+    "keydown",
+    on_key_handler({
+      Enter: () => {
+        toggle({ value: open })();
+      },
+      ArrowUp: () => {
+        const open_index = items.data.findIndex((i) => i.value === open);
+        const next_index = Math.max(0, open_index - 1);
+        open = items.data[next_index].value;
+        self.dispatchEvent(new ShouldRender());
+      },
+      ArrowDown: () => {
+        const open_index = items.data.findIndex((i) => i.value === open);
+        const next_index = Math.min(items.data.length - 1, open_index + 1);
+        open = items.data[next_index].value;
+        self.dispatchEvent(new ShouldRender());
+      },
+    })
+  );
+
+  $on_blur: {
+    open = "";
+    self.should_render();
+  }
+</script>
+<style>
+  @js const { theme, spec } = require("../global/theme");
+  @insert ../styles/checklist-select.pss;
+</style>
+
+<div style="display: none">
+  <slot on:slotchange="items.on_change"></slot>
+</div>
+
+<div class=":self.label_class">
+  <div class="label-text">
+    <slot name="label"></slot>
+  </div>
+
+  <div class="content scrollable">
+    <s:for subject=":items.data" key="option">
+      <s:if check=":!option.disabled">
+        <div
+          class=":c('item', 'option', ['selected', active(option)], ['hover', open === option.value])"
+          on:click="toggle(option)"
+        >
+          <span class="toggle">
+            <t-icon name="check" colour="body" text></t-icon>
+          </span>
+          <s:text use=":option.text"></s:text>
+        </div>
+      </s:if>
+      <s:if check=":option.disabled">
+        <div class=":c('item', 'disabled', ['selected', active(option)])">
+          <span class="toggle">
+            <t-icon name="check" colour="body" text></t-icon>
+          </span>
+          <s:text use=":option.text"></s:text>
+        </div>
+      </s:if>
+    </s:for>
+  </div>
+</div>
+
+<s:if check=":self.should_show_validation">
+  <s:if check=":self.is_bad_empty">
+    <div class="error-text">
+      <slot name="empty"></slot>
+    </div>
+  </s:if>
+  <s:if check=":!self.is_bad_empty && self.is_invalid">
+    <div class="error-text">
+      <slot name="invalid"></slot>
+    </div>
+  </s:if>
+</s:if>
+<s:if check=":!self.should_show_validation">
+  <div class=":c('help-text', ['empty', !slot.has_children])">
+    <slot name="help" on:slotchange="slot.on_change"></slot>
+  </div>
+</s:if>

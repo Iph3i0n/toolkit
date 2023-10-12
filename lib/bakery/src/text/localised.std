@@ -1,0 +1,37 @@
+<s:meta name="t-localised">
+  Only displays text for the preferred locale of the user. Put content in a slot
+  with the name of the locale it is written in. If there is no content in the
+  slot with the preferred locale of the user, content from the unnamed slot will
+  be used as a fallback.
+  <base use="BakeryBase" from="../global/base-classes/main" default />
+</s:meta>
+
+<script>
+  function Languages() {
+    if (navigator.languages != undefined) return navigator.languages;
+    return [navigator.language];
+  }
+
+  let possible = [];
+  function HasData(lang) {
+    return (e) => {
+      possible = possible.filter((p) => p !== lang);
+      if (e.currentTarget.assignedNodes().length > 0)
+        possible = [...possible, lang];
+    };
+  }
+</script>
+
+<s:use get=":Languages()" as="languages">
+  <s:for subject=":languages" key="lang">
+    <slot
+      name=":lang"
+      on:slotchange="HasData(lang)"
+      style=":!possible.includes(lang)?'display: none': undefined"
+    ></slot>
+  </s:for>
+
+  <s:if check=":!possible.length">
+    <slot></slot>
+  </s:if>
+</s:use>
