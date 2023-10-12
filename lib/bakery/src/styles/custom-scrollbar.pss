@@ -1,4 +1,4 @@
-@js const { theme, spec } = require("../global/theme");
+@js const [theme, spec] = require("../global/theme");
 
 .scrollable::-webkit-scrollbar {
   width: 1rem;

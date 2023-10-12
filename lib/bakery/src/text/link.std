@@ -28,8 +28,8 @@
 </s:meta>
 
 <script>
-  import Router from "../global/base-classes-router";
-  import { on_key_handler } from "../utils/events/keyboard";
+  import Router from "../global/base-classes/router";
+  import { on_key_handler } from "../global/events/keyboard";
 
   self.tabIndex = 0;
 
@@ -58,7 +58,7 @@
 </script>
 
 <style>
-  @js const { theme } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
 
   :host {
     display: ":self.block ? 'block' : 'inline-block'";

@@ -17,11 +17,11 @@
     from="../global/base-classes/context-fetcher"
     default
   />
-  <import use="c" from="../html/classes" default />
 </s:meta>
 
 <script>
   import PaginationEvent from "../global/events/pagination";
+  import c from "../utils/html/classes";
 
   self.accessor = "total";
 
@@ -48,7 +48,7 @@
 </script>
 
 <style>
-  @js const { theme } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
 
   :host {
     display: flex;

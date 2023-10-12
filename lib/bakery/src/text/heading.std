@@ -28,7 +28,7 @@
 </script>
 
 <style>
-  @js const theme = require("../theme");
+  @js const [theme] = require("../global/theme");
 
   :host {
     display: block;

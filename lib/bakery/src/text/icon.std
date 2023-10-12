@@ -43,7 +43,7 @@
 </script>
 
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
   @js const size = spec.text_styles[self.size ?? 'body'].font_size;
 
   :host {

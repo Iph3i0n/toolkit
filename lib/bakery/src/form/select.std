@@ -6,10 +6,8 @@
     The name of the value field in the form data. Should be unique.
   </attr>
   <attr name="options" type="string" optional>
-    Pull the options from the context. Must be in the format of
-    ```
-    { text: string, value: string, disabled?: boolean }[]
-    ```
+    Pull the options from the context. Must be in the format of ``` { text:
+    string, value: string, disabled?: boolean }[] ```
   </attr>
   <attr name="required" type="boolean">
     If set then the form will not be submittable until the element field has a
@@ -22,7 +20,7 @@
   <member name="value" type="import('./types').FormElementValue">
     The value of the element. What is submitted.
   </member>
-  <event name="ValueChanged" type="import('./events').ValueChangedEvent"">
+  <event name="ValueChanged" type="import('./events').ValueChangedEvent">
     Fired when the input value is changed. Does not fire if the value changes
     because the `prefill` value changes.
     <key name="Value" type="import('./types').FormElementValue">
@@ -81,7 +79,7 @@
   );
 </script>
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
   @insert ../styles/single-line-input.pss;
   @insert ../styles/dropdown.pss;
 

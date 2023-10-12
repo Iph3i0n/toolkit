@@ -16,6 +16,7 @@
     "wicg-inert": "^3.1.2"
   },
   "devDependencies": {
+    "circular-dependency-plugin": "^5.2.2",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "http-server": "^14.1.1",
@@ -30,5 +31,10 @@
   ],
   "prettier": {
     "htmlWhitespaceSensitivity": "ignore"
+  },
+  "exports": {
+    ".": "./dist/native/index.js",
+    "./react": "./dist/react/index.js",
+    "./preact": "./dist/preact/index.js"
   }
 }

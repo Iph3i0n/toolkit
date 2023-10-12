@@ -51,9 +51,6 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
     () => [PreactTemplate, PreactTypingsTemplate] as const
   )(options.framework ?? "native");
 
-  const package_json = read_json("./package.json");
-  const extra_types = package_json.wholemeal;
-
   const tsconfig = read_json("./tsconfig.json");
   const root_dir = tsconfig?.compilerOptions?.rootDir ?? "./";
   const local_path = Path.relative(root_dir, this.resource);

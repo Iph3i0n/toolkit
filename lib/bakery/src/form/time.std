@@ -130,7 +130,7 @@
   );
 </script>
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
   @insert ../styles/single-line-input.pss;
   @insert ../styles/flash.pss;
 

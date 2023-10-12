@@ -50,7 +50,7 @@
   const colour = () => slots[current]?.colour ?? "body";
 </script>
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
 
   :host {
     display: block;

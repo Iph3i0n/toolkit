@@ -1,4 +1,4 @@
-@js const { theme, spec } = require("../global/theme");
+@js const [theme, spec] = require("../global/theme");
 @insert ./input.pss;
 @insert ./custom-scrollbar.pss;
 

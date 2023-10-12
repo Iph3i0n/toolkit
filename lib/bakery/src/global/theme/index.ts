@@ -1,2 +1,4 @@
-export * as theme from "./actions";
-export * as spec from "./spec";
+import * as theme from "./actions";
+import * as spec from "./spec";
+
+module.exports = [theme, spec] as const;

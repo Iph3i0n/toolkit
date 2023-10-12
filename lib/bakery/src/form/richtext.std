@@ -60,7 +60,7 @@
 </s:meta>
 
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
   @insert ../styles/input.pss;
   @insert ../styles/richtext.pss;
 

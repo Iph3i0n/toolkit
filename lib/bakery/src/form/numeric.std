@@ -144,7 +144,7 @@
 <style>
   @insert ../styles/input.pss;
   @insert ../styles/flash.pss;
-  @js const { theme } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
 
   .label {
     display: flex;

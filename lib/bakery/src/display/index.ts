@@ -5,5 +5,3 @@ export * from "./listgroup.std";
 export * from "./loading.std";
 export * from "./panel.std";
 export * from "./progress.std";
-
-export * from "./events";

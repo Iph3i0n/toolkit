@@ -17,7 +17,7 @@
 </script>
 
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
 
   @keyframes placeholder-fade {
     0% {

@@ -121,7 +121,7 @@
   }
 </script>
 <style>
-  @js const { theme, spec } = require("../global/theme");
+  @js const [theme, spec] = require("../global/theme");
   @insert ../styles/input.pss;
 
   .label {
