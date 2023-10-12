@@ -37,7 +37,7 @@
   import { On } from "../utils/events";
   import { MatchEvent } from "../global/events/routing";
   import { screen_sizes } from "../global/theme/spec";
-  import { CloseRequestedEvent } from "./events";
+  import { CloseRequestedEvent } from "../global/events/close";
 
   let open = false;
   let width = "0";

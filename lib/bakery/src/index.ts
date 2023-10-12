@@ -2,11 +2,13 @@ import GlobalCss from "./global.pss";
 import { RenderSheet } from "@ipheion/wholemeal";
 
 export * from "./display";
-export * from "./area/form";
+export * from "./form";
 export * from "./layout";
 export * from "./overlay";
-export * from "./area/text";
-export * from "./area/unit";
+export * from "./text";
+export * from "./unit";
+export * from "./global/events/close";
+export * from "./global/events/pagination";
 
 const style = document.createElement("style");
 style.innerHTML = RenderSheet(GlobalCss());

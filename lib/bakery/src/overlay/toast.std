@@ -42,7 +42,7 @@
 
 <script>
   import { on_key_handler } from "../global/events/keyboard";
-  import { CloseRequestedEvent } from "./events";
+  import { CloseRequestedEvent } from "../global/events/close";
 
   function close() {
     const event = new CloseRequestedEvent();

@@ -21,7 +21,7 @@
 </s:meta>
 
 <script>
-  import { CloseRequestedEvent } from "./events";
+  import { CloseRequestedEvent } from "../global/events/close";
 
   function close() {
     const event = new CloseRequestedEvent();
