@@ -1,5 +1,5 @@
 {
-  "name": "@ipheion/auth-service",
+  "name": "@ipheion/identity-service",
   "version": "0.0.1",
   "description": "Easy type serialisation",
   "main": "dist/index.js",
@@ -11,6 +11,8 @@
   "requires": [
     "@ipheion/safe-type",
     "@ipheion/puristee",
-    "@ipheion/moulding-tin"
+    "@ipheion/moulding-tin",
+    "@ipheion/bakery",
+    "@ipheion/wholemeal"
   ]
 }
