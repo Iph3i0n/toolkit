@@ -54,7 +54,7 @@
   <slot name="invalid">
     The error text for if validate is set and the RegExp does not match
   </slot>
-  <base use="RichText" from="../base-classes/rich-text" default />
+  <base use="RichText" from="./base/rich-text" default />
   <aria role="input" />
   <form />
 </s:meta>

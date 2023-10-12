@@ -18,7 +18,7 @@
 </s:meta>
 
 <script>
-  import c from "../html/classes";
+  import c from "../utils/html/classes";
 
   let slots = [];
   let current = 0;

@@ -12,7 +12,6 @@
     If set then the use attribute will be treated as a URL. If not then it will
     be treated as a HTML ID.
   </attr>
-  <import use="is_visible" from="../html/is-visible" />
   <base
     use="ContextFetcher"
     from="../global/base-classes/context-fetcher"
@@ -27,6 +26,7 @@
 </style>
 
 <script type="module">
+  import { is_visible } from "../utils/html/is-visible";
   import ejs from "ejs/ejs.min";
 
   const cache = {};

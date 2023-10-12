@@ -103,7 +103,7 @@
 </script>
 
 <style>
-  @js const theme = require("../theme");
+  @js const [theme] = require("../global/theme");
   @js const c = self.colour ?? 'primary';
   :host {
     position: relative;
