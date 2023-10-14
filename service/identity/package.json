@@ -7,12 +7,24 @@
     "build": "tsc"
   },
   "private": true,
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.3",
+    "@types/uuid": "^9.0.5",
+    "ts-loader": "^9.5.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  },
   "requires": [
     "@ipheion/safe-type",
     "@ipheion/puristee",
     "@ipheion/moulding-tin",
     "@ipheion/bakery",
     "@ipheion/wholemeal"
-  ]
+  ],
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1"
+  }
 }
