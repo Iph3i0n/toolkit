@@ -1,0 +1,23 @@
+namespace Time {
+  struct Date {
+    with timestamp: long;
+  }
+
+  schema DateLike {
+    with timestamp: long;
+  }
+
+  fn add_days(self: Date) {
+
+  }
+}
+
+namespace Identity {
+
+}
+
+namespace App {
+  fn main(): int {
+    return 0;
+  }
+}

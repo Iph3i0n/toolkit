@@ -44,3 +44,19 @@ bind desired_test = Namespace.test();
 ```
 
 Like all blocks in Unbound, a function must return a value.
+
+## As Types
+
+Functions may be used as a type like so:
+
+```
+fn test(part: (int, bool) -> int): int {
+  return 123.part(false);
+}
+
+fn test(part: (int, bool) -> int): int {
+  return part(123, false);
+}
+```
+
+Any function or bound function can then be passed to the function. All functions may be used as function pointers.

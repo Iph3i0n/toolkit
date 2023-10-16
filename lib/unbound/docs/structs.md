@@ -4,9 +4,9 @@ Structs are the only way to declare data types in Unbound. They are declared as 
 
 ```
 struct User {
-  username: char[];
-  password: char[];
-  logged_in: bool;
+  with username: char[];
+  with password: char[];
+  with logged_in: bool;
 }
 ```
 

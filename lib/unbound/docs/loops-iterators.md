@@ -21,7 +21,7 @@ fn test(): int[] {
     indexer += 1;
 
     return indexer;
-  }
+  };
 
   return result;
 }
@@ -36,7 +36,7 @@ fn test(): int[] {
   store iterator = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   store result = iterate (iterator) as (item) {
     return item + 1;
-  }
+  };
 
   return result;
 }
@@ -50,7 +50,7 @@ Count loops are for when you want to perform an operation for a fixed number of 
 fn test(): int[] {
   store result = count (10) {
     return 1;
-  }
+  };
 
   return result;
 }
