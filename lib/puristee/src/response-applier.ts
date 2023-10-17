@@ -16,25 +16,25 @@ export default async function Send(
   res: ServerResponse
 ) {
   const headers = response.headers ?? {};
-  for (const key in headers) res.setHeader(key, headers[key]);
+  for (const key in headers) res = res.setHeader(key, headers[key]);
 
   if (response.cookies)
     for (const value of SetCookies(response.cookies))
-      res.setHeader("Set-Cookie", value);
+      res = res.setHeader("Set-Cookie", value);
 
   const original_body = response.body;
   for (const type of AcceptedTypes)
     if (original_body instanceof type) {
       res.statusCode = response.status;
-      res.end(original_body);
+      return res.end(original_body);
     }
 
   if (IsString(original_body)) {
     res.statusCode = response.status;
-    res.end(original_body);
+    return res.end(original_body);
   }
 
-  res.setHeader("Content-Type", "application/json");
+  res = res.setHeader("Content-Type", "application/json");
   res.statusCode = response.status;
-  res.end(JSON.stringify(original_body));
+  return res.end(JSON.stringify(original_body));
 }

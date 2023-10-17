@@ -4,7 +4,8 @@
   "description": "Easy type serialisation",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && webpack",
+    "dev": "tsc && node ."
   },
   "private": true,
   "devDependencies": {
@@ -19,7 +20,6 @@
     "@ipheion/safe-type",
     "@ipheion/puristee",
     "@ipheion/moulding-tin",
-    "@ipheion/bakery",
     "@ipheion/wholemeal"
   ],
   "dependencies": {

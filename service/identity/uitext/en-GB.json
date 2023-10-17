@@ -1,0 +1,5 @@
+{
+  "email": "Email",
+  "no_email": "Please enter an email address",
+  "invalid_email": "Invalid email address"
+}

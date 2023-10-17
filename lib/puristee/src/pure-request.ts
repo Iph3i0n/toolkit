@@ -32,7 +32,10 @@ export default class PureRequest {
     private readonly pattern: Pattern,
     private readonly body_data: unknown
   ) {
-    this.url_object = new URL(request.url ?? "/");
+    this.url_object = new URL(
+      request.url ?? "/",
+      `http://${request.headers.host}`
+    );
   }
 
   public get url() {

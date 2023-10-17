@@ -1,0 +1,40 @@
+<s:meta name="ui-identity">
+  An integration with the login service to put in any project that you desire.
+  <attr name="trigger" type="string" optional>
+    The trigger to open the modal
+  </attr>
+  <aria role="group" />
+</s:meta>
+
+<script>
+  import { ApiClient } from "./client";
+
+  function on_login(e) {
+    const form = e.FormData;
+  }
+</script>
+
+<u-fetch
+  url="/uitext/{{ locale }}.json"
+  fallback="/uitext/en-DB.json"
+  name="uitext"
+>
+  <o-modal trigger=":self.trigger" size="large">
+    <span slot="title"> Login </span>
+    <f-form submit="event-only" on:Submitted="on_login">
+      <l-row>
+        <l-col xs="12">
+          <f-input name="email" type="email" validate=".+@.+" required>
+            <u-text use=":':this.state.uitext.email'"></u-text>
+            <span slot="empty">
+              <u-text use=":':this.state.uitext.no_email'"></u-text>
+            </span>
+            <span slot="invalid">
+              <u-text use=":':this.state.uitext.invalid_email'"></u-text>
+            </span>
+          </f-input>
+        </l-col>
+      </l-row>
+    </f-form>
+  </o-modal>
+</u-fetch>

@@ -19,7 +19,8 @@ Server.CreateHandler("/api/v1/token/:token", "get").Register(
       status: 200,
       data: {
         id: decoded.user_id,
-        ...user,
+        email: user.email,
+        last_login: user.last_login.toISOString(),
       },
     };
   }

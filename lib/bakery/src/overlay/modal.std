@@ -4,7 +4,7 @@
     A CSS selector to listen to for opening the dialogue. Will listen for clicks
     of any elements matching the selector.
   </attr>
-  <attr name="size" type="size" default="medium">
+  <attr name="size" type="string" default="medium">
     The size of the modal on the screen.
   </attr>
   <attr name="path" type="string" optional>

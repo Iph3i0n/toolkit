@@ -74,7 +74,7 @@ async function SendFile(path: string, mime?: string): Promise<PureResponse> {
   try {
     const stat = await Fs.stat(path);
     if (stat.isDirectory()) return { status: 404 };
-    const file = await Fs.open(path);
+    const file = await Fs.readFile(path);
     return {
       status: 200,
       headers: {

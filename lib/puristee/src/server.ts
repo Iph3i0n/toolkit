@@ -28,7 +28,7 @@ export default function CreateServer<
     current_state: StateReader<TSchema>
   ) {
     try {
-      const url = new URL(request.url ?? "/");
+      const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
       const target = store.Get(url, request.method?.toLowerCase() ?? "get");
       if (!target) {
         console.log(`No handler found for ${request.url}`);
