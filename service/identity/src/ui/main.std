@@ -9,30 +9,80 @@
 <script>
   import { ApiClient } from "./client";
 
+  const domain = new URL(document.currentScript.src).origin;
+
   function on_login(e) {
     const form = e.FormData;
+    console.log(form);
   }
 </script>
 
 <u-fetch
-  url="/uitext/{{ locale }}.json"
+  url=":`${domain}/uitext/{{ locale }}.json`"
   fallback="/uitext/en-DB.json"
   name="uitext"
 >
-  <o-modal trigger=":self.trigger" size="large">
-    <span slot="title"> Login </span>
+  <o-modal trigger=":self.trigger">
+    <span slot="title">
+      <u-text use=":':this.state.uitext.login.title'"></u-text>
+    </span>
     <f-form submit="event-only" on:Submitted="on_login">
       <l-row>
         <l-col xs="12">
           <f-input name="email" type="email" validate=".+@.+" required>
-            <u-text use=":':this.state.uitext.email'"></u-text>
+            <u-text use=":':this.state.uitext.login.email'"></u-text>
+            <span slot="help">
+              <u-text
+                use=":':this.state.uitext.login.no_account.prefix'"
+              ></u-text>
+              <t-link>
+                <u-text
+                  use=":':this.state.uitext.login.no_account.link'"
+                ></u-text>
+              </t-link>
+              <u-text
+                use=":':this.state.uitext.login.no_account.suffix'"
+              ></u-text>
+            </span>
             <span slot="empty">
-              <u-text use=":':this.state.uitext.no_email'"></u-text>
+              <u-text use=":':this.state.uitext.login.no_email'"></u-text>
             </span>
             <span slot="invalid">
-              <u-text use=":':this.state.uitext.invalid_email'"></u-text>
+              <u-text use=":':this.state.uitext.login.invalid_email'"></u-text>
             </span>
           </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-input name="password" sensitive required>
+            <u-text use=":':this.state.uitext.login.password'"></u-text>
+            <span slot="help">
+              <u-text
+                use=":':this.state.uitext.login.forgot_password.prefix'"
+              ></u-text>
+              <t-link>
+                <u-text
+                  use=":':this.state.uitext.login.forgot_password.link'"
+                ></u-text>
+              </t-link>
+              <u-text
+                use=":':this.state.uitext.login.forgot_password.suffix'"
+              ></u-text>
+            </span>
+            <span slot="empty">
+              <u-text use=":':this.state.uitext.login.no_password'"></u-text>
+            </span>
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <d-panel colour="surface">
+            <l-row>
+              <l-col xs="12">
+                <f-button type="submit">
+                  <u-text use=":':this.state.uitext.login.submit'"></u-text>
+                </f-button>
+              </l-col>
+            </l-row>
+          </d-panel>
         </l-col>
       </l-row>
     </f-form>
