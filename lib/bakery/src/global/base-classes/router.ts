@@ -31,15 +31,9 @@ export abstract class UrlBuilder extends BakeryBase {
     );
   }
 
-  constructor(target: HTMLElement) {
-    super(target);
-
-    this.addEventListener(PaginationEvent.Key, (e) => {
-      if (!(e instanceof PaginationEvent)) return;
-
-      this.#skip = e.Skip;
-      this.#take = e.Take;
-    });
+  [PaginationEvent.ListenerKey](e: PaginationEvent) {
+    this.#skip = e.Skip;
+    this.#take = e.Take;
   }
 
   Render(url: string) {
@@ -55,31 +49,29 @@ export default abstract class Router extends BakeryBase {
 
   #previous = false;
 
-  constructor(target: HTMLElement) {
-    super(target);
-    document.addEventListener(NavigationEventKey, () =>
-      this.dispatchEvent(new ShouldRender())
+  [`$${NavigationEventKey}`]() {
+    this.should_render();
+  }
+
+  $popstate() {
+    this.should_render();
+  }
+
+  [RenderEvent.ListenerKey]() {
+    const current = this.Matches;
+    if (current.match)
+      this.provide_context(DATA_KEY, {
+        used: current.used,
+        params: current.params,
+      });
+
+    if (current.match === this.#previous) return;
+
+    this.#previous = current.match;
+    setTimeout(
+      () => this.dispatchEvent(new MatchEvent(current.match, current.params)),
+      5
     );
-    self.addEventListener("popstate", () =>
-      this.dispatchEvent(new ShouldRender())
-    );
-
-    this.addEventListener(RenderEvent.Key, () => {
-      const current = this.Matches;
-      if (current.match)
-        this.provide_context(DATA_KEY, {
-          used: current.used,
-          params: current.params,
-        });
-
-      if (current.match === this.#previous) return;
-
-      this.#previous = current.match;
-      setTimeout(
-        () => this.dispatchEvent(new MatchEvent(current.match, current.params)),
-        5
-      );
-    });
   }
 
   get CurrentlyMatching() {
@@ -109,7 +101,7 @@ export default abstract class Router extends BakeryBase {
   }
 
   get Matches() {
-    if (!this.path) return { match: false, params: {} };
+    if (!this.path) return { match: true, params: {} };
     // deno-lint-ignore no-explicit-any
     const existing: any = this.state[DATA_KEY];
     const { used, params } = existing ?? { used: 0, params: {} };

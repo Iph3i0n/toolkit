@@ -1,19 +1,36 @@
 import { ComponentBase } from "./component";
 
+const loaded_key = "__WHOLEMEAL_INTERNAL__all_loaded";
+
 export default abstract class ComponentWrapper<
   TElement extends ComponentBase
 > extends HTMLElement {
-  #awaited: TElement | undefined;
-  readonly #instance: Promise<TElement>;
-  #trigger: ((item: TElement) => void) | undefined = undefined;
+  #awaited: ComponentBase | undefined;
+  readonly #instance: Promise<ComponentBase>;
+  #trigger: ((item: ComponentBase) => void) | undefined = undefined;
+
+  static #loading = 0;
+
+  static readonly #loaded: Record<symbol, ComponentBase> = {};
 
   constructor() {
     super();
-    this.#instance = new Promise((res) => {
-      this.#trigger = (item) => {
-        this.#awaited = item;
-        res(item);
-      };
+
+    ComponentWrapper.#loading += 1;
+    const id = Symbol();
+
+    this.#instance = new Promise<ComponentBase>((res) => {
+      document.addEventListener(loaded_key, () => {
+        this.#awaited = ComponentWrapper.#loaded[id];
+        res(this.#awaited);
+      });
+
+      this.Initialiser(this).then((r) => {
+        ComponentWrapper.#loaded[id] = r;
+        ComponentWrapper.#loading -= 1;
+        if (ComponentWrapper.#loading === 0)
+          document.dispatchEvent(new CustomEvent(loaded_key));
+      });
     });
   }
 
@@ -25,7 +42,6 @@ export default abstract class ComponentWrapper<
 
   connectedCallback() {
     this.style.display = "none";
-    this.Initialiser(this).then(this.#trigger);
 
     this.#instance.then((i) => {
       try {
@@ -48,6 +64,4 @@ export default abstract class ComponentWrapper<
   attributeChangedCallback(name: string, old: string, next: string) {
     this.#instance.then((i) => i.attributeChangedCallback(name, old, next));
   }
-
-  // TODO: Add an event listener proxy
 }

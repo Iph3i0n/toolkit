@@ -6,6 +6,10 @@ export class LoadedEvent extends Event {
   static get Key() {
     return "loaded";
   }
+
+  static get ListenerKey() {
+    return `$${this.Key}`;
+  }
 }
 
 export class BeforeRenderEvent extends Event {
@@ -15,6 +19,10 @@ export class BeforeRenderEvent extends Event {
 
   static get Key() {
     return "before-render";
+  }
+
+  static get ListenerKey() {
+    return `$${this.Key}`;
   }
 }
 
@@ -26,6 +34,10 @@ export class RenderEvent extends Event {
   static get Key() {
     return "rerendered";
   }
+
+  static get ListenerKey() {
+    return `$${this.Key}`;
+  }
 }
 
 export class ShouldRender extends Event {
@@ -35,6 +47,10 @@ export class ShouldRender extends Event {
 
   static get Key() {
     return "should_render";
+  }
+
+  static get ListenerKey() {
+    return `$${this.Key}`;
   }
 }
 
@@ -52,6 +68,10 @@ export class PropsEvent extends Event {
 
   static get Key() {
     return "props_changed";
+  }
+
+  static get ListenerKey() {
+    return `$${this.Key}`;
   }
 
   get Key() {

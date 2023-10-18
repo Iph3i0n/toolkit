@@ -19,6 +19,10 @@ export function is_visible(self: BakeryBase) {
     };
 
     const instance: BakeryBase = (current as any).Wholemeal;
+    if (!instance) {
+      current = current.parentElement;
+      continue;
+    }
 
     if (
       instance.tagName === "U-IF" &&

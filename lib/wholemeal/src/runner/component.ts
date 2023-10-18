@@ -25,6 +25,14 @@ function PropValue(value: string): any {
 
 type Handler<T extends Event> = (event: T) => void;
 
+function* AllFunctions(subject: any): Generator<string> {
+  let obj = subject;
+  do {
+    for (const key of Object.getOwnPropertyNames(obj))
+      if (typeof subject[key] === "function") yield key;
+  } while ((obj = Object.getPrototypeOf(obj)));
+}
+
 abstract class Base {
   readonly #ele: HTMLElement;
   readonly #root: ShadowRoot;
@@ -80,6 +88,23 @@ abstract class Base {
   }
 
   async connectedCallback() {
+    const self = this;
+    for (const key of AllFunctions(this)) {
+      if (key.startsWith("$")) {
+        this.matcher.addEventListener(
+          key.replace("$", ""),
+          function handler(event) {
+            if (!self.#ele || !self.#ele.isConnected) {
+              self.#ele.removeEventListener(key.replace("$", ""), handler);
+              return;
+            }
+
+            (self as any)[key].call(self, event);
+          }
+        );
+      }
+    }
+
     // deno-lint-ignore no-explicit-any
     const internals: any = this.#internals;
     for (const key in this.aria)

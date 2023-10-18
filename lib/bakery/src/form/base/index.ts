@@ -1,4 +1,4 @@
-import { ShouldRender, LoadedEvent, RenderEvent } from "@ipheion/wholemeal";
+import { LoadedEvent, RenderEvent, ComponentWrapper } from "@ipheion/wholemeal";
 import c from "../../utils/html/classes";
 import Router, { UrlBuilder } from "../../global/base-classes/router";
 import ContextFetcher from "../../global/base-classes/context-fetcher";
@@ -34,21 +34,21 @@ export abstract class FormManagerElement extends UrlBuilder {
 
   readonly #elements: Array<FormElement> = [];
 
-  constructor(target: HTMLElement) {
-    super(target);
-    this.addEventListener(REGISTER_KEY, (event) => {
-      if (!(event instanceof RegisterFormElementEvent))
-        throw new Error(
-          "Only the register form element event class may be used to register an element."
-        );
-      const target = event.composedPath()[0];
-      if (!(target instanceof FormElement))
-        throw new Error("Only FormElement components may register themselves.");
+  [`$${REGISTER_KEY}`](event: Event) {
+    if (!(event instanceof RegisterFormElementEvent))
+      throw new Error(
+        "Only the register form element event class may be used to register an element."
+      );
+    const wrapper = event.composedPath()[0];
+    if (!(wrapper instanceof ComponentWrapper))
+      throw new Error("Only FormElement components may register themselves.");
+    const target = wrapper.Wholemeal;
+    if (!(target instanceof FormElement))
+      throw new Error("Only FormElement components may register themselves.");
 
-      if (event.Manager) return;
-      this.#elements.push(target);
-      event.Manager = this;
-    });
+    if (event.Manager) return;
+    this.#elements.push(target);
+    event.Manager = this;
   }
 
   async #ajax_submit(data: FormData | FormValue) {
@@ -210,64 +210,53 @@ export default abstract class FormElement extends ContextFetcher {
   abstract validate: string;
   abstract name: string;
 
-  constructor(target: HTMLElement) {
-    super(target);
+  #default_value: FormElementValue;
 
-    this.addEventListener(RenderEvent.Key, () => {
-      if (this.disabled) this.tabIndex = -1;
-      else this.tabIndex = parseInt(this.tabindex ?? "0");
-    });
+  [RenderEvent.ListenerKey]() {
+    if (this.disabled) this.tabIndex = -1;
+    else this.tabIndex = parseInt(this.tabindex ?? "0");
 
-    this.addEventListener("focus", () => {
-      this.#focused = true;
-      this.dispatchEvent(new ShouldRender());
-    });
+    const next_default = this.use_string_context("prefill");
 
-    this.addEventListener("blur", () => {
+    if (next_default === this.#default_value) return;
+    this.#default_value = next_default;
+    this.value = next_default;
+  }
+
+  $focus() {
+    this.#focused = true;
+    this.should_render();
+  }
+
+  $blur() {
+    this.#touched = true;
+    this.#focused = false;
+    this.should_render();
+  }
+
+  $AfterSubmit() {
+    this.value = this.use_string_context("prefill");
+    this.#touched = false;
+  }
+
+  [LoadedEvent.ListenerKey]() {
+    this.#default_value = this.use_string_context("prefill");
+    this.value = this.#default_value;
+
+    const event = new RegisterFormElementEvent();
+    this.dispatchEvent(event);
+
+    const form = event.Manager;
+    if (!form) return;
+
+    this.#form = form;
+
+    form.addEventListener(VALIDATION_KEY, () => {
+      if (!is_visible(this)) return;
+
       this.#touched = true;
-      this.#focused = false;
-      this.dispatchEvent(new ShouldRender());
-    });
-
-    this.addEventListener(LoadedEvent.Key, () => {
-      let default_value = this.use_string_context("prefill");
-      this.value = default_value;
-
-      const event = new RegisterFormElementEvent();
-      this.dispatchEvent(event);
-
-      const form = event.Manager;
-      if (!form) return;
-
-      this.#form = form;
-
-      const on_validate = (e: Event) => {
-        if (!this || !this.isConnected) {
-          form.removeEventListener(VALIDATION_KEY, on_validate);
-          return;
-        }
-
-        if (!is_visible(this)) return;
-
-        this.#touched = true;
-        if (!this.validity.valid) e.preventDefault();
-        this.dispatchEvent(new ShouldRender());
-      };
-
-      this.#form.addEventListener(VALIDATION_KEY, on_validate);
-
-      this.#form.addEventListener("AfterSubmit", () => {
-        this.value = this.use_string_context("prefill");
-        this.#touched = false;
-      });
-
-      this.addEventListener(RenderEvent.Key, () => {
-        const next_default = this.use_string_context("prefill");
-
-        if (next_default === default_value) return;
-        default_value = next_default;
-        this.value = next_default;
-      });
+      if (!this.validity.valid) event.preventDefault();
+      this.should_render();
     });
   }
 

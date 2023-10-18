@@ -15,6 +15,8 @@ export default abstract class RichText extends FormElement {
   readonly #language_input_ref = CreateRef<HTMLInputElement>();
   readonly #slot = Slotted();
 
+  #loaded = false;
+
   get #editor() {
     const result = this.#editor_ref.current;
     if (!result) throw new Error("Attempting to get the before init");
@@ -64,44 +66,49 @@ export default abstract class RichText extends FormElement {
     this.#exec("insertHTML", text);
   }
 
-  constructor(target: HTMLElement) {
-    super(target);
+  [LoadedEvent.ListenerKey]() {
+    this.#editor.innerHTML = this.value?.toString() ?? "";
+    this.#loaded = true;
+  }
 
-    let loaded = false;
-    this.addEventListener(LoadedEvent.Key, () => {
+  $input(e: Event) {
+    const target = e.target;
+    if (!(target instanceof Node)) return;
+    const child = target.firstChild;
+
+    if (child && child.nodeType === child.TEXT_NODE) this.Format = "p";
+    else if (this.#editor.innerHTML === "<br>") this.#editor.innerHTML = "";
+    this.value = this.#editor.innerHTML;
+  }
+
+  $keydown(e: KeyboardEvent) {
+    if (e.key === "Enter" && BasicLineBreak.includes(this.Format)) {
+      e.preventDefault();
+      this.InsertTextAtCaret("\n\n");
+    }
+  }
+
+  $click() {
+    this.#update_state();
+  }
+
+  $keyup() {
+    this.#update_state();
+  }
+
+  $focus() {
+    this.#editor.focus();
+  }
+
+  $ValueChanged() {
+    if (!this.#loaded) return;
+    if (this.#editor.innerHTML !== this.value)
       this.#editor.innerHTML = this.value?.toString() ?? "";
+  }
 
-      this.#editor.addEventListener("input", (e) => {
-        const target = e.target;
-        if (!(target instanceof Node)) return;
-        const child = target.firstChild;
-
-        if (child && child.nodeType === child.TEXT_NODE) this.Format = "p";
-        else if (this.#editor.innerHTML === "<br>") this.#editor.innerHTML = "";
-        this.value = this.#editor.innerHTML;
-      });
-
-      this.#editor.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && BasicLineBreak.includes(this.Format)) {
-          e.preventDefault();
-          this.InsertTextAtCaret("\n\n");
-        }
-      });
-
-      loaded = true;
-    });
-
+  async connectedCallback() {
+    await super.connectedCallback();
     document.addEventListener("selectchange", () => this.#update_state());
-    this.addEventListener("click", () => this.#update_state());
-    this.addEventListener("keyup", () => this.#update_state());
-
-    this.addEventListener("focus", () => this.#editor.focus());
-
-    self.addEventListener("ValueChanged", () => {
-      if (!loaded) return;
-      if (this.#editor.innerHTML !== this.value)
-        this.#editor.innerHTML = this.value?.toString() ?? "";
-    });
   }
 
   get Format() {

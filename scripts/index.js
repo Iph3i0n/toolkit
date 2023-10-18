@@ -10,4 +10,10 @@ yargs
     () => ({}),
     (args) => run_package(".", "build")
   )
+  .command(
+    "run [task]",
+    "The specified workspace",
+    () => ({}),
+    (args) => run_package(".", args.task)
+  )
   .parse();

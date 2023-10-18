@@ -6,6 +6,10 @@ export default class PaginationEvent extends Event {
     return "Pagination";
   }
 
+  static get ListenerKey() {
+    return "$" + this.Key;
+  }
+
   constructor(skip: number, take: number) {
     super(PaginationEvent.Key, { bubbles: true });
     this.#skip = skip;

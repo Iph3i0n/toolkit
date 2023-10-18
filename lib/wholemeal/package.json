@@ -5,6 +5,7 @@
   "main": "./dist/mod.js",
   "scripts": {
     "build": "tsc",
+    "dev": "tsc",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
