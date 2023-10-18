@@ -251,7 +251,7 @@ export default abstract class FormElement extends ContextFetcher {
 
     this.#form = form;
 
-    form.addEventListener(VALIDATION_KEY, () => {
+    form.addEventListener(VALIDATION_KEY, (event) => {
       if (!is_visible(this)) return;
 
       this.#touched = true;
