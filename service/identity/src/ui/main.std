@@ -1,5 +1,8 @@
 <s:meta name="ui-identity">
   An integration with the login service to put in any project that you desire.
+  <attr name="service" type="string">
+    The name of the service to authenticate with
+  </attr>
   <attr name="trigger" type="string" optional>
     The trigger to open the modal
   </attr>

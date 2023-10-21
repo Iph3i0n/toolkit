@@ -1,13 +1,12 @@
 import { ComponentBase } from "./component";
 
-const loaded_key = "__WHOLEMEAL_INTERNAL__all_loaded";
+const loaded_key = "__WHOLEMEAL_INTERNAL__all_loaded_" + crypto.randomUUID();
 
 export default abstract class ComponentWrapper<
   TElement extends ComponentBase
 > extends HTMLElement {
   #awaited: ComponentBase | undefined;
   readonly #instance: Promise<ComponentBase>;
-  #trigger: ((item: ComponentBase) => void) | undefined = undefined;
 
   static #loading = 0;
 
