@@ -9,9 +9,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "requires": [
-    "@ipheion/moulding-tin",
-    "@ipheion/safe-type"
-  ]
+  }
 }

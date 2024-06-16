@@ -12,9 +12,5 @@
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.2"
-  },
-  "requires": [
-    "@ipheion/safe-type",
-    "@ipheion/fs-db"
-  ]
+  }
 }

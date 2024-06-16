@@ -26,8 +26,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "requires": [
-    "@ipheion/safe-type"
-  ]
+  }
 }
