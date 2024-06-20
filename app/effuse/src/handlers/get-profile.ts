@@ -1,5 +1,5 @@
 import { EmptyResponse, JsonResponse, PureRequest } from "@ipheion/puristee";
-import { Handler, Response, State } from "../server";
+import { Handler, Result, State } from "../server";
 import { SsoAuthService } from "../services/sso-auth-service";
 import { NewSsoAuthService } from "../bootstrap/services/sso-auth-service";
 
@@ -13,11 +13,11 @@ export class GetProfile extends Handler {
 
   async Process(request: PureRequest, state: State) {
     const { UserId } = await this.#sso_auth_service.Auth(request);
-    if (!UserId) return new Response(new EmptyResponse("NotFound"));
+    if (!UserId) return new Result(new EmptyResponse("NotFound"));
     const user = state.users[UserId];
-    if (!user) return new Response(new EmptyResponse("NotFound"));
+    if (!user) return new Result(new EmptyResponse("NotFound"));
 
-    return new Response(
+    return new Result(
       new JsonResponse("Ok", {
         UserId: user.user_id,
         Email: user.email,

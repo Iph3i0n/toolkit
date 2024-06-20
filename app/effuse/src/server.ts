@@ -14,6 +14,6 @@ export const Handler = Server.Handler;
 
 export type Handler = typeof Server.Handler;
 
-export const Response = Server.Response;
+export const Result = Server.Response;
 
-export type Response = typeof Server.Response;
+export type Result = typeof Server.Response;
