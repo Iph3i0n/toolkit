@@ -1,6 +1,6 @@
 import { addHours } from "date-fns";
-import { IJwtClient } from "../integrations/i-jwt-client";
-import { User } from "../models/user";
+import { IJwtClient } from "$i/i-jwt-client";
+import { User } from "$sso/m/user";
 import { IsObject, IsOneOf, IsString } from "@ipheion/safe-type";
 import { PureRequest } from "@ipheion/puristee";
 import BCrypt from "bcrypt";
@@ -55,7 +55,7 @@ export class UserGrant {
   }
 }
 
-export class SsoAuthService {
+export class AuthService {
   readonly #state: State;
   readonly #jwt_client: IJwtClient;
 

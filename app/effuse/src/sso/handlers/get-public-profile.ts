@@ -4,7 +4,7 @@ import {
   JsonResponse,
   PureRequest,
 } from "@ipheion/puristee";
-import { Handler, State, Result } from "../server";
+import { Handler, Result } from "../server";
 import { IsString } from "@ipheion/safe-type";
 
 export default class GetPublicProfile extends Handler {

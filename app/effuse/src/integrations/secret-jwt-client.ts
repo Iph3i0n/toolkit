@@ -1,4 +1,4 @@
-import { Assert, Checker, IsObject } from "@ipheion/safe-type";
+import { Assert, Checker } from "@ipheion/safe-type";
 import { IJwtClient } from "./i-jwt-client";
 import { IParameterClient, Parameter } from "./i-parameter-client";
 import Jwt from "jsonwebtoken";

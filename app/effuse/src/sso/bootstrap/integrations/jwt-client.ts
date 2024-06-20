@@ -1,5 +1,5 @@
-import { IJwtClient } from "../../integrations/i-jwt-client";
-import { SecretJwtClient } from "../../integrations/secret-jwt-client";
+import { IJwtClient } from "$i/i-jwt-client";
+import { SecretJwtClient } from "$i/secret-jwt-client";
 import { b } from "../common";
 import { NewParameterClient } from "./parameter-client";
 

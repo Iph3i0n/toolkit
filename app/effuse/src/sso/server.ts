@@ -1,5 +1,5 @@
 import CreateServer from "@ipheion/puristee";
-import { User } from "./models/user";
+import { User } from "$sso/m/user";
 import { StateReader } from "@ipheion/fs-db";
 
 const InitalState = {

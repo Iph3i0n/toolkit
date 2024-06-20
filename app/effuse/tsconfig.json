@@ -11,7 +11,14 @@
     "rootDir": "src",
     "lib": ["es2023"],
     "downlevelIteration": true,
-    "declaration": true
+    "declaration": true,
+    "paths": {
+      "$sso/b/*": ["./src/sso/bootstrap/*"],
+      "$i/*": ["./src/integrations/*"],
+      "$sso/m/*": ["./src/sso/models/*"],
+      "$sso/s/*": ["./src/sso/services/*"],
+      "$sso/server": ["./src/sso/server.ts"]
+    }
   },
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]
 }
