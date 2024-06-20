@@ -4,6 +4,7 @@ import { User } from "../models/user";
 import { IsObject, IsOneOf, IsString } from "@ipheion/safe-type";
 import { PureRequest } from "@ipheion/puristee";
 import BCrypt from "bcrypt";
+import { State } from "../server";
 
 export const UserAccess = Object.freeze({
   Admin: "Admin",
@@ -88,17 +89,22 @@ export class SsoAuthService {
     );
   }
 
-  async Auth(request: PureRequest) {
+  async GetAdminUser(request: PureRequest, state: State) {
     const head = request.headers.Authorization;
-    if (!head) return { UserId: undefined, Access: undefined };
+    if (!head) return undefined;
 
     const token = head.replace("Bearer ", "");
     const payload = await this.#jwt_client.DecodeJwt(
       token,
-      IsObject({ UserId: IsString, Access: IsOneOf("Admin", "Identify") })
+      IsObject({
+        UserId: IsString,
+        Access: IsOneOf(...Object.keys(UserAccess)),
+      })
     );
 
-    return payload;
+    if (payload.Access === UserAccess.Admin) return undefined;
+
+    return state.users[payload.UserId];
   }
 
   async EncryptPassword(password: string) {
