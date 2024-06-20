@@ -27,7 +27,7 @@ tasks:
 
   puristee:build:
     deps: [fs-db:build, safe-type:build]
-    dir: "{{.TASKFILE_DIR}}/lib/fs-db"
+    dir: "{{.TASKFILE_DIR}}/lib/puristee"
     cmds:
       - npm run build
 
@@ -48,6 +48,8 @@ tasks:
     cmds:
       - npm run test
 
-  effuse-sso:build:
+  effuse:build-sso:
     deps: [puristee:build, safe-type:build, moulding-tin:build]
-    dir: "{{.TASKFILE_DIR}}/app/effuse-sso"
+    dir: "{{.TASKFILE_DIR}}/app/effuse"
+    cmds:
+      - npm run build

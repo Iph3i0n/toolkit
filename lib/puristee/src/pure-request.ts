@@ -2,6 +2,7 @@ import type { IncomingMessage } from "node:http";
 import Pattern from "./pattern";
 import { ReadonlyRecord } from "./util-types";
 import Cookies from "./cookies";
+import { Checker } from "@ipheion/safe-type";
 
 async function GetJson(request: IncomingMessage) {
   return new Promise<unknown>((res) => {
@@ -22,6 +23,19 @@ async function GetJson(request: IncomingMessage) {
       res(undefined);
     });
   });
+}
+
+function IsDictionaryMatch<
+  T extends Record<string, string | Array<string> | null | undefined>
+>(
+  checker: { [TKey in keyof T]: Checker<T[TKey]> },
+  // deno-lint-ignore no-explicit-any
+  subject: any
+): subject is T {
+  if (typeof subject !== "object") return false;
+  for (const key in checker) if (!checker[key](subject[key])) return false;
+
+  return true;
 }
 
 export default class PureRequest {
@@ -68,6 +82,27 @@ export default class PureRequest {
 
   public get cookies() {
     return Cookies(this.request);
+  }
+
+  Body<T>(checker: Checker<T>) {
+    let body = this.body;
+    if (body instanceof FormData) {
+      // deno-lint-ignore no-explicit-any
+      const result: any = {};
+      for (const [key, value] of body.entries()) result[key] = value.valueOf();
+      body = result;
+    }
+
+    if (checker(body)) return body;
+    return undefined;
+  }
+
+  Parameters<
+    T extends Record<string, string | Array<string> | null | undefined>
+  >(checker: { [TKey in keyof T]: Checker<T[TKey]> }) {
+    const parameters = this.parameters;
+    if (IsDictionaryMatch(checker, parameters)) return parameters;
+    return undefined;
   }
 
   public static async Init(request: IncomingMessage, pattern: Pattern) {

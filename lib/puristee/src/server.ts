@@ -1,25 +1,17 @@
-import {
-  Directory,
-  Schema,
-  StateReader,
-} from "@ipheion/fs-db";
+import { Directory, Schema, StateReader } from "@ipheion/fs-db";
 import Http, { IncomingMessage } from "node:http";
 import Send from "./response-applier";
-import HandlerFactory, { Middleware } from "./handler";
+import { HandlerFactory, Handler } from "./handler";
 import { HandlerStore } from "./handler-store";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
-import Provider from "./providers";
+import { EmptyResponse } from "./response";
 
-export default function CreateServer<
-  TSchema extends Schema,
-  TProviders extends Provider<TSchema>
->(
+export default function CreateServer<TSchema extends Schema>(
   state_dir: string,
-  schema: TSchema,
-  provider?: new (state: StateReader<TSchema>) => TProviders
+  schema: TSchema
 ) {
-  const store = new HandlerStore<TSchema, TProviders>();
+  const store = new HandlerStore<TSchema>();
 
   async function Run(
     request: IncomingMessage,
@@ -30,15 +22,15 @@ export default function CreateServer<
       const target = store.Get(url, request.method?.toLowerCase() ?? "get");
       if (!target) {
         console.log(`No handler found for ${request.url}`);
-        return { response: { status: 404 } };
+        return { response: new EmptyResponse("NotFound") };
       }
 
       console.log(`Handling request for ${request.url}`);
-      const [_, pattern, handler] = target;
-      const result = await handler(
+      const [_, pattern, Handler] = target;
+      const instance = new Handler();
+      const result = await instance.Process(
         await PureRequest.Init(request, pattern),
-        current_state,
-        provider ? new provider(current_state) : undefined
+        current_state
       );
 
       if ("response" in result)
@@ -47,15 +39,18 @@ export default function CreateServer<
       return { response: result, state: undefined };
     } catch (err) {
       console.error(err);
-      return { response: { status: 500 } };
+      return { response: new EmptyResponse("InternalServerError") };
     }
   }
 
   return {
-    CreateHandler(pattern: string, method: string) {
-      return HandlerFactory<TSchema, TProviders>((handler) =>
-        store.Add(method, new Pattern(pattern), handler)
-      );
+    Handler: Handler<TSchema>,
+    WithHandler(
+      pattern: string,
+      method: string,
+      handler: HandlerFactory<TSchema>
+    ) {
+      store.Add(method, new Pattern(pattern), handler);
     },
     async Listen(port: number) {
       const state_manager = new Directory(schema, state_dir);
@@ -67,12 +62,6 @@ export default function CreateServer<
       });
 
       server.listen(port, () => console.log(`Server listening on ${port}`));
-    },
-    CreateMiddleware<
-      TContext extends Record<never, never>,
-      TResponse extends Record<never, never>
-    >(handler: Middleware<TSchema, TProviders, TContext, TResponse>) {
-      return handler;
     },
   };
 }
