@@ -9,6 +9,7 @@ import {
 
 export const User = new Struct({
   user_id: new ASCII(),
+  username: new UTF8(),
   email: new UTF8(),
   encrypted_email: new UTF8(),
   registered_at: new DateTime(),

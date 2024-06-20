@@ -13,3 +13,7 @@ export const Server = CreateServer("./data", InitalState);
 export const Handler = Server.Handler;
 
 export type Handler = typeof Server.Handler;
+
+export const Response = Server.Response;
+
+export type Response = typeof Server.Response;

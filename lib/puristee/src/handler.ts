@@ -4,12 +4,23 @@ import { IResponse } from "./response";
 
 export type Promisish<T> = T | Promise<T>;
 
-export type ServerResponse<TState extends Schema> =
-  | {
-      state?: StateWriter<TState>;
-      response: IResponse;
-    }
-  | IResponse;
+export class ServerResponse<TState extends Schema> {
+  readonly #state?: StateWriter<TState>;
+  readonly #response: IResponse;
+
+  constructor(response: IResponse, state?: StateWriter<TState>) {
+    this.#response = response;
+    this.#state = state;
+  }
+
+  get state() {
+    return this.#state;
+  }
+
+  get response() {
+    return this.#response;
+  }
+}
 
 export abstract class Handler<TState extends Schema> {
   abstract Process(

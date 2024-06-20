@@ -1,7 +1,7 @@
 import { Directory, Schema, StateReader } from "@ipheion/fs-db";
 import Http, { IncomingMessage } from "node:http";
 import Send from "./response-applier";
-import { HandlerFactory, Handler } from "./handler";
+import { HandlerFactory, Handler, ServerResponse } from "./handler";
 import { HandlerStore } from "./handler-store";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
@@ -33,10 +33,7 @@ export default function CreateServer<TSchema extends Schema>(
         current_state
       );
 
-      if ("response" in result)
-        return { response: result.response, state: result.state };
-
-      return { response: result, state: undefined };
+      return { response: result.response, state: result.state };
     } catch (err) {
       console.error(err);
       return { response: new EmptyResponse("InternalServerError") };
@@ -45,6 +42,7 @@ export default function CreateServer<TSchema extends Schema>(
 
   return {
     Handler: Handler<TSchema>,
+    Response: ServerResponse<TSchema>,
     WithHandler(
       pattern: string,
       method: string,
