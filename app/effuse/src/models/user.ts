@@ -2,10 +2,19 @@ import {
   ASCII,
   Array,
   DateTime,
+  Record,
   Serialised,
   Struct,
   UTF8,
 } from "@ipheion/moulding-tin";
+
+export const PushSubscription = new Struct({
+  endpoint: new UTF8(),
+  expires: new DateTime(),
+  parameters: new Record(new UTF8(), new UTF8()),
+});
+
+export type PushSubscription = Serialised<typeof PushSubscription>;
 
 export const User = new Struct({
   user_id: new ASCII(),
@@ -21,6 +30,7 @@ export const User = new Struct({
     })
   ),
   biography: new UTF8(),
+  push_subscriptions: new Array(PushSubscription),
 });
 
 export type User = Serialised<typeof User>;
