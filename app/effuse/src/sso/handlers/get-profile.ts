@@ -20,12 +20,12 @@ export default class GetProfile extends Handler {
   readonly Url = "/api/v1/user/profile";
 
   async Process(request: PureRequest) {
-    const user = await this.#auth_service.GetAdminUser(request);
+    const [user, user_id] = await this.#auth_service.GetAdminUser(request);
     if (!user) return new Result(new EmptyResponse("NotFound"));
 
     return new Result(
       new JsonResponse("Ok", {
-        UserId: user.user_id,
+        UserId: user_id,
         Email: user.email,
         UserName: user.username,
         Biography: user.biography,

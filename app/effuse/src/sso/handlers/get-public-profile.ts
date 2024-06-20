@@ -19,7 +19,7 @@ export default class GetPublicProfile extends Handler {
     if (!user) return new Result(new EmptyResponse("NotFound"));
     return new Result(
       new JsonResponse("Ok", {
-        UserId: user.user_id,
+        UserId: userId,
         UserName: user.username,
         Biography: user.biography,
       })

@@ -20,7 +20,7 @@ export default class GetPushSubscriptions extends Handler {
   readonly Url = "/api/v1/user/push-subscriptions";
 
   async Process(request: PureRequest) {
-    const user = await this.#auth_service.GetAdminUser(request);
+    const [user] = await this.#auth_service.GetAdminUser(request);
     if (!user) return new Result(new EmptyResponse("NotFound"));
 
     return new Result(

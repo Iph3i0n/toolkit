@@ -20,8 +20,8 @@ export default class GetUserFromToken extends Handler {
   readonly Url = "/api/v1/auth/user";
 
   async Process(request: PureRequest) {
-    const user = await this.#auth_service.GetIdentifyUser(request);
+    const [user, user_id] = await this.#auth_service.GetIdentifyUser(request);
     if (!user) return new Result(new EmptyResponse("NotFound"));
-    return new Result(new JsonResponse("Ok", { UserId: user.user_id }));
+    return new Result(new JsonResponse("Ok", { UserId: user_id }));
   }
 }

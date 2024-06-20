@@ -1,5 +1,4 @@
 import {
-  ASCII,
   Array,
   DateTime,
   Record,
@@ -17,7 +16,6 @@ export const PushSubscription = new Struct({
 export type PushSubscription = Serialised<typeof PushSubscription>;
 
 export const User = new Struct({
-  user_id: new ASCII(),
   username: new UTF8(),
   email: new UTF8(),
   encrypted_email: new UTF8(),
