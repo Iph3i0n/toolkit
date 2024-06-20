@@ -102,7 +102,7 @@ export class SsoAuthService {
       })
     );
 
-    if (payload.Access === UserAccess.Admin) return undefined;
+    if (payload.Access !== UserAccess.Admin) return undefined;
 
     return state.users[payload.UserId];
   }
