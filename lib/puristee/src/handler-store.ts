@@ -1,11 +1,11 @@
 import { Schema } from "@ipheion/fs-db";
-import { Handler, HandlerFactory } from "./handler";
+import { Handler } from "./handler";
 import Pattern from "./pattern";
 
 export class HandlerStore<TState extends Schema> {
-  private data: Array<[string, Pattern, HandlerFactory<TState>]> = [];
+  private data: Array<[string, Pattern, Handler<TState>]> = [];
 
-  public Add(method: string, pattern: Pattern, handler: HandlerFactory<TState>) {
+  public Add(method: string, pattern: Pattern, handler: Handler<TState>) {
     this.data = [...this.data, [method, pattern, handler]];
   }
 

@@ -1,13 +1,21 @@
-import { EmptyResponse, JsonResponse, PureRequest } from "@ipheion/puristee";
+import {
+  EmptyResponse,
+  HttpMethod,
+  JsonResponse,
+  PureRequest,
+} from "@ipheion/puristee";
 import { Handler, State, Result } from "../server";
 import { IsString } from "@ipheion/safe-type";
 
 export class GetPublicProfile extends Handler {
-  async Process(request: PureRequest, state: State) {
+  readonly Method = HttpMethod.Get;
+  readonly Url = "/api/v1/users/{userId}/profile";
+
+  async Process(request: PureRequest) {
     const { userId } = request.Parameters({ userId: IsString }) ?? {};
     if (!userId) return new Result(new EmptyResponse("NotFound"));
 
-    const user = state.users[userId];
+    const user = this.State.users[userId];
     if (!user) return new Result(new EmptyResponse("NotFound"));
     return new Result(
       new JsonResponse("Ok", {

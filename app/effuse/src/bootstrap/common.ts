@@ -1,8 +1,10 @@
-export function b<T>(factory: () => T) {
+import { State } from "../server";
+
+export function b<T>(factory: (state: State) => T) {
   let instance: T;
 
-  return () => {
-    if (!instance) instance = factory();
+  return (state: State) => {
+    if (!instance) instance = factory(state);
 
     return instance;
   };

@@ -4,5 +4,5 @@ import { b } from "../common";
 import { NewParameterClient } from "./parameter-client";
 
 export const NewJwtClient = b(
-  (): IJwtClient => new SecretJwtClient(NewParameterClient())
+  (s): IJwtClient => new SecretJwtClient(NewParameterClient(s))
 );

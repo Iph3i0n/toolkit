@@ -1,7 +1,9 @@
-import { Directory, Schema, StateReader } from "@ipheion/fs-db";
+import Fs from "node:fs/promises";
+import Path from "node:path";
+import { Directory, Schema } from "@ipheion/fs-db";
 import Http, { IncomingMessage } from "node:http";
 import Send from "./response-applier";
-import { HandlerFactory, Handler, ServerResponse } from "./handler";
+import { HandlerFactory, Handler, Result } from "./handler";
 import { HandlerStore } from "./handler-store";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
@@ -12,11 +14,9 @@ export default function CreateServer<TSchema extends Schema>(
   schema: TSchema
 ) {
   const store = new HandlerStore<TSchema>();
+  const state_manager = new Directory(schema, state_dir);
 
-  async function Run(
-    request: IncomingMessage,
-    current_state: StateReader<TSchema>
-  ) {
+  async function Run(request: IncomingMessage) {
     try {
       const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
       const target = store.Get(url, request.method?.toLowerCase() ?? "get");
@@ -26,11 +26,9 @@ export default function CreateServer<TSchema extends Schema>(
       }
 
       console.log(`Handling request for ${request.url}`);
-      const [_, pattern, Handler] = target;
-      const instance = new Handler();
+      const [_, pattern, instance] = target;
       const result = await instance.Process(
-        await PureRequest.Init(request, pattern),
-        current_state
+        await PureRequest.Init(request, pattern)
       );
 
       return { response: result.response, state: result.state };
@@ -42,18 +40,20 @@ export default function CreateServer<TSchema extends Schema>(
 
   return {
     Handler: Handler<TSchema>,
-    Response: ServerResponse<TSchema>,
-    WithHandler(
-      pattern: string,
-      method: string,
-      handler: HandlerFactory<TSchema>
-    ) {
-      store.Add(method, new Pattern(pattern), handler);
-    },
-    async Listen(port: number) {
-      const state_manager = new Directory(schema, state_dir);
+    Response: Result<TSchema>,
+    async Start(dir: string, port: number) {
+      const handlers = await Fs.readdir(dir);
+      for (const item of handlers) {
+        const loc = Path.resolve(dir, item);
+        const Constructor: HandlerFactory<TSchema> = require(loc).default;
+
+        const instance = new Constructor(state_manager.Model);
+
+        store.Add(instance.Method, new Pattern(instance.Url), instance);
+      }
+
       const server = Http.createServer(async (req, res) => {
-        const { response, state } = await Run(req, state_manager.Model);
+        const { response, state } = await Run(req);
         if (state) state_manager.Write(state);
 
         await Send(response, res);

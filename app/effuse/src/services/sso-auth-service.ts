@@ -56,9 +56,11 @@ export class UserGrant {
 }
 
 export class SsoAuthService {
+  readonly #state: State;
   readonly #jwt_client: IJwtClient;
 
-  constructor(jwt_client: IJwtClient) {
+  constructor(state: State, jwt_client: IJwtClient) {
+    this.#state = state;
     this.#jwt_client = jwt_client;
   }
 
@@ -89,7 +91,7 @@ export class SsoAuthService {
     );
   }
 
-  async GetAdminUser(request: PureRequest, state: State) {
+  async GetAdminUser(request: PureRequest) {
     const head = request.headers.Authorization;
     if (!head) return undefined;
 
@@ -104,10 +106,10 @@ export class SsoAuthService {
 
     if (payload.Access !== UserAccess.Admin) return undefined;
 
-    return state.users[payload.UserId];
+    return this.#state.users[payload.UserId];
   }
 
-  async GetIdentifyUser(request: PureRequest, state: State) {
+  async GetIdentifyUser(request: PureRequest) {
     const { token } = request.Parameters({ token: IsString }) ?? {};
     if (!token) return undefined;
     const payload = await this.#jwt_client.DecodeJwt(
@@ -120,7 +122,7 @@ export class SsoAuthService {
 
     if (payload.Access !== UserAccess.Identify) return undefined;
 
-    return state.users[payload.UserId];
+    return this.#state.users[payload.UserId];
   }
 
   async EncryptPassword(password: string) {

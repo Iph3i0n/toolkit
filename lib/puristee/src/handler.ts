@@ -4,7 +4,21 @@ import { IResponse } from "./response";
 
 export type Promisish<T> = T | Promise<T>;
 
-export class ServerResponse<TState extends Schema> {
+export const HttpMethod = Object.freeze({
+  Get: "GET",
+  Put: "PUT",
+  Post: "POST",
+  Delete: "DELETE",
+  Patch: "PATCH",
+  Options: "OPTIONS",
+  Head: "HEAD",
+  Connect: "CONNECT",
+  Trace: "TRACE",
+});
+
+export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
+
+export class Result<TState extends Schema> {
   readonly #state?: StateWriter<TState>;
   readonly #response: IResponse;
 
@@ -23,10 +37,23 @@ export class ServerResponse<TState extends Schema> {
 }
 
 export abstract class Handler<TState extends Schema> {
-  abstract Process(
-    request: PureRequest,
-    state: StateReader<TState>
-  ): Promisish<ServerResponse<TState>>;
+  readonly #state: StateReader<TState>;
+
+  constructor(state: StateReader<TState>) {
+    this.#state = state;
+  }
+
+  get State() {
+    return this.#state;
+  }
+
+  abstract Process(request: PureRequest): Promisish<Result<TState>>;
+
+  abstract readonly Url: string;
+
+  abstract readonly Method: HttpMethod;
 }
 
-export type HandlerFactory<TState extends Schema> = new () => Handler<TState>;
+export type HandlerFactory<TState extends Schema> = new (
+  state: StateReader<TState>
+) => Handler<TState>;
