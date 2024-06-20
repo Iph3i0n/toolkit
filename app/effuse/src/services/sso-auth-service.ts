@@ -107,6 +107,22 @@ export class SsoAuthService {
     return state.users[payload.UserId];
   }
 
+  async GetIdentifyUser(request: PureRequest, state: State) {
+    const { token } = request.Parameters({ token: IsString }) ?? {};
+    if (!token) return undefined;
+    const payload = await this.#jwt_client.DecodeJwt(
+      token,
+      IsObject({
+        UserId: IsString,
+        Access: IsOneOf(...Object.keys(UserAccess)),
+      })
+    );
+
+    if (payload.Access !== UserAccess.Identify) return undefined;
+
+    return state.users[payload.UserId];
+  }
+
   async EncryptPassword(password: string) {
     const salt = await BCrypt.genSalt(10);
     return await BCrypt.hash(password, salt);
