@@ -8,7 +8,7 @@ import { Handler, Result, State } from "../server";
 import { SsoAuthService } from "../services/sso-auth-service";
 import { NewSsoAuthService } from "../bootstrap/services/sso-auth-service";
 
-export class GetPushSubscriptions extends Handler {
+export default class GetPushSubscriptions extends Handler {
   readonly #sso_auth_service: SsoAuthService;
 
   constructor(

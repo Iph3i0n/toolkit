@@ -8,7 +8,7 @@ import { Handler, State, Result } from "../server";
 import { NewSsoAuthService } from "../bootstrap/services/sso-auth-service";
 import { SsoAuthService } from "../services/sso-auth-service";
 
-export class GetUserFromToken extends Handler {
+export default class GetUserFromToken extends Handler {
   readonly #sso_auth_service: SsoAuthService;
 
   constructor(

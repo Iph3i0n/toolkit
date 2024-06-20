@@ -7,7 +7,7 @@ import {
 import { Handler, State, Result } from "../server";
 import { IsString } from "@ipheion/safe-type";
 
-export class GetPublicProfile extends Handler {
+export default class GetPublicProfile extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/users/{userId}/profile";
 
