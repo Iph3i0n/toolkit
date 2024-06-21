@@ -38,4 +38,8 @@ export class UserGrant {
   get ServerToken() {
     return this.#server_token;
   }
+
+  get UserId() {
+    return this.#user_id;
+  }
 }

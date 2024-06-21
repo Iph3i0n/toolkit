@@ -12,4 +12,16 @@ export class UserPublicProfile {
     this.#username = model.UserName;
     this.#biography = model.Biography;
   }
+
+  get UserId() {
+    return this.#user_id;
+  }
+
+  get UserName() {
+    return this.#username;
+  }
+
+  get Biography() {
+    return this.#biography;
+  }
 }

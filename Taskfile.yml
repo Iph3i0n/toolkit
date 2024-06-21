@@ -55,10 +55,15 @@ tasks:
       - rm -rf dist
       - npm run build
 
+  effuse:api-test:
+    dir: "{{.TASKFILE_DIR}}/app/effuse"
+    cmds:
+      - node --test --import tsx ./tests/**/*.test.ts
+
   effuse:run-sso:
     deps: [effuse:build-sso]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
-      - node ./dist/sso.js
+      - node ./dist/src/sso.js
     env:
-      NODE_PATH: ./dist
+      NODE_PATH: ./dist/src
