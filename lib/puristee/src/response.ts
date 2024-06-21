@@ -51,6 +51,7 @@ const StatusCodes = Object.freeze({
    * Body or parameters are of invalid schema.
    */
   BadRequest: 400,
+  Unauthorised: 403,
   /**
    * No resource exists.
    */

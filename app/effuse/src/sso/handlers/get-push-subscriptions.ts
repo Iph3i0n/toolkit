@@ -21,7 +21,7 @@ export default class GetPushSubscriptions extends Handler {
 
   async Process(request: PureRequest) {
     const [user] = await this.#auth_service.GetAdminUser(request);
-    if (!user) return new Result(new EmptyResponse("NotFound"));
+    if (!user) return new Result(new EmptyResponse("Unauthorised"));
 
     return new Result(
       new JsonResponse(
