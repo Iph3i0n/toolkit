@@ -34,7 +34,7 @@ export default class GetToken extends Handler {
 
     const user = this.State.users[user_email.user_id];
     if (!user) return new Result(new EmptyResponse("NotFound"));
-    if (!(await this.#auth_service.IsMatch(password, user.encrypted_email)))
+    if (!(await this.#auth_service.IsMatch(password, user.encrypted_password)))
       return new Result(new EmptyResponse("NotFound"));
 
     const grant = await this.#auth_service.CreateGrant(user_email.user_id);
