@@ -29,33 +29,32 @@ export default class GetToken extends Handler {
 
     if (!email || !password) return new Result(new EmptyResponse("BadRequest"));
 
-    for (const [user_id, user] of this.State.users) {
-      if (user.email !== email) continue;
+    const user_email = this.State.user_emails[email];
+    if (!user_email) return new Result(new EmptyResponse("NotFound"));
 
-      if (!(await this.#auth_service.IsMatch(password, user.encrypted_email)))
-        return new Result(new EmptyResponse("NotFound"));
+    const user = this.State.users[user_email.user_id];
+    if (!user) return new Result(new EmptyResponse("NotFound"));
+    if (!(await this.#auth_service.IsMatch(password, user.encrypted_email)))
+      return new Result(new EmptyResponse("NotFound"));
 
-      const grant = await this.#auth_service.CreateGrant(user_id);
+    const grant = await this.#auth_service.CreateGrant(user_email.user_id);
 
-      return new Result(
-        new JsonResponse("Ok", {
-          AdminToken: grant.UserToken,
-          ServerToken: grant.ServerToken,
-          UserId: grant.UserId,
-          RefreshToken: grant.RefreshToken,
-          Expires: grant.Expires.toISOString(),
-        }),
-        {
-          users: {
-            [user_id]: {
-              ...user,
-              last_sign_in: new Date(),
-            },
+    return new Result(
+      new JsonResponse("Ok", {
+        AdminToken: grant.UserToken,
+        ServerToken: grant.ServerToken,
+        UserId: grant.UserId,
+        RefreshToken: grant.RefreshToken,
+        Expires: grant.Expires.toISOString(),
+      }),
+      {
+        users: {
+          [user_email.user_id]: {
+            ...user,
+            last_sign_in: new Date(),
           },
-        }
-      );
-    }
-
-    return new Result(new EmptyResponse("NotFound"));
+        },
+      }
+    );
   }
 }

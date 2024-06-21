@@ -2,9 +2,11 @@ import Path from "path";
 import CreateServer from "@ipheion/puristee";
 import { User } from "$sso/m/user";
 import { StateReader } from "@ipheion/fs-db";
+import { UserEmail } from "./models/user-email";
 
 const InitalState = {
   users: User,
+  user_emails: UserEmail,
 };
 
 export const DataDir = process.env.DATA_DIR ?? "./data";
