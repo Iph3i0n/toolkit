@@ -44,6 +44,7 @@ export default function CreateServer<TSchema extends Schema>(
     async Start(dir: string, port: number) {
       const handlers = await Fs.readdir(dir);
       for (const item of handlers) {
+        if (!item.endsWith(".js")) continue;
         const loc = Path.resolve(dir, item);
         const Constructor: HandlerFactory<TSchema> = require(loc).default;
 

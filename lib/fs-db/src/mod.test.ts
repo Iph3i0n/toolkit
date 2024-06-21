@@ -1,6 +1,6 @@
 import { ASCII, Struct } from "@ipheion/moulding-tin";
 import { Directory, Schema } from "./mod";
-import Fs from "fs/promises";
+import Fs from "node:fs/promises";
 
 const TEST_DIR = "./test-data";
 

@@ -1,5 +1,5 @@
-import { EnvVarParameterClient } from "$i/env-var-parameter-client";
-import { IParameterClient } from "$i/i-parameter-client";
+import { EnvVarParameterClient } from "integrations/env-var-parameter-client";
+import { IParameterClient } from "integrations/i-parameter-client";
 import { b } from "../common";
 
 export const NewParameterClient = b(

@@ -1,6 +1,6 @@
-import { IProfilePicture } from "$i/i-profile-picture";
-import { NewProfilePicture } from "$sso/b/integrations/profile-picture";
-import { Handler, Result, State } from "$sso/server";
+import { IProfilePicture } from "sso/integrations/i-profile-picture";
+import { NewProfilePicture } from "sso/bootstrap/integrations/profile-picture";
+import { Handler, Result, State } from "sso/server";
 import {
   EmptyResponse,
   HttpMethod,

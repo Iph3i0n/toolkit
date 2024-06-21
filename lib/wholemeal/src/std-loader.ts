@@ -13,8 +13,8 @@ import {
   PatternMatch,
 } from "@ipheion/safe-type";
 import TypingsTemplate from "./compiler/typings/template";
-import Fs from "fs";
-import Path from "path";
+import Fs from "node:fs";
+import Path from "node:path";
 import Json from "comment-json";
 import PreactTemplate from "./compiler/templates/preact-template";
 import ReactTemplate from "./compiler/templates/react-template";

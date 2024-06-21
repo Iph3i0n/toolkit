@@ -1,7 +1,7 @@
 import { SetCookie } from "./set-cookies";
 import { ReadonlyRecord } from "./util-types";
 import Mime from "mime-types";
-import Fs from "fs/promises";
+import Fs from "node:fs/promises";
 
 export interface IResponse {
   readonly status: number | Promise<number>;

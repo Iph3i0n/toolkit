@@ -52,4 +52,13 @@ tasks:
     deps: [puristee:build, safe-type:build, moulding-tin:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
+      - rm -rf dist
       - npm run build
+
+  effuse:run-sso:
+    deps: [effuse:build-sso]
+    dir: "{{.TASKFILE_DIR}}/app/effuse"
+    cmds:
+      - node ./dist/sso.js
+    env:
+      NODE_PATH: ./dist

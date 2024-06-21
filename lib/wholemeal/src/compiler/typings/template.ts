@@ -1,6 +1,6 @@
 import Component from "../../xml/component";
 import * as Ts from "../../ts-writer";
-import Path from "path";
+import Path from "node:path";
 
 export default class TypingsTemplate {
   readonly #component: Component;

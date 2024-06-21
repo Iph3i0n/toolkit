@@ -1,4 +1,4 @@
-import { AuthService } from "$sso/s/auth-service";
+import { AuthService } from "sso/services/auth-service";
 import { b } from "../common";
 import { NewJwtClient } from "../integrations/jwt-client";
 

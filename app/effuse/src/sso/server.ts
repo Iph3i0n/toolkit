@@ -1,8 +1,8 @@
-import Path from "path";
+import Path from "node:path";
 import CreateServer from "@ipheion/puristee";
-import { User } from "$sso/m/user";
+import { User } from "sso/models/user";
 import { StateReader } from "@ipheion/fs-db";
-import { UserEmail } from "./models/user-email";
+import { UserEmail } from "sso/models/user-email";
 
 const InitalState = {
   users: User,

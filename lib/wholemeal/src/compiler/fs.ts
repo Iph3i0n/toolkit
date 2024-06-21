@@ -1,5 +1,5 @@
-import Path from "path";
-import Fs from "fs/promises";
+import Path from "node:path";
+import Fs from "node:fs/promises";
 
 export async function EnsureDir(path: string) {
   try {

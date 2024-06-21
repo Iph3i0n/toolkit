@@ -1,5 +1,5 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
-import { Handler, Result } from "$sso/server";
+import { Handler, Result } from "sso/server";
 
 export default class GetHeartBeat extends Handler {
   readonly Method = HttpMethod.Get;

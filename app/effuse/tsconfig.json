@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -12,13 +12,7 @@
     "lib": ["es2023"],
     "downlevelIteration": true,
     "declaration": true,
-    "paths": {
-      "$sso/b/*": ["./src/sso/bootstrap/*"],
-      "$i/*": ["./src/integrations/*"],
-      "$sso/m/*": ["./src/sso/models/*"],
-      "$sso/s/*": ["./src/sso/services/*"],
-      "$sso/server": ["./src/sso/server.ts"]
-    }
+    "baseUrl": "./src"
   },
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]
 }

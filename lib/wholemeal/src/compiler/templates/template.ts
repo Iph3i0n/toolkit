@@ -1,6 +1,5 @@
 import Component from "../../xml/component";
 import * as Js from "../../writer/mod";
-import Path from "path";
 
 export default class Template {
   readonly #data: Component;

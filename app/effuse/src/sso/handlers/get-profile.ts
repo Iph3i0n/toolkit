@@ -4,9 +4,9 @@ import {
   JsonResponse,
   PureRequest,
 } from "@ipheion/puristee";
-import { Handler, Result, State } from "$sso/server";
-import { NewAuthService } from "$sso/b/services/auth-service";
-import { AuthService } from "$sso/s/auth-service";
+import { Handler, Result, State } from "sso/server";
+import { NewAuthService } from "sso/bootstrap/services/auth-service";
+import { AuthService } from "sso/services/auth-service";
 
 export default class GetProfile extends Handler {
   readonly #auth_service: AuthService;

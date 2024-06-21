@@ -1,8 +1,7 @@
 import Fs from "node:fs/promises";
-import Path from "path";
-import { User } from "$sso/m/user";
+import Path from "node:path";
 import { IProfilePicture } from "./i-profile-picture";
-import { DataDir } from "$sso/server";
+import { DataDir } from "sso/server";
 
 export class FsProfilePicture implements IProfilePicture {
   get #dir() {
