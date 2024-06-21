@@ -8,11 +8,12 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "lib": ["es2023"],
     "downlevelIteration": true,
     "declaration": true,
     "baseUrl": "./src"
   },
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]
 }
