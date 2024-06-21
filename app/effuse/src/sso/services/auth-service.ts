@@ -50,6 +50,15 @@ export class AuthService {
     );
   }
 
+  async GetRefreshUser(token: string) {
+    const payload = await this.#jwt_client.DecodeJwt(
+      token,
+      IsObject({ UserId: IsString })
+    );
+
+    return [this.#state.users[payload.UserId], payload.UserId] as const;
+  }
+
   async GetAdminUser(request: PureRequest) {
     const head = request.headers.Authorization;
     if (!head) return [undefined, undefined] as const;
