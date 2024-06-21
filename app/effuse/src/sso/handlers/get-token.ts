@@ -9,7 +9,7 @@ import {
 } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
 
-export default class Login extends Handler {
+export default class GetToken extends Handler {
   readonly #auth_service: AuthService;
 
   constructor(state: State, auth_service: AuthService = NewAuthService(state)) {

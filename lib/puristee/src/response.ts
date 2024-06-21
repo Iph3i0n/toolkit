@@ -166,7 +166,7 @@ export class FileResponse implements IResponse {
       try {
         const stat = await Fs.stat(this.#path);
         if (stat.isDirectory()) return res(404);
-        return 200;
+        res(200);
       } catch (err) {
         res(404);
       }
@@ -191,5 +191,33 @@ export class FileResponse implements IResponse {
         res(undefined);
       }
     });
+  }
+}
+
+export class MemoryFileResponse implements IResponse {
+  readonly #data: Buffer;
+  readonly #mime: string;
+
+  constructor(data: Buffer, mime: string) {
+    this.#data = data;
+    this.#mime = mime;
+  }
+
+  get status() {
+    return 200;
+  }
+
+  get headers() {
+    return {
+      "Content-Type": this.#mime,
+    };
+  }
+
+  get cookies() {
+    return {};
+  }
+
+  get body() {
+    return this.#data;
   }
 }

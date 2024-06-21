@@ -1,7 +1,7 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { Handler, Result } from "$sso/server";
 
-export default class HeartBeat extends Handler {
+export default class GetHeartBeat extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/heartbeat";
 

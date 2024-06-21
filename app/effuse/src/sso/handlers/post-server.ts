@@ -10,7 +10,7 @@ import {
 import { IsObject, IsString } from "@ipheion/safe-type";
 import Axios from "axios";
 
-export default class JoinServer extends Handler {
+export default class PostServer extends Handler {
   readonly #auth_service: AuthService;
 
   constructor(state: State, auth_service: AuthService = NewAuthService(state)) {
