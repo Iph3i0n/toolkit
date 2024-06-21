@@ -15,6 +15,7 @@ const StatusCodes = Object.freeze({
    * Request Successful
    */
   Ok: 200,
+  Created: 201,
   MultipleChoices: 300,
   /**
    * GET methods unchanged. Others may or may not be changed to GET.
@@ -54,6 +55,7 @@ const StatusCodes = Object.freeze({
    * No resource exists.
    */
   NotFound: 404,
+  Conflict: 409,
   InternalServerError: 500,
 });
 

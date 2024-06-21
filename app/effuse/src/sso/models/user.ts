@@ -18,7 +18,7 @@ export type PushSubscription = Serialised<typeof PushSubscription>;
 export const User = new Struct({
   username: new UTF8(),
   email: new UTF8(),
-  encrypted_email: new UTF8(),
+  encrypted_password: new UTF8(),
   registered_at: new DateTime(),
   last_sign_in: new DateTime(),
   servers: new Array(
