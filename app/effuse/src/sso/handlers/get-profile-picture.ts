@@ -9,7 +9,7 @@ import { IsString } from "@ipheion/safe-type";
 
 export default class GetProfilePicture extends Handler {
   readonly Method = HttpMethod.Get;
-  readonly Url = "/profile/pictures/{userid}";
+  readonly Url = "/profile/pictures/:userid";
 
   async Process(request: PureRequest) {
     const { userid } = request.Parameters({ userid: IsString }) ?? {};

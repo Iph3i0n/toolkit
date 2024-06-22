@@ -35,7 +35,7 @@ export default class PostServer extends Handler {
 
     if (!body) return new Result(new EmptyResponse("BadRequest"));
 
-    await Axios.get("/api/v1/users", {
+    await Axios.post("/api/v1/users", {
       baseURL: body.ServerUrl,
       data: {
         ServerToken: body.ServerToken,

@@ -9,7 +9,7 @@ import { IsString } from "@ipheion/safe-type";
 
 export default class GetPublicProfile extends Handler {
   readonly Method = HttpMethod.Get;
-  readonly Url = "/api/v1/users/{userId}/profile";
+  readonly Url = "/api/v1/users/:userId/profile";
 
   async Process(request: PureRequest) {
     const { userId } = request.Parameters({ userId: IsString }) ?? {};
