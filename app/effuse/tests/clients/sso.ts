@@ -12,24 +12,25 @@ import { UserGrant } from "../models/user-grant";
 import { UserProfile } from "../models/user-profile";
 import { UserPublicProfile } from "../models/user-public-profile";
 import { UserSubscription } from "../models/user-subscription";
+import { ClientBase } from "./base";
 
-export class SsoClient {
-  readonly #axios = Axios.create({ baseURL: process.env.SSO_BASE });
+export class SsoClient extends ClientBase {
+  constructor() {
+    super({ baseURL: process.env.SSO_BASE });
+  }
 
   async HeartBeat() {
-    const response = await this.#axios.get("/api/v1/heartbeat");
+    const response = await this.get("/api/v1/heartbeat");
 
     Assert(IsObject({ Text: IsLiteral("Hello world") }), response.data);
   }
 
   async GetProfilePicture(user_id: string) {
-    const response = await this.#axios.get(
-      Url("/profile/pictures/:user_id", { user_id })
-    );
+    await this.get(Url("/profile/pictures/:user_id", { user_id }));
   }
 
   async GetProfile(grant: UserGrant) {
-    const response = await this.#axios.get("/api/v1/user/profile", {
+    const response = await this.get("/api/v1/user/profile", {
       headers: grant.AdminHeaders,
     });
 
@@ -55,7 +56,7 @@ export class SsoClient {
   }
 
   async GetPublicProfile(user_id: string) {
-    const response = await this.#axios.get(
+    const response = await this.get(
       Url("/api/v1/users/:user_id/profile", { user_id })
     );
 
@@ -72,7 +73,7 @@ export class SsoClient {
   }
 
   async GetPushSubscriptions(grant: UserGrant) {
-    const response = await this.#axios.get("/api/v1/user/push-subscriptions", {
+    const response = await this.get("/api/v1/user/push-subscriptions", {
       headers: grant.AdminHeaders,
     });
 
@@ -91,7 +92,7 @@ export class SsoClient {
   }
 
   async GetRefreshToken(grant: UserGrant) {
-    const response = await this.#axios.get(
+    const response = await this.get(
       Url("/api/v1/auth/refresh-token", { token: grant.RefreshToken })
     );
 
@@ -110,7 +111,7 @@ export class SsoClient {
   }
 
   async GetToken(email: string, password: string) {
-    const response = await this.#axios.get(
+    const response = await this.get(
       Url("/api/v1/auth/token", { email, password })
     );
 
@@ -129,7 +130,7 @@ export class SsoClient {
   }
 
   async GetUserFromToken(grant: UserGrant) {
-    const response = await this.#axios.get(
+    const response = await this.get(
       Url("/api/v1/auth/user", { token: grant.ServerToken })
     );
 
@@ -147,7 +148,7 @@ export class SsoClient {
     model: { endpoint: string; expires: Date; keys: Record<string, string> },
     grant: UserGrant
   ) {
-    const response = await this.#axios.post(
+    const response = await this.post(
       "/api/v1/user/push-subscriptions",
       {
         Endpoint: model.endpoint,
@@ -166,7 +167,7 @@ export class SsoClient {
     model: { server_token: string; server_url: string; password: string },
     grant: UserGrant
   ) {
-    const response = await this.#axios.post(
+    const response = await this.post(
       "/api/v1/user/servers",
       {
         ServerToken: model.server_token,
@@ -186,7 +187,7 @@ export class SsoClient {
     email: string;
     password: string;
   }) {
-    const response = await this.#axios.post("/api/v1/users", {
+    const response = await this.post("/api/v1/users", {
       UserName: model.user_name,
       Email: model.email,
       Password: model.password,
@@ -214,7 +215,7 @@ export class SsoClient {
       mime_type: string;
     };
   }) {
-    const response = await this.#axios.put("/api/v1/user/profile", {
+    const response = await this.put("/api/v1/user/profile", {
       UserName: model.user_name,
       Biography: model.biography,
       Picture: {
