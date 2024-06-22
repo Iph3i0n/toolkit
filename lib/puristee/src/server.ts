@@ -21,7 +21,7 @@ export default function CreateServer<TSchema extends Schema>(
       const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
       const target = store.Get(url, request.method?.toLowerCase() ?? "get");
       if (!target) {
-        console.log(`No handler found for ${request.url}`);
+        console.log(`No handler found for ${request.method}:${request.url}`);
         return { response: new EmptyResponse("NotFound") };
       }
 

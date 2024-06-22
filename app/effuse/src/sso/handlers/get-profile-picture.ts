@@ -1,5 +1,3 @@
-import { IProfilePicture } from "sso/integrations/i-profile-picture";
-import { NewProfilePicture } from "sso/bootstrap/integrations/profile-picture";
 import { Handler, Result, State } from "sso/server";
 import {
   EmptyResponse,
@@ -10,16 +8,6 @@ import {
 import { IsString } from "@ipheion/safe-type";
 
 export default class GetProfilePicture extends Handler {
-  readonly #profile_picture: IProfilePicture;
-
-  constructor(
-    state: State,
-    profile_picture: IProfilePicture = NewProfilePicture(state)
-  ) {
-    super(state);
-    this.#profile_picture = profile_picture;
-  }
-
   readonly Method = HttpMethod.Get;
   readonly Url = "/profile/pictures/{userid}";
 
@@ -27,9 +15,11 @@ export default class GetProfilePicture extends Handler {
     const { userid } = request.Parameters({ userid: IsString }) ?? {};
     if (!userid) return new Result(new EmptyResponse("NotFound"));
 
-    const data = await this.#profile_picture.GetPicture(userid);
-    if (!data) return new Result(new EmptyResponse("NotFound"));
+    const picture = this.State.pictures[userid];
+    if (!picture) return new Result(new EmptyResponse("NotFound"));
 
-    return new Result(new MemoryFileResponse(data[1], data[0]));
+    return new Result(
+      new MemoryFileResponse(Buffer.from(picture.data), picture.mime)
+    );
   }
 }

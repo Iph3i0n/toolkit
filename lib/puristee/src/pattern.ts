@@ -21,9 +21,11 @@ class Part {
 }
 
 export default class Pattern {
+  private readonly raw: string;
   private readonly parts: Array<Part>;
 
   public constructor(raw: string) {
+    this.raw = raw;
     this.parts = raw
       .split("/")
       .filter((p) => p)
@@ -79,5 +81,9 @@ export default class Pattern {
     for (const [key, value] of url.searchParams) manager.Add(key, value);
 
     return manager.Record;
+  }
+
+  public get Route() {
+    return this.raw;
   }
 }

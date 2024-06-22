@@ -6,7 +6,8 @@ export class HandlerStore<TState extends Schema> {
   private data: Array<[string, Pattern, Handler<TState>]> = [];
 
   public Add(method: string, pattern: Pattern, handler: Handler<TState>) {
-    this.data = [...this.data, [method, pattern, handler]];
+    console.log(`Added handler for ${method}:${pattern.Route}`);
+    this.data = [...this.data, [method.toLowerCase(), pattern, handler]];
   }
 
   public Get(url: URL, method: string) {

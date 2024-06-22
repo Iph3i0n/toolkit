@@ -3,10 +3,12 @@ import CreateServer from "@ipheion/puristee";
 import { User } from "sso/models/user";
 import { StateReader } from "@ipheion/fs-db";
 import { UserEmail } from "sso/models/user-email";
+import { ProfilePicture } from "./models/profile";
 
 const InitalState = {
   users: User,
   user_emails: UserEmail,
+  pictures: ProfilePicture,
 };
 
 export const DataDir = process.env.DATA_DIR ?? "./data";

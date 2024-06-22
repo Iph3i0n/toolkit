@@ -1,5 +1,3 @@
-import { IProfilePicture } from "sso/integrations/i-profile-picture";
-import { NewProfilePicture } from "sso/bootstrap/integrations/profile-picture";
 import { NewAuthService } from "sso/bootstrap/services/auth-service";
 import { AuthService } from "sso/services/auth-service";
 import { Handler, Result, State } from "sso/server";
@@ -13,16 +11,10 @@ import { IsObject, IsString } from "@ipheion/safe-type";
 
 export default class PutProfile extends Handler {
   readonly #auth_service: AuthService;
-  readonly #profile_picture: IProfilePicture;
 
-  constructor(
-    state: State,
-    auth_service: AuthService = NewAuthService(state),
-    profile_picture: IProfilePicture = NewProfilePicture(state)
-  ) {
+  constructor(state: State, auth_service: AuthService = NewAuthService(state)) {
     super(state);
     this.#auth_service = auth_service;
-    this.#profile_picture = profile_picture;
   }
 
   readonly Method = HttpMethod.Put;
@@ -45,11 +37,7 @@ export default class PutProfile extends Handler {
     const [user, user_id] = await this.#auth_service.GetAdminUser(request);
     if (!user) return new Result(new EmptyResponse("NotFound"));
 
-    await this.#profile_picture.SavePicture(
-      user_id,
-      body.Picture.MimeType,
-      body.Picture.Base64Data
-    );
+    const buffer = Buffer.from(body.Picture.Base64Data, "base64");
 
     return new Result(
       new JsonResponse("Ok", {
@@ -69,6 +57,12 @@ export default class PutProfile extends Handler {
           [user_id]: {
             ...user,
             biography: body.Biography,
+          },
+        },
+        pictures: {
+          [user_id]: {
+            mime: body.Picture.MimeType,
+            data: buffer,
           },
         },
       }

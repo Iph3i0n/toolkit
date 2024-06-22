@@ -48,6 +48,12 @@ tasks:
     cmds:
       - npm run test
 
+  effuse:setup:
+    cmds:
+      - openssl req -new -newkey rsa:4096 -nodes -keyout signing_key.key -out public_key.csr -subj "/C=UK/CN=local"
+      - openssl x509 -req -sha512 -days 365 -in public_key.csr -signkey signing_key.key -out private_key.pem
+    dir: "{{.TASKFILE_DIR}}/app/effuse/data"
+
   effuse:build-sso:
     deps: [puristee:build, safe-type:build, moulding-tin:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
@@ -58,7 +64,10 @@ tasks:
   effuse:api-test:
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
+      - rm -rf ./data/db
       - node --test --import tsx ./tests/**/*.test.ts
+    env:
+      SSO_BASE: http://localhost:3000/
 
   effuse:run-sso:
     deps: [effuse:build-sso]
@@ -67,3 +76,4 @@ tasks:
       - node ./dist/src/sso.js
     env:
       NODE_PATH: ./dist/src
+      DATA_DIR: "./data"
