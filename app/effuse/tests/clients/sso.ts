@@ -6,7 +6,6 @@ import {
   IsObject,
   IsString,
 } from "@ipheion/safe-type";
-import Axios from "axios";
 import { Url } from "../utils/url";
 import { UserGrant } from "../models/user-grant";
 import { UserProfile } from "../models/user-profile";
@@ -23,6 +22,7 @@ export class SsoClient extends ClientBase {
     const response = await this.get("/api/v1/heartbeat");
 
     Assert(IsObject({ Text: IsLiteral("Hello world") }), response.data);
+    return response.headers as Record<string, string>;
   }
 
   async GetProfilePicture(user_id: string) {
@@ -243,5 +243,11 @@ export class SsoClient extends ClientBase {
     );
 
     return new UserProfile(response.data);
+  }
+
+  async HeartBeatOptions() {
+    const response = await this.options("/api/v1/heartbeat");
+
+    return response.headers as Record<string, string>;
   }
 }

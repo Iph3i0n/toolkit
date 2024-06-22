@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch Effuse SSO",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "task",
       "runtimeArgs": ["effuse:run-sso"]

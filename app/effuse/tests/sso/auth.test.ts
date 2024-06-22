@@ -56,4 +56,24 @@ describe("Auth", () => {
     assert.equal(typeof profile.LastSignIn.getTime(), "number");
     assert.equal(typeof profile.RegisteredAt.getTime(), "number");
   });
+
+  test("Allows refresh", async () => {
+    const email = CreateEmail();
+    const user = await sso.PostUser({
+      user_name: "test_user",
+      email: email,
+      password: "test123",
+    });
+
+    const refresh = await sso.GetRefreshToken(user);
+
+    const profile = await sso.GetProfile(refresh);
+
+    assert.equal(profile.UserId, user.UserId);
+    assert.equal(profile.UserName, "test_user");
+    assert.equal(profile.Biography, "");
+    assert.deepEqual(profile.Servers, []);
+    assert.equal(typeof profile.LastSignIn.getTime(), "number");
+    assert.equal(typeof profile.RegisteredAt.getTime(), "number");
+  });
 });

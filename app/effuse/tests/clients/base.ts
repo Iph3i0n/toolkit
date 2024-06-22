@@ -32,6 +32,20 @@ export class ClientBase {
     }
   }
 
+  async options(url: string, config?: AxiosRequestConfig) {
+    try {
+      return await this.#axios.options(url, config);
+    } catch (e: any) {
+      const err: AxiosError = e;
+
+      throw this.#create_error("Axios Request Failed", {
+        url,
+        method: "Options",
+        status: err.response?.status.toString() ?? "",
+      });
+    }
+  }
+
   async put(url: string, body: unknown, config?: AxiosRequestConfig) {
     try {
       return await this.#axios.put(url, body, config);

@@ -99,9 +99,11 @@ export class JsonResponse implements IResponse {
 
 export class EmptyResponse implements IResponse {
   readonly #status: Status;
+  readonly #headers?: Record<string, string>;
 
-  constructor(status: Status) {
+  constructor(status: Status, headers?: Record<string, string>) {
     this.#status = status;
+    this.#headers = headers;
   }
 
   get status() {
@@ -109,7 +111,47 @@ export class EmptyResponse implements IResponse {
   }
 
   get headers() {
+    return this.#headers ?? {};
+  }
+
+  get cookies() {
     return {};
+  }
+
+  get body() {
+    return "";
+  }
+}
+
+export class CorsResponse implements IResponse {
+  readonly #allow_origin: string;
+  readonly #allow_methods: string;
+  readonly #allow_headers: string;
+
+  constructor(
+    allow_origin: string,
+    allow_methods?: Array<string>,
+    allow_headers?: Array<string>
+  ) {
+    this.#allow_origin = allow_origin;
+    this.#allow_methods = (
+      allow_methods ?? ["OPTIONS", "GET", "PUT", "POST", "DELETE"]
+    ).join(", ");
+    this.#allow_headers = (
+      allow_headers ?? ["Authorization", "Content-Type"]
+    ).join(", ");
+  }
+
+  get status() {
+    return 200;
+  }
+
+  get headers() {
+    return {
+      "Access-Control-Allow-Origin": this.#allow_origin,
+      "Access-Control-Allow-Methods": this.#allow_methods,
+      "Access-Control-Allow-Headers": this.#allow_headers,
+    };
   }
 
   get cookies() {

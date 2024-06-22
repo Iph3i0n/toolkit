@@ -11,7 +11,8 @@ import { EmptyResponse } from "./response";
 
 export default function CreateServer<TSchema extends Schema>(
   state_dir: string,
-  schema: TSchema
+  schema: TSchema,
+  default_headers?: Record<string, string>
 ) {
   const store = new HandlerStore<TSchema>();
   const state_manager = new Directory(schema, state_dir);
@@ -57,6 +58,8 @@ export default function CreateServer<TSchema extends Schema>(
         const { response, state } = await Run(req);
         if (state) state_manager.Write(state);
 
+        for (const header in default_headers)
+          res.setHeader(header, default_headers[header]);
         await Send(response, res);
       });
 

@@ -15,7 +15,11 @@ export const DataDir = process.env.DATA_DIR ?? "./data";
 
 export type State = StateReader<typeof InitalState>;
 
-export const Server = CreateServer(Path.resolve(DataDir, "db"), InitalState);
+export const Server = CreateServer(Path.resolve(DataDir, "db"), InitalState, {
+  "Access-Control-Allow-Origin": process.env.UI_URL ?? "*",
+  "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+});
 
 export const Handler = Server.Handler;
 

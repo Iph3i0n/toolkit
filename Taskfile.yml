@@ -68,6 +68,7 @@ tasks:
       - node --test --import tsx ./tests/**/*.test.ts
     env:
       SSO_BASE: http://localhost:3000/
+      UI_URL: http://localhost:3001/
 
   effuse:run-sso:
     deps: [effuse:build-sso]
@@ -76,4 +77,5 @@ tasks:
       - node ./dist/src/sso.js
     env:
       NODE_PATH: ./dist/src
-      DATA_DIR: "./data"
+      DATA_DIR: ./data
+      UI_URL: http://localhost:3001/
