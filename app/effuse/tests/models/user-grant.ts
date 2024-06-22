@@ -42,4 +42,8 @@ export class UserGrant {
   get UserId() {
     return this.#user_id;
   }
+
+  get Expires() {
+    return this.#expires;
+  }
 }

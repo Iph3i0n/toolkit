@@ -12,4 +12,16 @@ export class UserSubscription {
     this.#expires = new Date(model.Expires);
     this.#keys = model.Keys;
   }
+
+  get Endpoint() {
+    return this.#endpoint;
+  }
+
+  get Expires() {
+    return this.#expires;
+  }
+
+  get Keys() {
+    return this.#keys;
+  }
 }

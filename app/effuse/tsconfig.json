@@ -12,7 +12,8 @@
     "lib": ["es2023"],
     "downlevelIteration": true,
     "declaration": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "sourceMap": true
   },
   "include": ["src/**/*", "tests/**/*"],
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]

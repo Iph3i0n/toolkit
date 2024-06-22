@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   async GetAdminUser(request: PureRequest) {
-    const head = request.headers.Authorization;
+    const head = request.headers.authorization;
     if (!head) return [undefined, undefined] as const;
 
     const token = head.replace("Bearer ", "");

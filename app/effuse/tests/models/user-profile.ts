@@ -26,4 +26,32 @@ export class UserProfile {
     this.#last_sign_in = new Date(model.LastSignIn);
     this.#servers = model.Servers.map((s) => new UserServer(s));
   }
+
+  get UserId() {
+    return this.#user_id;
+  }
+
+  get Email() {
+    return this.#email;
+  }
+
+  get UserName() {
+    return this.#username;
+  }
+
+  get Biography() {
+    return this.#biography;
+  }
+
+  get RegisteredAt() {
+    return this.#registered_at;
+  }
+
+  get LastSignIn() {
+    return this.#last_sign_in;
+  }
+
+  get Servers() {
+    return this.#servers;
+  }
 }

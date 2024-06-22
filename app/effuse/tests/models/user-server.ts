@@ -6,4 +6,12 @@ export class UserServer {
     this.#url = model.Url;
     this.#joined_at = new Date(model.JoinedAt);
   }
+
+  get Url() {
+    return this.#url;
+  }
+
+  get JoinedAt() {
+    return this.#joined_at;
+  }
 }
