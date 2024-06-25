@@ -87,7 +87,10 @@ describe("Profile", () => {
       assert.equal(profile.UserId, user.UserId);
       assert.equal(profile.Biography, "I love my wife!!!");
       assert.equal(profile.UserName, "test user");
-      assert.deepEqual(profile.Servers, []);
+      assert.equal(profile.Servers.length, 1);
+      const [server] = profile.Servers;
+      assert.equal(typeof server.JoinedAt.getTime(), "number");
+      assert.equal(server.Url, server_url);
       assert.equal(typeof profile.LastSignIn.getTime(), "number");
       assert.equal(typeof profile.RegisteredAt.getTime(), "number");
     });
