@@ -7,7 +7,7 @@ import {
   JsonResponse,
   PureRequest,
 } from "@ipheion/puristee";
-import { IsObject, IsString } from "@ipheion/safe-type";
+import { IsObject, IsString, Optional } from "@ipheion/safe-type";
 import Axios from "axios";
 
 export default class PostServer extends Handler {
@@ -29,7 +29,7 @@ export default class PostServer extends Handler {
       IsObject({
         ServerToken: IsString,
         ServerUrl: IsString,
-        Password: IsString,
+        Password: Optional(IsString),
       })
     );
 

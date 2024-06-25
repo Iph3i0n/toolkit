@@ -163,14 +163,14 @@ export class SsoClient extends ClientBase {
     Assert(IsObject({ Message: IsLiteral("Success") }), response.data);
   }
 
-  async JoinServer(
-    model: { server_token: string; server_url: string; password: string },
+  async PostServer(
+    model: { server_url: string; password?: string },
     grant: UserGrant
   ) {
     const response = await this.post(
       "/api/v1/user/servers",
       {
-        ServerToken: model.server_token,
+        ServerToken: grant.ServerToken,
         ServerUrl: model.server_url,
         Password: model.password,
       },
@@ -207,22 +207,31 @@ export class SsoClient extends ClientBase {
     return new UserGrant(response.data);
   }
 
-  async PutProfile(model: {
-    user_name: string;
-    biography: string;
-    picture: {
-      base64data: string;
-      mime_type: string;
-    };
-  }) {
-    const response = await this.put("/api/v1/user/profile", {
-      UserName: model.user_name,
-      Biography: model.biography,
-      Picture: {
-        Base64Data: model.picture.base64data,
-        MimeType: model.picture.mime_type,
+  async PutProfile(
+    model: {
+      user_name: string;
+      biography: string;
+      picture: {
+        base64data: string;
+        mime_type: string;
+      };
+    },
+    grant: UserGrant
+  ) {
+    const response = await this.put(
+      "/api/v1/user/profile",
+      {
+        UserName: model.user_name,
+        Biography: model.biography,
+        Picture: {
+          Base64Data: model.picture.base64data,
+          MimeType: model.picture.mime_type,
+        },
       },
-    });
+      {
+        headers: grant.AdminHeaders,
+      }
+    );
 
     Assert(
       IsObject({

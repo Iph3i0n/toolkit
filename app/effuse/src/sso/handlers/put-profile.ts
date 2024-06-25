@@ -43,7 +43,7 @@ export default class PutProfile extends Handler {
       new JsonResponse("Ok", {
         UserId: user_id,
         Email: user.email,
-        UserName: user.username,
+        UserName: body.UserName,
         Biography: body.Biography,
         RegisteredAt: user.registered_at.toISOString(),
         LastSignIn: user.last_sign_in.toISOString(),
@@ -57,6 +57,7 @@ export default class PutProfile extends Handler {
           [user_id]: {
             ...user,
             biography: body.Biography,
+            username: body.UserName,
           },
         },
         pictures: {
