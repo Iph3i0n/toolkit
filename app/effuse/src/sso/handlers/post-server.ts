@@ -13,9 +13,9 @@ import Axios from "axios";
 export default class PostServer extends Handler {
   readonly #auth_service: AuthService;
 
-  constructor(state: State, auth_service: AuthService = NewAuthService(state)) {
-    super(state);
-    this.#auth_service = auth_service;
+  constructor(auth_service?: AuthService) {
+    super();
+    this.#auth_service = auth_service ?? NewAuthService(this.State);
   }
 
   readonly Method = HttpMethod.Post;

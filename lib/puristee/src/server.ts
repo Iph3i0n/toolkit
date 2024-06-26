@@ -1,69 +1,99 @@
-import Fs from "node:fs/promises";
-import Path from "node:path";
-import { Directory, Schema } from "@ipheion/fs-db";
-import Http, { IncomingMessage } from "node:http";
-import Send from "./response-applier";
-import { HandlerFactory, Handler, Result } from "./handler";
-import { HandlerStore } from "./handler-store";
+import { Directory, Schema, StateWriter } from "@ipheion/fs-db";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
-import { EmptyResponse } from "./response";
+import { IResponse } from "./response";
+import { IHandler, InternalRequest, InternalResponse } from "./contracts";
+
+export const HttpMethod = Object.freeze({
+  Get: "GET",
+  Put: "PUT",
+  Post: "POST",
+  Delete: "DELETE",
+  Patch: "PATCH",
+  Options: "OPTIONS",
+  Head: "HEAD",
+  Connect: "CONNECT",
+  Trace: "TRACE",
+});
+
+export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
+
+export type Promisish<T> = T | Promise<T>;
 
 export default function CreateServer<TSchema extends Schema>(
   state_dir: string,
   schema: TSchema,
   default_headers?: Record<string, string>
 ) {
-  const store = new HandlerStore<TSchema>();
   const state_manager = new Directory(schema, state_dir);
 
-  async function Run(request: IncomingMessage) {
-    try {
-      const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
-      const target = store.Get(url, request.method?.toLowerCase() ?? "get");
-      if (!target) {
-        console.log(`No handler found for ${request.method}:${request.url}`);
-        return { response: new EmptyResponse("NotFound") };
+  class Result {
+    readonly #state?: StateWriter<TSchema>;
+    readonly #response: IResponse;
+
+    constructor(response: IResponse, state?: StateWriter<TSchema>) {
+      this.#response = response;
+      this.#state = state;
+    }
+
+    get state() {
+      return this.#state;
+    }
+
+    get response() {
+      return this.#response;
+    }
+  }
+
+  abstract class Handler implements IHandler {
+    get Pattern() {
+      return new Pattern(this.Url);
+    }
+
+    get State() {
+      return state_manager.Model;
+    }
+
+    abstract Process(request: PureRequest): Promisish<Result>;
+
+    abstract readonly Url: string;
+
+    abstract readonly Method: HttpMethod;
+
+    async OnRequest(request: InternalRequest): Promise<InternalResponse> {
+      try {
+        console.log(`Handling request for ${request.url}`);
+        const request_object = new PureRequest(request, this.Pattern);
+        const result = await this.Process(request_object);
+
+        if (result.state) state_manager.Write(result.state);
+        return {
+          request_id: request.request_id,
+          status: await result.response.status,
+          headers: {
+            ...default_headers,
+            ...result.response.headers,
+          },
+          body: result.response.body,
+          cookies: result.response.cookies,
+        };
+      } catch (err) {
+        console.error(err);
+        return {
+          request_id: request.request_id,
+          status: 500,
+          body: { Error: "Internal Server Error" },
+          headers: {
+            ...default_headers,
+          },
+          cookies: {},
+        };
       }
-
-      console.log(`Handling request for ${request.url}`);
-      const [_, pattern, instance] = target;
-      const result = await instance.Process(
-        await PureRequest.Init(request, pattern)
-      );
-
-      return { response: result.response, state: result.state };
-    } catch (err) {
-      console.error(err);
-      return { response: new EmptyResponse("InternalServerError") };
     }
   }
 
   return {
-    Handler: Handler<TSchema>,
-    Response: Result<TSchema>,
-    async Start(dir: string, port: number) {
-      const handlers = await Fs.readdir(dir);
-      for (const item of handlers) {
-        if (!item.endsWith(".js")) continue;
-        const loc = Path.resolve(dir, item);
-        const Constructor: HandlerFactory<TSchema> = require(loc).default;
-
-        const instance = new Constructor(state_manager.Model);
-
-        store.Add(instance.Method, new Pattern(instance.Url), instance);
-      }
-
-      const server = Http.createServer(async (req, res) => {
-        const { response, state } = await Run(req);
-        if (state) state_manager.Write(state);
-
-        for (const header in default_headers)
-          res.setHeader(header, default_headers[header]);
-        await Send(response, res);
-      });
-
-      server.listen(port, () => console.log(`Server listening on ${port}`));
-    },
+    Handler: Handler,
+    Response: Result,
   };
 }

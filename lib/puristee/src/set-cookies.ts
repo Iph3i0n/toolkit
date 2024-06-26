@@ -1,3 +1,12 @@
+import {
+  IsInstanceOf,
+  IsObject,
+  IsOneOf,
+  IsString,
+  IsUnion,
+  Optional,
+} from "@ipheion/safe-type";
+
 const TimeUnitTransform = {
   seconds: (v: number) => v,
   minutes: (v: number) => v * 60,
@@ -8,6 +17,20 @@ const TimeUnitTransform = {
 type TimeUnit = keyof typeof TimeUnitTransform;
 
 type Time = `${number} ${TimeUnit}`;
+
+export const SetCookie = IsUnion(
+  IsString,
+  IsObject({
+    value: IsString,
+    expires: Optional(IsInstanceOf(Date)),
+    max_age: Optional(IsString),
+    domain: Optional(IsString),
+    path: Optional(IsString),
+    secure: Optional(IsString),
+    http_only: Optional(IsString),
+    same_site: Optional(IsOneOf("Struct", "Lax", "None")),
+  })
+);
 
 export type SetCookie =
   | string

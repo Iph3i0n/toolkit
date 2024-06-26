@@ -11,7 +11,8 @@
     "rootDir": "src",
     "lib": ["es2015"],
     "downlevelIteration": true,
-    "declaration": true
+    "declaration": true,
+    "sourceMap": true
   },
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]
 }

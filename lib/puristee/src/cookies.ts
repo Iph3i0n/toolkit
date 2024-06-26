@@ -1,7 +1,7 @@
-import type { IncomingMessage } from "node:http";
 import ArrayableRecord from "./arrayable-record";
+import { InternalRequest } from "./contracts";
 
-export default function Cookies(request: IncomingMessage) {
+export default function Cookies(request: InternalRequest) {
   const header = request.headers.cookie;
   if (!header) return {};
 

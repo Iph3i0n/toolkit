@@ -1,4 +1,8 @@
+import { StartServer } from "@ipheion/puristee";
 import Path from "node:path";
-import { Server } from "sso/server";
 
-Server.Start(Path.resolve(__dirname, "sso/handlers"), 3000);
+StartServer({
+  handler_dir: Path.resolve(__dirname, "sso/handlers"),
+  port: 3000,
+  threads: parseInt(process.env.THREADS ?? "6"),
+});

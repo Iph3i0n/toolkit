@@ -3,27 +3,7 @@ import Pattern from "./pattern";
 import { ReadonlyRecord } from "./util-types";
 import Cookies from "./cookies";
 import { Checker } from "@ipheion/safe-type";
-
-async function GetJson(request: IncomingMessage) {
-  return new Promise<unknown>((res) => {
-    let body = "";
-    request.on("data", (chunk) => {
-      body += chunk;
-    });
-
-    request.on("end", () => {
-      try {
-        res(JSON.parse(body));
-      } catch {
-        res(undefined);
-      }
-    });
-
-    request.on("error", () => {
-      res(undefined);
-    });
-  });
-}
+import { InternalRequest } from "./contracts";
 
 function IsDictionaryMatch<
   T extends Record<string, string | Array<string> | null | undefined>
@@ -41,10 +21,9 @@ function IsDictionaryMatch<
 export default class PureRequest {
   private readonly url_object: URL;
 
-  private constructor(
-    private readonly request: IncomingMessage,
-    private readonly pattern: Pattern,
-    private readonly body_data: unknown
+  constructor(
+    private readonly request: InternalRequest,
+    private readonly pattern: Pattern
   ) {
     this.url_object = new URL(
       request.url ?? "/",
@@ -77,7 +56,7 @@ export default class PureRequest {
   }
 
   public get body() {
-    return this.body_data;
+    return this.request.body;
   }
 
   public get cookies() {
@@ -103,11 +82,5 @@ export default class PureRequest {
     const parameters = this.parameters;
     if (IsDictionaryMatch(checker, parameters)) return parameters;
     return undefined;
-  }
-
-  public static async Init(request: IncomingMessage, pattern: Pattern) {
-    const body = await GetJson(request);
-
-    return new PureRequest(request, pattern, body);
   }
 }

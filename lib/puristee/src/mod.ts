@@ -1,4 +1,4 @@
-export { default } from "./server";
+export { default, HttpMethod, Promisish } from "./server";
 export * from "./response";
 export { default as PureRequest } from "./pure-request";
-export { HttpMethod } from "./handler";
+export { StartServer } from "./handler-manager";
