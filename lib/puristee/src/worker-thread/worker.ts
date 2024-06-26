@@ -1,6 +1,6 @@
 import { Assert } from "@ipheion/safe-type";
 import { parentPort, workerData } from "node:worker_threads";
-import { IHandler, InternalRequest, Startup } from "./contracts";
+import { IHandler, InternalRequest, Startup } from "../contracts";
 import { HandlerStore } from "./handler-store";
 
 Assert(Startup, workerData);

@@ -8,10 +8,9 @@ import {
   IsNumber,
   IsOneOf,
   IsLiteral,
-  IsInstanceOf,
 } from "@ipheion/safe-type";
-import { SetCookie } from "./set-cookies";
-import Pattern from "./pattern";
+import { SetCookie } from "./main-thread/set-cookies";
+import Pattern from "./worker-thread/pattern";
 
 export const InternalRequest = IsObject({
   request_id: IsString,
@@ -63,7 +62,7 @@ export type Startup = IsType<typeof Startup>;
 export const WebSocketPost = IsObject({
   type: IsLiteral("WS_POST"),
   connection_id: IsString,
-  data: DoNotCare,
+  data: IsString,
 });
 
 export type WebSocketPost = IsType<typeof WebSocketPost>;

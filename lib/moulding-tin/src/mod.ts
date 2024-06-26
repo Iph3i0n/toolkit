@@ -20,6 +20,7 @@ export { default as Intersection } from "./data-types/intersection";
 export { default as Literal } from "./data-types/literal";
 export { default as Record } from "./data-types/record";
 export { default as Buffer } from "./data-types/buffer";
+export { default as Guid } from "./data-types/guid";
 export { default as Optional } from "./data-types/optional";
 export type { default as ISerialiseable } from "./data-types/base";
 

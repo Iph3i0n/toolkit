@@ -1,4 +1,4 @@
-import ArrayableRecord from "./arrayable-record";
+import ArrayableRecord from "../utils/arrayable-record";
 
 class Part {
   public constructor(private readonly raw: string) {}

@@ -1,5 +1,5 @@
-import { SetCookie } from "./set-cookies";
-import { ReadonlyRecord } from "./util-types";
+import { SetCookie } from "../main-thread/set-cookies";
+import { ReadonlyRecord } from "../utils/util-types";
 import Mime from "mime-types";
 import Fs from "node:fs/promises";
 

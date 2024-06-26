@@ -1,5 +1,5 @@
-import ArrayableRecord from "./arrayable-record";
-import { InternalRequest } from "./contracts";
+import ArrayableRecord from "../utils/arrayable-record";
+import { InternalRequest } from "../contracts";
 
 export default function Cookies(request: InternalRequest) {
   const header = request.headers.cookie;

@@ -1,7 +1,7 @@
 import type { ServerResponse } from "node:http";
 import { IsString } from "@ipheion/safe-type";
 import SetCookies from "./set-cookies";
-import { IResponse } from "./response";
+import { IResponse } from "../worker-thread/response";
 
 const AcceptedTypes = [
   Blob,

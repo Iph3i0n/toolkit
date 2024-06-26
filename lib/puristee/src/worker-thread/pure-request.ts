@@ -1,9 +1,9 @@
 import type { IncomingMessage } from "node:http";
 import Pattern from "./pattern";
-import { ReadonlyRecord } from "./util-types";
+import { ReadonlyRecord } from "../utils/util-types";
 import Cookies from "./cookies";
 import { Checker } from "@ipheion/safe-type";
-import { InternalRequest } from "./contracts";
+import { InternalRequest } from "../contracts";
 
 function IsDictionaryMatch<
   T extends Record<string, string | Array<string> | null | undefined>

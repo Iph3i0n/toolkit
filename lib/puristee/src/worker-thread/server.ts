@@ -2,7 +2,7 @@ import { Directory, Schema, StateWriter } from "@ipheion/fs-db";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
 import { IResponse } from "./response";
-import { IHandler, InternalRequest, InternalResponse } from "./contracts";
+import { IHandler, InternalRequest, InternalResponse } from "../contracts";
 
 export const HttpMethod = Object.freeze({
   Get: "GET",

@@ -1,4 +1,4 @@
-import { IHandler } from "./contracts";
+import { IHandler } from "../contracts";
 import Pattern from "./pattern";
 
 export class HandlerStore {

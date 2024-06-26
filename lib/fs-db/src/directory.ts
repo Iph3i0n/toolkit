@@ -36,7 +36,7 @@ export default class Directory<TSchema extends Schema>
     if (!this.#exists(path)) return undefined;
 
     const data = Fs.readFileSync(path);
-    return MT.Read(this.#schema[key], new Buffer(data));
+    return MT.Read(this.#schema[key], Buffer.from(data));
   }
 
   get Model(): StateReader<TSchema> {
