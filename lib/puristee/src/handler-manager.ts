@@ -3,6 +3,7 @@ import Send from "./response-applier";
 import Fs from "node:fs/promises";
 import Path from "node:path";
 import { Worker, SHARE_ENV } from "node:worker_threads";
+import Multipart from "parse-multipart-data";
 import { InternalRequest, InternalResponse, Startup } from "./contracts";
 import { v4 as Guid } from "uuid";
 import { Assert } from "@ipheion/safe-type";
@@ -15,8 +16,13 @@ async function GetJson(request: Http.IncomingMessage) {
     });
 
     request.on("end", () => {
+      const content_type = request.headers["content-type"];
       try {
-        res(JSON.parse(body));
+        if (content_type?.includes("application/json")) res(JSON.parse(body));
+        else if (content_type?.includes("multipart/form-data")) {
+          const [boundary] = body.split("\n");
+          res(Multipart.parse(Buffer.from(body), boundary));
+        }
       } catch {
         res(undefined);
       }
