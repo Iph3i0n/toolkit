@@ -21,8 +21,7 @@ for (const id in workerData.handlers) {
 parentPort?.on("message", async (data) => {
   Assert(InternalRequest, data);
 
-  const handler = handler_store.Get(new URL(data.url), data.method);
-  if (!handler)
+  const not_found = () =>
     parentPort?.postMessage({
       request_id: data.request_id,
       status: 404,
@@ -30,5 +29,18 @@ parentPort?.on("message", async (data) => {
       headers: {},
       cookies: {},
     });
-  else parentPort?.postMessage(await handler.OnRequest(data));
+
+  const handler = handler_store.Get(new URL(data.url), data.method);
+  if (!handler) return not_found();
+
+  switch (data.event) {
+    case "REST": {
+      if (handler.type !== "REST") return not_found();
+      return parentPort?.postMessage(await handler.OnRequest(data));
+    }
+    default: {
+      if (handler.type !== "WEBSOCKET") return not_found();
+      return parentPort?.postMessage(await handler.OnRequest(data));
+    }
+  }
 });

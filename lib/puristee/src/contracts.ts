@@ -6,12 +6,21 @@ import {
   IsBoolean,
   DoNotCare,
   IsNumber,
+  IsOneOf,
+  IsLiteral,
+  IsInstanceOf,
 } from "@ipheion/safe-type";
 import { SetCookie } from "./set-cookies";
 import Pattern from "./pattern";
 
 export const InternalRequest = IsObject({
   request_id: IsString,
+  event: IsOneOf(
+    "REST",
+    "WEBSOCKET_CONNECT",
+    "WEBSOCKET_DISCONNECT",
+    "WEBSOCKET_MESSAGE"
+  ),
   url: IsString,
   method: IsString,
   headers: IsDictionary(IsString),
@@ -37,6 +46,7 @@ export type InternalResponse = {
 };
 
 export interface IHandler {
+  readonly type: "REST" | "WEBSOCKET";
   readonly Method: string;
   readonly Url: string;
   readonly Pattern: Pattern;
@@ -49,3 +59,11 @@ export const Startup = IsObject({
 });
 
 export type Startup = IsType<typeof Startup>;
+
+export const WebSocketPost = IsObject({
+  type: IsLiteral("WS_POST"),
+  connection_id: IsString,
+  data: DoNotCare,
+});
+
+export type WebSocketPost = IsType<typeof WebSocketPost>;

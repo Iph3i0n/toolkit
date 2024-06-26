@@ -46,6 +46,10 @@ export default function CreateServer<TSchema extends Schema>(
   }
 
   abstract class Handler implements IHandler {
+    get type() {
+      return "REST" as const;
+    }
+
     get Pattern() {
       return new Pattern(this.Url);
     }
@@ -92,8 +96,82 @@ export default function CreateServer<TSchema extends Schema>(
     }
   }
 
+  abstract class WebSocketHandler implements IHandler {
+    get type() {
+      return "WEBSOCKET" as const;
+    }
+
+    get Pattern() {
+      return new Pattern(this.Url);
+    }
+
+    get State() {
+      return state_manager.Model;
+    }
+
+    abstract readonly Url: string;
+
+    get Method(): HttpMethod {
+      return HttpMethod.Get;
+    }
+
+    abstract OnConnect(request: PureRequest): Promisish<Result>;
+    abstract OnMessage(request: PureRequest): Promisish<Result>;
+    abstract OnClose(request: PureRequest): Promisish<Result>;
+
+    async OnRequest(request: InternalRequest): Promise<InternalResponse> {
+      try {
+        console.log(`Handling ${request.event} for ${request.url}`);
+        const request_object = new PureRequest(request, this.Pattern);
+        const result =
+          request.event === "WEBSOCKET_CONNECT"
+            ? await this.OnConnect(request_object)
+            : request.event === "WEBSOCKET_MESSAGE"
+            ? await this.OnMessage(request_object)
+            : request.event === "WEBSOCKET_DISCONNECT"
+            ? await this.OnClose(request_object)
+            : undefined;
+
+        if (!result)
+          return {
+            request_id: request.request_id,
+            status: 404,
+            body: { Error: "Not Found" },
+            headers: {
+              ...default_headers,
+            },
+            cookies: {},
+          };
+
+        if (result.state) state_manager.Write(result.state);
+        return {
+          request_id: request.request_id,
+          status: await result.response.status,
+          headers: {
+            ...default_headers,
+            ...result.response.headers,
+          },
+          body: result.response.body,
+          cookies: result.response.cookies,
+        };
+      } catch (err) {
+        console.error(err);
+        return {
+          request_id: request.request_id,
+          status: 500,
+          body: { Error: "Internal Server Error" },
+          headers: {
+            ...default_headers,
+          },
+          cookies: {},
+        };
+      }
+    }
+  }
+
   return {
-    Handler: Handler,
+    Handler,
     Response: Result,
+    WebSocketHandler,
   };
 }

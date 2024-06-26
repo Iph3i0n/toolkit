@@ -31,6 +31,13 @@ export default class PureRequest {
     );
   }
 
+  public get request_id() {
+    return this.request.request_id
+      .replace("WS_CONNECT_", "")
+      .replace("WS_MESSAGE_", "")
+      .replace("WS_CLOSE_", "");
+  }
+
   public get url() {
     return this.url_object.pathname;
   }

@@ -12,10 +12,12 @@
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.2",
-    "@types/uuid": "^10.0.0"
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.5.10"
   },
   "dependencies": {
     "parse-multipart-data": "^1.5.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "ws": "^8.17.1"
   }
 }
