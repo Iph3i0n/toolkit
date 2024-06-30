@@ -9,8 +9,12 @@ export class WebSocketServer {
   readonly #connections: Record<string, WebSocket> = {};
   readonly #thread_pool: ThreadPool;
 
-  constructor(thread_pool: ThreadPool) {
+  constructor(thread_pool: ThreadPool, server: Http.Server) {
     this.#thread_pool = thread_pool;
+
+    server.on("upgrade", async (request, socket, head) =>
+      this.Upgrade(request, socket, head)
+    );
   }
 
   async Upgrade(

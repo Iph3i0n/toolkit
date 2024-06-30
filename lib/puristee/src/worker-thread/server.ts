@@ -66,7 +66,9 @@ export default function CreateServer<TSchema extends Schema>(
 
     async OnRequest(request: InternalRequest): Promise<InternalResponse> {
       try {
-        console.log(`Handling request for ${request.url}`);
+        console.log(
+          `Handling ${request.request_id} with ${request.method}:${this.Pattern.Route}`
+        );
         const request_object = new PureRequest(request, this.Pattern);
         const result = await this.Process(request_object);
 
@@ -78,7 +80,7 @@ export default function CreateServer<TSchema extends Schema>(
             ...default_headers,
             ...result.response.headers,
           },
-          body: result.response.body,
+          body: await result.response.body,
           cookies: result.response.cookies,
         };
       } catch (err) {

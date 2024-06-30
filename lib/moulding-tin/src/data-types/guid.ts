@@ -20,7 +20,7 @@ export default class Guid implements ISerialiseable<string> {
 
     for (let i = 0; i < data_length; i++) {
       const value = buffer.Read(4);
-      if (value <= 10) result += String.fromCharCode(value + 48);
+      if (value < 10) result += String.fromCharCode(value + 48);
       else result += String.fromCharCode(value + 87);
     }
 

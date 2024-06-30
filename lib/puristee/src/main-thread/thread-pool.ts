@@ -54,8 +54,8 @@ export class ThreadPool {
 
     return new Promise<InternalResponse>((res) => {
       this.#listeners[data.request_id] = (data) => {
-        delete this.#listeners[data.request_id];
         res(data);
+        delete this.#listeners[data.request_id];
       };
       this.#threads[target_thread].postMessage(data);
     });
