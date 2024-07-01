@@ -9,7 +9,7 @@ type UnionToIntersection<T extends unknown[]> = T extends [infer F, ...infer R]
   ? F & UnionToIntersection<R>
   : unknown;
 
-export default class Intersection<TOptions extends any[]>
+export class Intersection<TOptions extends any[]>
   implements ISerialiseable<UnionToIntersection<TOptions>>
 {
   #structure: Structured<TOptions>;

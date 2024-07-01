@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Literal<T extends string | number | boolean>
+export class Literal<T extends string | number | boolean>
   implements ISerialiseable<T>
 {
   #structure: T;

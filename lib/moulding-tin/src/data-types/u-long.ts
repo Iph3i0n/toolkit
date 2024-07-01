@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class ULong implements ISerialiseable<bigint> {
+export class ULong implements ISerialiseable<bigint> {
   Impart(value: bigint, buffer: IBufferWriter): void {
     let binary_string = value.toString(2);
     while (binary_string.length < 64) binary_string = "0" + binary_string;

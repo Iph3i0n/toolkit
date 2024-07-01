@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class IBuffer implements ISerialiseable<ArrayBuffer> {
+export class Buffer implements ISerialiseable<ArrayBuffer> {
   Impart(value: ArrayBuffer, buffer: IBufferWriter): void {
     buffer.Write(32, value.byteLength);
     for (const byte of new Uint8Array(value)) buffer.Write(8, byte);

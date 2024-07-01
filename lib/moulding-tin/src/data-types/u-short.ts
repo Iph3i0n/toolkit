@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class UShort implements ISerialiseable<number> {
+export class UShort implements ISerialiseable<number> {
   Impart(value: number, buffer: IBufferWriter): void {
     buffer.Write(16, value);
   }

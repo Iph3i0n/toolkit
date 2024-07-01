@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Long implements ISerialiseable<bigint> {
+export class Long implements ISerialiseable<bigint> {
   Impart(value: bigint, buffer: IBufferWriter): void {
     buffer.Write(1, value >= 0 ? 1 : 0);
     let binary_string = value.toString(2);

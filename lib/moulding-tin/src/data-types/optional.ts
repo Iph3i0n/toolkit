@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Optional<T> implements ISerialiseable<T | null> {
+export class Optional<T> implements ISerialiseable<T | null> {
   readonly #structure: ISerialiseable<T>;
 
   constructor(structure: ISerialiseable<T>) {

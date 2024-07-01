@@ -5,7 +5,7 @@ type Structured<TOptions extends any[]> = {
   [TKey in keyof TOptions]: ISerialiseable<TOptions[TKey]>;
 };
 
-export default class Union<TOptions extends any[]>
+export class Union<TOptions extends any[]>
   implements ISerialiseable<TOptions[number]>
 {
   #structure: Structured<TOptions>;

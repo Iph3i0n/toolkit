@@ -5,7 +5,7 @@ type Structured<T extends Record<string, unknown>> = {
   [TKey in keyof T]: ISerialiseable<T[TKey]>;
 };
 
-export default class Struct<T extends Record<string, unknown>>
+export class Struct<T extends Record<string, unknown>>
   implements ISerialiseable<T>
 {
   #structure: Structured<T>;

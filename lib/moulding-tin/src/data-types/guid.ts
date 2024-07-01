@@ -2,7 +2,7 @@ import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
 const data_length = 32;
 
-export default class Guid implements ISerialiseable<string> {
+export class Guid implements ISerialiseable<string> {
   Impart(value: string, buffer: IBufferWriter): void {
     const data = value.split("-").join("");
     if (data.length !== data_length) throw new Error("Invalid GUID");

@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class ASCII implements ISerialiseable<string> {
+export class ASCII implements ISerialiseable<string> {
   Impart(value: string, buffer: IBufferWriter): void {
     for (const char of value) buffer.Write(8, char.charCodeAt(0));
 

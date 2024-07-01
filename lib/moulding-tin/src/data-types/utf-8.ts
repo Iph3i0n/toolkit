@@ -1,7 +1,7 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 import { BitMax } from "./utils";
 
-export default class UTF8 implements ISerialiseable<string> {
+export class UTF8 implements ISerialiseable<string> {
   Impart(value: string, buffer: IBufferWriter): void {
     for (const char of value) {
       const code = char.charCodeAt(0);

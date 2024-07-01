@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Float implements ISerialiseable<number> {
+export class Float implements ISerialiseable<number> {
   Impart(value: number, buffer: IBufferWriter): void {
     const data = new ArrayBuffer(4);
     new DataView(data).setFloat32(0, value, false);

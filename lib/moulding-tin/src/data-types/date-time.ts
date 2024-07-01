@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class DateTime implements ISerialiseable<Date> {
+export class DateTime implements ISerialiseable<Date> {
   Impart(value: Date, buffer: IBufferWriter): void {
     buffer.Write(16, value.getFullYear());
     buffer.Write(5, value.getMonth());

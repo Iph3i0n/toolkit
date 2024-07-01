@@ -1,5 +1,8 @@
-import { Struct, Guid } from "@ipheion/moulding-tin";
+import { Struct, Guid, Enum, Serialised } from "@ipheion/moulding-tin";
 
 export const UserPolicy = new Struct({
-  ChannelId: new Guid(),
+  channel_id: new Guid(),
+  access: new Enum("Read", "Write"),
 });
+
+export type UserPolicy = Serialised<typeof UserPolicy>;

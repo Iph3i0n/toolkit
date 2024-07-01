@@ -1,8 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Dictionary<TKey extends string | number, TValue>
-  implements ISerialiseable<Record<TKey, TValue>>
+type VanillaRecord<TKey extends string | number, TValue> = {
+  [key in TKey]: TValue;
+};
+
+export class Record<TKey extends string | number, TValue>
+  implements ISerialiseable<VanillaRecord<TKey, TValue>>
 {
   readonly #key: ISerialiseable<TKey>;
   readonly #value: ISerialiseable<TValue>;
@@ -12,7 +16,7 @@ export default class Dictionary<TKey extends string | number, TValue>
     this.#value = value;
   }
 
-  Impart(value: Record<TKey, TValue>, buffer: IBufferWriter): void {
+  Impart(value: VanillaRecord<TKey, TValue>, buffer: IBufferWriter): void {
     for (const key in value) {
       buffer.Write(1, 1);
       this.#key.Impart(key, buffer);
@@ -22,7 +26,7 @@ export default class Dictionary<TKey extends string | number, TValue>
     buffer.Write(1, 0);
   }
 
-  Accept(buffer: IBufferReader): Record<TKey, TValue> {
+  Accept(buffer: IBufferReader): VanillaRecord<TKey, TValue> {
     const result: any = {};
 
     while (buffer.Read(1)) {
@@ -34,7 +38,7 @@ export default class Dictionary<TKey extends string | number, TValue>
     return result;
   }
 
-  Confirm(value: unknown): value is Record<TKey, TValue> {
+  Confirm(value: unknown): value is VanillaRecord<TKey, TValue> {
     if (typeof value !== "object") return false;
 
     for (const key in value)

@@ -1,6 +1,6 @@
 import ISerialiseable, { IBufferReader, IBufferWriter } from "./base";
 
-export default class Sequence<T> implements ISerialiseable<Array<T>> {
+export class Sequence<T> implements ISerialiseable<Array<T>> {
   #structure: ISerialiseable<T>;
 
   constructor(structure: ISerialiseable<T>) {
