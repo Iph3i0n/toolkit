@@ -1,7 +1,16 @@
-import { Guid, Serialised, Struct } from "@ipheion/moulding-tin";
+import {
+  Guid,
+  Literal,
+  Serialised,
+  Struct,
+  Union,
+} from "@ipheion/moulding-tin";
 
-export const UserEmail = new Struct({
-  user_id: new Guid(),
-});
+export const UserEmail = new Union(
+  new Struct({
+    version: new Literal(1),
+    user_id: new Guid(),
+  })
+);
 
 export type UserEmail = Serialised<typeof UserEmail>;

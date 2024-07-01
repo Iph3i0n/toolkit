@@ -81,11 +81,11 @@ tasks:
       DATA_DIR: ./data
       UI_URL: http://localhost:3001/
 
-  effuse:run-server:
+  effuse:run-local:
     deps: [effuse:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
-      - node ./dist/src/sso.js
+      - node ./dist/src/local.js
     env:
       NODE_PATH: ./dist/src
       DATA_DIR: ./data

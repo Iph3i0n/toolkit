@@ -1,21 +1,25 @@
 import Path from "node:path";
-import CreateServer from "@ipheion/puristee";
-import { User } from "sso/models/user";
+import { User } from "local/models/user";
+import { Channel } from "./models/channel";
+import { Role } from "./models/role";
+import { Array, ULong } from "@ipheion/moulding-tin";
+import { Message } from "./models/message";
 import { StateReader } from "@ipheion/fs-db";
-import { UserEmail } from "sso/models/user-email";
-import { ProfilePicture } from "./models/profile";
+import CreateServer from "@ipheion/puristee";
 
 const InitalState = {
   users: User,
-  user_emails: UserEmail,
-  pictures: ProfilePicture,
+  channels: Channel,
+  roles: Role,
+  messages: new Array(Message),
+  message_counts: new ULong(),
 };
 
 export const DataDir = process.env.DATA_DIR ?? "./data";
 
 export type State = StateReader<typeof InitalState>;
 
-const Server = CreateServer(Path.resolve(DataDir, "sso"), InitalState, {
+const Server = CreateServer(Path.resolve(DataDir, "local"), InitalState, {
   "Access-Control-Allow-Origin": process.env.UI_URL ?? "*",
   "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
   "Access-Control-Allow-Headers": "Authorization, Content-Type",

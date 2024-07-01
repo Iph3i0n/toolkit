@@ -52,10 +52,11 @@ export default class PostUser extends Handler {
       }),
       {
         user_emails: {
-          [body.Email]: { user_id },
+          [body.Email]: { user_id, version: 1 },
         },
         users: {
           [user_id]: {
+            version: 1,
             username: body.UserName,
             email: body.Email,
             encrypted_password: encrypted_password,
