@@ -58,7 +58,7 @@ export default function CreateServer<TSchema extends Schema>(
       return state_manager.Model;
     }
 
-    abstract Process(request: PureRequest): Promisish<Result>;
+    abstract Process(request: PureRequest): Promisish<Result | IResponse>;
 
     abstract readonly Url: string;
 
@@ -71,17 +71,19 @@ export default function CreateServer<TSchema extends Schema>(
         );
         const request_object = new PureRequest(request, this.Pattern);
         const result = await this.Process(request_object);
+        const state = result instanceof Result ? result.state : undefined;
+        const response = result instanceof Result ? result.response : result;
 
-        if (result.state) state_manager.Write(result.state);
+        if (state) state_manager.Write(state);
         return {
           request_id: request.request_id,
-          status: await result.response.status,
+          status: await response.status,
           headers: {
             ...default_headers,
-            ...result.response.headers,
+            ...response.headers,
           },
-          body: await result.response.body,
-          cookies: result.response.cookies,
+          body: await response.body,
+          cookies: response.cookies,
         };
       } catch (err) {
         console.error(err);

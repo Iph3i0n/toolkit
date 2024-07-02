@@ -25,7 +25,7 @@ export default class GetAllChannels extends Handler {
   readonly Url = "/api/v1/channels";
 
   async Process(request: PureRequest) {
-    const [user, user_id] = await this.#auth_service.GetUser(request);
+    const [user] = await this.#auth_service.GetUser(request);
     if (!user) return new Result(new EmptyResponse("Unauthorised"));
     const role = user.role ? this.State.roles[user.role] : undefined;
     const result: Array<[string, Channel]> = [];
