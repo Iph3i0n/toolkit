@@ -1,6 +1,6 @@
 import { NewAuthService } from "sso/bootstrap/services/auth-service";
 import { AuthService } from "sso/services/auth-service";
-import { Handler, Result, State } from "sso/server";
+import { Handler, Result } from "sso/server";
 import {
   EmptyResponse,
   HttpMethod,
@@ -62,6 +62,7 @@ export default class PutProfile extends Handler {
         },
         pictures: {
           [user_id]: {
+            version: 1,
             mime: body.Picture.MimeType,
             data: buffer,
           },
