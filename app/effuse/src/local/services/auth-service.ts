@@ -4,10 +4,21 @@ import { IsObject, IsString } from "@ipheion/safe-type";
 import { PureRequest } from "@ipheion/puristee";
 import { State } from "local/server";
 import { UserGrant } from "local/models/user-grant";
+import { User } from "local/models/user";
+import { Role } from "local/models/role";
+import { Cache } from "utils/cache";
+
+type AuthContext = {
+  user?: User;
+  user_id?: string;
+  role?: Role;
+};
 
 export class AuthService {
   readonly #state: State;
   readonly #jwt_client: IJwtClient;
+
+  static readonly #cache = new Cache<AuthContext>(100);
 
   constructor(state: State, jwt_client: IJwtClient) {
     this.#state = state;
@@ -27,16 +38,31 @@ export class AuthService {
     );
   }
 
-  async GetUser(request: PureRequest) {
+  async GetUser(request: PureRequest): Promise<AuthContext> {
     const head = request.headers.authorization;
-    if (!head) return [undefined, undefined] as const;
+    if (!head) return {};
 
     const token = head.replace("Bearer ", "");
+    return this.GetTokenUser(token);
+  }
+
+  async GetTokenUser(token: string) {
+    const cached = AuthService.#cache.Get(token);
+    if (cached) return cached;
+
     const payload = await this.#jwt_client.DecodeJwt(
       token,
       IsObject({ UserId: IsString })
     );
 
-    return [this.#state.users[payload.UserId], payload.UserId] as const;
+    const user = this.#state.users[payload.UserId];
+    const result: AuthContext = {
+      user,
+      user_id: payload.UserId,
+      role: user.role ? this.#state.roles[user.role] : undefined,
+    };
+
+    AuthService.#cache.Set(token, result);
+    return result;
   }
 }

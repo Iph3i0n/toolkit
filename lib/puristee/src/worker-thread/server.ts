@@ -119,9 +119,9 @@ export default function CreateServer<TSchema extends Schema>(
       return HttpMethod.Get;
     }
 
-    abstract OnConnect(request: PureRequest): Promisish<Result>;
-    abstract OnMessage(request: PureRequest): Promisish<Result>;
-    abstract OnClose(request: PureRequest): Promisish<Result>;
+    abstract OnConnect(request: PureRequest): Promisish<Result | IResponse>;
+    abstract OnMessage(request: PureRequest): Promisish<Result | IResponse>;
+    abstract OnClose(request: PureRequest): Promisish<Result | IResponse>;
 
     async OnRequest(request: InternalRequest): Promise<InternalResponse> {
       try {
@@ -147,16 +147,19 @@ export default function CreateServer<TSchema extends Schema>(
             cookies: {},
           };
 
-        if (result.state) state_manager.Write(result.state);
+        const state = result instanceof Result ? result.state : undefined;
+        const response = result instanceof Result ? result.response : result;
+        if (state) state_manager.Write(state);
         return {
           request_id: request.request_id,
-          status: await result.response.status,
+          status: await response.status,
           headers: {
             ...default_headers,
-            ...result.response.headers,
+            ...response.headers,
           },
-          body: result.response.body,
-          cookies: result.response.cookies,
+          body: response.body,
+          cookies: response.cookies,
+          ws_events: { message: "OnMessage" in this, close: "OnClose" in this },
         };
       } catch (err) {
         console.error(err);

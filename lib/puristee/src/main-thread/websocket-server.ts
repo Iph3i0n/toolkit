@@ -42,31 +42,33 @@ export class WebSocketServer {
 
       ws.on("error", console.error);
 
-      ws.on("message", async (data) => {
-        const response = await this.#thread_pool.Run({
-          request_id: "WS_MESSAGE_" + request_id,
-          event: "WEBSOCKET_MESSAGE",
-          url: url.href,
-          method: "GET",
-          headers: {},
-          body: JSON.parse(data.toString()),
+      if (response.ws_events?.message)
+        ws.on("message", async (data) => {
+          const response = await this.#thread_pool.Run({
+            request_id: "WS_MESSAGE_" + request_id,
+            event: "WEBSOCKET_MESSAGE",
+            url: url.href,
+            method: "GET",
+            headers: {},
+            body: JSON.parse(data.toString()),
+          });
+
+          if (response.status > 399) return ws.close();
+
+          ws.send(JSON.stringify(response));
         });
 
-        if (response.status > 399) return ws.close();
-
-        ws.send(JSON.stringify(response));
-      });
-
-      ws.on("close", () => {
-        this.#thread_pool.Run({
-          request_id: "WS_CLOSE_" + request_id,
-          event: "WEBSOCKET_MESSAGE",
-          url: url.href,
-          method: "GET",
-          headers: {},
-          body: undefined,
+      if (response.ws_events?.close)
+        ws.on("close", () => {
+          this.#thread_pool.Run({
+            request_id: "WS_CLOSE_" + request_id,
+            event: "WEBSOCKET_MESSAGE",
+            url: url.href,
+            method: "GET",
+            headers: {},
+            body: undefined,
+          });
         });
-      });
     });
   }
 

@@ -8,6 +8,7 @@ import {
   IsNumber,
   IsOneOf,
   IsLiteral,
+  Optional,
 } from "@ipheion/safe-type";
 import { SetCookie } from "./main-thread/set-cookies";
 import Pattern from "./worker-thread/pattern";
@@ -34,6 +35,7 @@ export const InternalResponse = IsObject({
   body: DoNotCare,
   headers: IsDictionary(IsString),
   cookies: IsDictionary(SetCookie),
+  ws_events: Optional(IsObject({ message: IsBoolean, close: IsBoolean })),
 });
 
 export type InternalResponse = {
@@ -42,6 +44,7 @@ export type InternalResponse = {
   body: any;
   headers: Record<string, string>;
   cookies: Record<string, SetCookie>;
+  ws_events?: { message: boolean; close: boolean };
 };
 
 export interface IHandler {

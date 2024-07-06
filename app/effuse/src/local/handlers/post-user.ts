@@ -19,7 +19,7 @@ export default class PostUser extends Handler {
     const body = request.Body(
       IsObject({ ServerToken: IsString, Password: IsString })
     );
-    if (!body) return new Result(new EmptyResponse("BadRequest"));
+    if (!body) return new EmptyResponse("BadRequest");
 
     const url = new URL("/api/v1/auth/user", process.env.SSO_URL);
     url.searchParams.set("token", body.ServerToken);
@@ -27,7 +27,7 @@ export default class PostUser extends Handler {
 
     Assert(IsObject({ UserId: IsString }), data);
     const existing = this.State.users[data.UserId];
-    if (existing) return new Result(new EmptyResponse("Ok"));
+    if (existing) return new EmptyResponse("Ok");
 
     if (
       body.Password ===
