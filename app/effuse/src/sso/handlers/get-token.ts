@@ -21,13 +21,10 @@ export default class GetToken extends Handler {
   readonly Url = "/api/v1/auth/token";
 
   async Process(request: PureRequest) {
-    const { email, password } =
-      request.Parameters({
-        email: IsString,
-        password: IsString,
-      }) ?? {};
-
-    if (!email || !password) return new Result(new EmptyResponse("BadRequest"));
+    const { email, password } = request.Parameters({
+      email: IsString,
+      password: IsString,
+    });
 
     const user_email = this.State.user_emails[email];
     if (!user_email) return new Result(new EmptyResponse("NotFound"));

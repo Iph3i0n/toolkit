@@ -30,8 +30,6 @@ export default class PostUser extends Handler {
       })
     );
 
-    if (!body) return new Result(new EmptyResponse("BadRequest"));
-
     const existing = this.State.user_emails[body.Email];
     if (existing) return new Result(new EmptyResponse("Conflict"));
 

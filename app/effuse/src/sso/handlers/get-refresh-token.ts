@@ -21,10 +21,7 @@ export default class GetRefreshToken extends Handler {
   readonly Url = "/api/v1/auth/refresh-token";
 
   async Process(request: PureRequest) {
-    const { token } = request.Parameters({ token: IsString }) ?? {};
-
-    if (!token) return new Result(new EmptyResponse("BadRequest"));
-
+    const { token } = request.Parameters({ token: IsString });
     const [user, user_id] = await this.#auth_service.GetRefreshUser(token);
     if (!user) return new Result(new EmptyResponse("NotFound"));
 

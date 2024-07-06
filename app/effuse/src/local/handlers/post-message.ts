@@ -34,9 +34,7 @@ export default class PostMessage extends Handler {
 
   async Process(request: PureRequest) {
     const body = request.Body(IsObject({ Text: IsString }));
-    const { channel_id } = request.Parameters({ channel_id: IsString }) ?? {};
-    if (!channel_id || !body) return new EmptyResponse("BadRequest");
-
+    const { channel_id } = request.Parameters({ channel_id: IsString });
     const { user_id } = await this.#auth_service.GetUser(request);
     if (
       !(await this.#channel_service.MayWrite(request, channel_id)) ||
@@ -47,21 +45,24 @@ export default class PostMessage extends Handler {
     const { data, name, count } = this.#message_service.Latest(channel_id);
     if (!data) return new EmptyResponse("NotFound");
 
-    return new Result(new JsonResponse("Created", { Message: "Message Sent" }), {
-      messages: {
-        [name]: [
-          ...data,
-          {
-            version: 1,
-            text: body.Text,
-            when: new Date(),
-            user: user_id,
-          },
-        ],
-      },
-      message_counts: {
-        [channel_id]: count + 1n,
-      },
-    });
+    return new Result(
+      new JsonResponse("Created", { Message: "Message Sent" }),
+      {
+        messages: {
+          [name]: [
+            ...data,
+            {
+              version: 1,
+              text: body.Text,
+              when: new Date(),
+              user: user_id,
+            },
+          ],
+        },
+        message_counts: {
+          [channel_id]: count + 1n,
+        },
+      }
+    );
   }
 }

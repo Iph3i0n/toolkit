@@ -32,8 +32,6 @@ export default class PutProfile extends Handler {
       })
     );
 
-    if (!body) return new Result(new EmptyResponse("BadRequest"));
-
     const [user, user_id] = await this.#auth_service.GetAdminUser(request);
     if (!user) return new Result(new EmptyResponse("NotFound"));
 

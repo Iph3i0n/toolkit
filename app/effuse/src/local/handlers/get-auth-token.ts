@@ -22,8 +22,6 @@ export default class GetAuthToken extends Handler {
 
   async Process(request: PureRequest) {
     const body = request.Parameters({ token: IsString });
-    if (!body) return new Result(new EmptyResponse("BadRequest"));
-
     const url = new URL("/api/v1/auth/user", process.env.SSO_URL);
     url.searchParams.set("token", body.token);
     const { data } = await Axios.get(url.href);

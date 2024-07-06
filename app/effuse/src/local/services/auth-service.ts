@@ -1,7 +1,7 @@
 import { addHours } from "date-fns";
 import { IJwtClient } from "integrations/i-jwt-client";
 import { IsObject, IsString } from "@ipheion/safe-type";
-import { PureRequest } from "@ipheion/puristee";
+import { EmptyResponse, PureRequest } from "@ipheion/puristee";
 import { State } from "local/server";
 import { UserGrant } from "local/models/user-grant";
 import { User } from "local/models/user";
@@ -64,5 +64,12 @@ export class AuthService {
 
     AuthService.#cache.Set(token, result);
     return result;
+  }
+
+  async RequireAdmin(request: PureRequest): Promise<void> {
+    const { user, role } = await this.GetUser(request);
+    if (!user?.admin && !role?.admin) {
+      throw new EmptyResponse("Unauthorised");
+    }
   }
 }

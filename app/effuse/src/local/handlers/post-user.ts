@@ -19,7 +19,6 @@ export default class PostUser extends Handler {
     const body = request.Body(
       IsObject({ ServerToken: IsString, Password: IsString })
     );
-    if (!body) return new EmptyResponse("BadRequest");
 
     const url = new URL("/api/v1/auth/user", process.env.SSO_URL);
     url.searchParams.set("token", body.ServerToken);

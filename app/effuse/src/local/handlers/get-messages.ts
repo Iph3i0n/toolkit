@@ -29,9 +29,10 @@ export default class GetMessages extends Handler {
   readonly Url = "/api/v1/channels/:channel_id/messages";
 
   async Process(request: PureRequest) {
-    const { channel_id, offset } =
-      request.Parameters({ channel_id: IsString, offset: IsString }) ?? {};
-    if (!channel_id || !offset) return new EmptyResponse("BadRequest");
+    const { channel_id, offset } = request.Parameters({
+      channel_id: IsString,
+      offset: IsString,
+    });
     if (!(await this.#channel_service.MayRead(request, channel_id)))
       return new EmptyResponse("Unauthorised");
 

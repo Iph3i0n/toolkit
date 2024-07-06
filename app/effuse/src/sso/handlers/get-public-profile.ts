@@ -12,8 +12,7 @@ export default class GetPublicProfile extends Handler {
   readonly Url = "/api/v1/users/:userId/profile";
 
   async Process(request: PureRequest) {
-    const { userId } = request.Parameters({ userId: IsString }) ?? {};
-    if (!userId) return new Result(new EmptyResponse("NotFound"));
+    const { userId } = request.Parameters({ userId: IsString });
 
     const user = this.State.users[userId];
     if (!user) return new Result(new EmptyResponse("NotFound"));

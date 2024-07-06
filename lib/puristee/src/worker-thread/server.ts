@@ -85,7 +85,18 @@ export default function CreateServer<TSchema extends Schema>(
           body: await response.body,
           cookies: response.cookies,
         };
-      } catch (err) {
+      } catch (err: any) {
+        if ("status" in err)
+          return {
+            request_id: request.request_id,
+            status: await err.status,
+            body: await err.body,
+            headers: {
+              ...default_headers,
+              ...err.headers,
+            },
+            cookies: err.cookies,
+          };
         console.error(err);
         return {
           request_id: request.request_id,
@@ -161,7 +172,18 @@ export default function CreateServer<TSchema extends Schema>(
           cookies: response.cookies,
           ws_events: { message: "OnMessage" in this, close: "OnClose" in this },
         };
-      } catch (err) {
+      } catch (err: any) {
+        if ("status" in err)
+          return {
+            request_id: request.request_id,
+            status: await err.status,
+            body: await err.body,
+            headers: {
+              ...default_headers,
+              ...err.headers,
+            },
+            cookies: err.cookies,
+          };
         console.error(err);
         return {
           request_id: request.request_id,

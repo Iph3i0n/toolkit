@@ -12,8 +12,7 @@ export default class GetProfilePicture extends Handler {
   readonly Url = "/profile/pictures/:userid";
 
   async Process(request: PureRequest) {
-    const { userid } = request.Parameters({ userid: IsString }) ?? {};
-    if (!userid) return new Result(new EmptyResponse("NotFound"));
+    const { userid } = request.Parameters({ userid: IsString });
 
     const picture = this.State.pictures[userid];
     if (!picture) return new Result(new EmptyResponse("NotFound"));

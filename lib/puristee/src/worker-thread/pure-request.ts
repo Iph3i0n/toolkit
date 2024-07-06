@@ -1,9 +1,9 @@
-import type { IncomingMessage } from "node:http";
 import Pattern from "./pattern";
 import { ReadonlyRecord } from "../utils/util-types";
 import Cookies from "./cookies";
 import { Checker } from "@ipheion/safe-type";
 import { InternalRequest } from "../contracts";
+import { EmptyResponse } from "./response";
 
 function IsDictionaryMatch<
   T extends Record<string, string | Array<string> | null | undefined>
@@ -80,7 +80,7 @@ export default class PureRequest {
     }
 
     if (checker(body)) return body;
-    return undefined;
+    throw new EmptyResponse("BadRequest");
   }
 
   Parameters<
@@ -88,6 +88,6 @@ export default class PureRequest {
   >(checker: { [TKey in keyof T]: Checker<T[TKey]> }) {
     const parameters = this.parameters;
     if (IsDictionaryMatch(checker, parameters)) return parameters;
-    return undefined;
+    throw new EmptyResponse("BadRequest");
   }
 }

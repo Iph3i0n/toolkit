@@ -23,8 +23,7 @@ export default class GetChannelUsers extends Handler {
   readonly Url = "/api/v1/channels/:channel_id/users";
 
   async Process(request: PureRequest) {
-    const { channel_id } = request.Parameters({ channel_id: IsString }) ?? {};
-    if (!channel_id) return new EmptyResponse("BadRequest");
+    const { channel_id } = request.Parameters({ channel_id: IsString });
     if (!(await this.#channel_service.MayRead(request, channel_id)))
       return new EmptyResponse("Unauthorised");
 

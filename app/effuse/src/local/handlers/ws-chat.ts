@@ -15,8 +15,10 @@ export default class WebSocketChat extends WebSocketHandler {
   readonly Url = "/ws/chat/:channel_id";
 
   async #authorised(request: PureRequest) {
-    const { token, channel_id } =
-      request.Parameters({ token: IsString, channel_id: IsString }) ?? {};
+    const { token, channel_id } = request.Parameters({
+      token: IsString,
+      channel_id: IsString,
+    });
 
     if (!token || !channel_id) return undefined;
 
