@@ -8,7 +8,7 @@ import { IsObject, IsString } from "@ipheion/safe-type";
 import { NewAuthService } from "local/bootstrap/services/auth-service";
 import { NewChannelService } from "local/bootstrap/services/channel-service";
 import { NewMessageService } from "local/bootstrap/services/message-service";
-import { Handler, Result } from "local/server";
+import { Handler, Result, SendWebsocketMessage } from "local/server";
 import { AuthService } from "local/services/auth-service";
 import { ChannelService } from "local/services/channel-service";
 import { MessageService } from "local/services/message-service";
@@ -44,6 +44,16 @@ export default class PostMessage extends Handler {
 
     const { data, name, count } = this.#message_service.Latest(channel_id);
     if (!data) return new EmptyResponse("NotFound");
+
+    const message_dto = {
+      Type: "Message",
+      Text: body.Text,
+      When: new Date().toISOString(),
+      Who: user_id,
+    };
+    for (const listener of this.State.channel_subscriptions[channel_id] ?? []) {
+      SendWebsocketMessage(listener, message_dto);
+    }
 
     return new Result(
       new JsonResponse("Created", { Message: "Message Sent" }),

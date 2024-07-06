@@ -1,3 +1,4 @@
+import { parentPort } from "node:worker_threads";
 import { Directory, Schema, StateWriter } from "@ipheion/fs-db";
 import Pattern from "./pattern";
 import PureRequest from "./pure-request";
@@ -202,5 +203,12 @@ export default function CreateServer<TSchema extends Schema>(
     Handler,
     Response: Result,
     WebSocketHandler,
+    SendWebsocketMessage(connection_id: string, data: any) {
+      parentPort?.postMessage({
+        type: "WS_POST",
+        connection_id,
+        data: JSON.stringify(data),
+      });
+    },
   };
 }

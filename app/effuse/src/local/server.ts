@@ -36,3 +36,5 @@ export type Result = typeof Server.Response;
 
 export const WebSocketHandler = Server.WebSocketHandler;
 export type WebSocketHandler = typeof Server.WebSocketHandler;
+
+export const SendWebsocketMessage = Server.SendWebsocketMessage;
