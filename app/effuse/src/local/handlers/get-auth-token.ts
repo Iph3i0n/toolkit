@@ -6,8 +6,6 @@ import {
   PureRequest,
 } from "@ipheion/puristee";
 import { Assert, IsObject, IsString } from "@ipheion/safe-type";
-import { IParameterClient } from "integrations/i-parameter-client";
-import { NewParameterClient } from "local/bootstrap/integrations/parameter-client";
 import { NewAuthService } from "local/bootstrap/services/auth-service";
 import { Handler, Result } from "local/server";
 import { AuthService } from "local/services/auth-service";

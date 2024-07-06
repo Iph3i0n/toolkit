@@ -47,7 +47,7 @@ export default class PostMessage extends Handler {
     const { data, name, count } = this.#message_service.Latest(channel_id);
     if (!data) return new EmptyResponse("NotFound");
 
-    return new Result(new JsonResponse("Ok", { Message: "Message Sent" }), {
+    return new Result(new JsonResponse("Created", { Message: "Message Sent" }), {
       messages: {
         [name]: [
           ...data,
