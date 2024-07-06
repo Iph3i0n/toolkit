@@ -16,6 +16,7 @@ const StatusCodes = Object.freeze({
    */
   Ok: 200,
   Created: 201,
+  NoContent: 204,
   MultipleChoices: 300,
   /**
    * GET methods unchanged. Others may or may not be changed to GET.
