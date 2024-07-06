@@ -57,6 +57,31 @@ export default class Directory<TSchema extends Schema>
                   yield [sub_key, self.#read_file(key, sub_key)];
                 }
               },
+              Map<TResult>(
+                mapper: (id: string, item: any) => TResult
+              ): Array<TResult> {
+                if (!self.#exists(self.#join(key))) return [];
+
+                const result: Array<TResult> = [];
+                for (const sub_key of Fs.readdirSync(self.#join(key))) {
+                  result.push(mapper(sub_key, self.#read_file(key, sub_key)));
+                }
+
+                return result;
+              },
+              Filter(
+                predicate: (id: string, item: any) => boolean
+              ): Array<any> {
+                if (!self.#exists(self.#join(key))) return [];
+
+                const result: Array<any> = [];
+                for (const sub_key of Fs.readdirSync(self.#join(key))) {
+                  if (predicate(sub_key, self.#read_file(key, sub_key)))
+                    result.push([sub_key, self.#read_file(key, sub_key)]);
+                }
+
+                return result;
+              },
             },
             {
               apply() {
