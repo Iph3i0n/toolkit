@@ -1,27 +1,9 @@
-export class UserPublicProfile {
-  readonly #user_id: string;
-  readonly #username: string;
-  readonly #biography: string;
+import { IsObject, IsString, IsType } from "@ipheion/safe-type";
 
-  constructor(model: {
-    readonly UserId: string;
-    readonly UserName: string;
-    readonly Biography: string;
-  }) {
-    this.#user_id = model.UserId;
-    this.#username = model.UserName;
-    this.#biography = model.Biography;
-  }
+export const UserPublicProfile = IsObject({
+  UserId: IsString,
+  UserName: IsString,
+  Biography: IsString,
+});
 
-  get UserId() {
-    return this.#user_id;
-  }
-
-  get UserName() {
-    return this.#username;
-  }
-
-  get Biography() {
-    return this.#biography;
-  }
-}
+export type UserPublicProfile = IsType<typeof UserPublicProfile>;

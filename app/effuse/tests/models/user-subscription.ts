@@ -1,27 +1,15 @@
-export class UserSubscription {
-  readonly #endpoint: string;
-  readonly #expires: Date;
-  readonly #keys: Record<string, string>;
+import {
+  IsDate,
+  IsDictionary,
+  IsObject,
+  IsString,
+  IsType,
+} from "@ipheion/safe-type";
 
-  constructor(model: {
-    readonly Endpoint: string;
-    readonly Expires: string;
-    readonly Keys: Record<string, string>;
-  }) {
-    this.#endpoint = model.Endpoint;
-    this.#expires = new Date(model.Expires);
-    this.#keys = model.Keys;
-  }
+export const UserSubscription = IsObject({
+  Endpoint: IsString,
+  Expires: IsDate,
+  Keys: IsDictionary(IsString),
+});
 
-  get Endpoint() {
-    return this.#endpoint;
-  }
-
-  get Expires() {
-    return this.#expires;
-  }
-
-  get Keys() {
-    return this.#keys;
-  }
-}
+export type UserSubscription = IsType<typeof UserSubscription>;

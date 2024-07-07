@@ -15,13 +15,13 @@ export default class GetAllUsers extends Handler {
   readonly Url = "/api/v1/users";
 
   async Process(request: PureRequest) {
-    await this.#auth_service.RequireAdmin(request);
+    await this.#auth_service.RequireUser(request);
 
     return new JsonResponse(
       "Ok",
       this.State.users
         .Filter((_, u) => !u.banned)
-        .map(([id, user]) => ({ UserId: id, Admin: user.admin }))
+        .map(([id, user]) => ({ UserId: id, Role: user.role }))
     );
   }
 }

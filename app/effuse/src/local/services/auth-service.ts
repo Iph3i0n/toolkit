@@ -7,6 +7,7 @@ import { UserGrant } from "local/models/user-grant";
 import { User } from "local/models/user";
 import { Role } from "local/models/role";
 import { Cache } from "utils/cache";
+import BCrypt from "bcrypt";
 
 type AuthContext = {
   user?: User;
@@ -66,9 +67,16 @@ export class AuthService {
     return result;
   }
 
+  async RequireUser(request: PureRequest): Promise<void> {
+    const { user } = await this.GetUser(request);
+    if (!user) {
+      throw new EmptyResponse("Unauthorised");
+    }
+  }
+
   async RequireAdmin(request: PureRequest): Promise<void> {
-    const { user, role } = await this.GetUser(request);
-    if (!user?.admin && !role?.admin) {
+    const { role } = await this.GetUser(request);
+    if (!role?.admin) {
       throw new EmptyResponse("Unauthorised");
     }
   }

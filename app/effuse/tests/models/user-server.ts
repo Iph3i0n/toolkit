@@ -1,17 +1,8 @@
-export class UserServer {
-  readonly #url: string;
-  readonly #joined_at: Date;
+import { IsDate, IsObject, IsString, IsType } from "@ipheion/safe-type";
 
-  constructor(model: { Url: string; JoinedAt: string }) {
-    this.#url = model.Url;
-    this.#joined_at = new Date(model.JoinedAt);
-  }
+export const UserServer = IsObject({
+  Url: IsString,
+  JoinedAt: IsDate,
+});
 
-  get Url() {
-    return this.#url;
-  }
-
-  get JoinedAt() {
-    return this.#joined_at;
-  }
-}
+export type UserServer = IsType<typeof UserServer>;

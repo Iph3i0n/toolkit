@@ -15,18 +15,30 @@ export default class GetAllRoles extends Handler {
   readonly Url = "/api/v1/roles";
 
   async Process(request: PureRequest) {
-    await this.#auth_service.RequireAdmin(request);
+    if (request.parameters.with_permissions) {
+      await this.#auth_service.RequireAdmin(request);
+
+      return new JsonResponse(
+        "Ok",
+        this.State.roles.Map((id, item) => ({
+          RoleId: id,
+          Name: item.name,
+          Admin: item.admin,
+          Policies: item.policies.map((p) => ({
+            ChannelId: p.channel_id,
+            Write: p.access === "Write",
+          })),
+        }))
+      );
+    }
+
+    await this.#auth_service.RequireUser(request);
 
     return new JsonResponse(
       "Ok",
       this.State.roles.Map((id, item) => ({
         RoleId: id,
         Name: item.name,
-        Admin: item.admin,
-        Policies: item.policies.map((p) => ({
-          ChannelId: p.channel_id,
-          Write: p.access === "Write",
-        })),
       }))
     );
   }

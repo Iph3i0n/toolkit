@@ -41,7 +41,6 @@ export default class PostChannel extends Handler {
             version: 1,
             name: body.Name,
             type: body.Type,
-            public: body.Public,
           },
         },
         message_counts: {

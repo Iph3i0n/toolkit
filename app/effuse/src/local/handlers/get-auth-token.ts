@@ -29,12 +29,13 @@ export default class GetAuthToken extends Handler {
     Assert(IsObject({ UserId: IsString }), data);
     const existing = this.State.users[data.UserId];
     if (!existing) return new Result(new EmptyResponse("Unauthorised"));
+    const role = this.State.roles[existing.role];
 
     const grant = await this.#auth_service.CreateGrant(data.UserId);
     return new Result(
       new JsonResponse("Ok", {
         LocalToken: grant.Token,
-        IsAdmin: existing.admin,
+        IsAdmin: role.admin,
         Expires: grant.Expires.toISOString(),
         UserId: grant.UserId,
       }),

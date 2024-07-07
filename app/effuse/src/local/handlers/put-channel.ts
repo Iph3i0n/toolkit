@@ -40,7 +40,6 @@ export default class PutChannel extends Handler {
           [channel_id]: {
             ...existing,
             name: body.Name,
-            public: body.Public,
           },
         },
       }

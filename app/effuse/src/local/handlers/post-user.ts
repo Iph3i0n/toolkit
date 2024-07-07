@@ -4,12 +4,16 @@ import Axios from "axios";
 import { Assert, IsObject, IsString } from "@ipheion/safe-type";
 import { IParameterClient, Parameter } from "integrations/i-parameter-client";
 import { NewParameterClient } from "local/bootstrap/integrations/parameter-client";
+import { AuthService } from "local/services/auth-service";
+import { NewAuthService } from "local/bootstrap/services/auth-service";
 
 export default class PostUser extends Handler {
   readonly #parameters: IParameterClient;
-  constructor(parameters?: IParameterClient) {
+  readonly #auth_service: AuthService;
+  constructor(parameters?: IParameterClient, auth_service?: AuthService) {
     super();
     this.#parameters = parameters ?? NewParameterClient(this.State);
+    this.#auth_service = auth_service ?? NewAuthService(this.State);
   }
 
   readonly Method = HttpMethod.Post;
@@ -28,43 +32,19 @@ export default class PostUser extends Handler {
     const existing = this.State.users[data.UserId];
     if (existing) return new EmptyResponse("Ok");
 
-    if (
-      body.Password ===
-      (await this.#parameters.GetParameter(Parameter.SERVER_PASSWORD))
-    ) {
-      return new Result(new EmptyResponse("Created"), {
-        users: {
-          [data.UserId]: {
-            version: 1,
-            joined_server: new Date(),
-            last_logged_in: new Date(),
-            admin: false,
-            banned: false,
-            role: null,
-            policies: [],
+    for (const [role_id, role] of this.State.roles)
+      if (body.Password === role.password)
+        return new Result(new EmptyResponse("Created"), {
+          users: {
+            [data.UserId]: {
+              version: 1,
+              joined_server: new Date(),
+              last_logged_in: new Date(),
+              banned: false,
+              role: role_id,
+            },
           },
-        },
-      });
-    }
-
-    if (
-      body.Password ===
-      (await this.#parameters.GetParameter(Parameter.SERVER_ADMIN_PASSWORD))
-    ) {
-      return new Result(new EmptyResponse("Created"), {
-        users: {
-          [data.UserId]: {
-            version: 1,
-            joined_server: new Date(),
-            last_logged_in: new Date(),
-            admin: true,
-            banned: false,
-            role: null,
-            policies: [],
-          },
-        },
-      });
-    }
+        });
 
     return new Result(new EmptyResponse("Unauthorised"));
   }

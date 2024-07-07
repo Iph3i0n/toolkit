@@ -29,8 +29,8 @@ export class SsoClient extends ClientBase {
     await this.get(Url("/profile/pictures/:user_id", { user_id }));
   }
 
-  async GetProfile(grant: UserGrant) {
-    const response = await this.get("/api/v1/user/profile", {
+  async GetProfile(grant: UserGrant): Promise<UserProfile> {
+    const { data } = await this.get("/api/v1/user/profile", {
       headers: grant.AdminHeaders,
     });
 
@@ -49,14 +49,22 @@ export class SsoClient extends ClientBase {
           })
         ),
       }),
-      response.data
+      data
     );
 
-    return new UserProfile(response.data);
+    return {
+      ...data,
+      RegisteredAt: new Date(data.RegisteredAt),
+      LastSignIn: new Date(data.LastSignIn),
+      Servers: data.Servers.map((s) => ({
+        Url: s.Url,
+        JoinedAt: new Date(s.JoinedAt),
+      })),
+    };
   }
 
-  async GetPublicProfile(user_id: string) {
-    const response = await this.get(
+  async GetPublicProfile(user_id: string): Promise<UserPublicProfile> {
+    const { data } = await this.get(
       Url("/api/v1/users/:user_id/profile", { user_id })
     );
 
@@ -66,13 +74,15 @@ export class SsoClient extends ClientBase {
         UserName: IsString,
         Biography: IsString,
       }),
-      response.data
+      { data }
     );
 
-    return new UserPublicProfile(response.data);
+    return data;
   }
 
-  async GetPushSubscriptions(grant: UserGrant) {
+  async GetPushSubscriptions(
+    grant: UserGrant
+  ): Promise<Array<UserSubscription>> {
     const response = await this.get("/api/v1/user/push-subscriptions", {
       headers: grant.AdminHeaders,
     });
@@ -88,11 +98,11 @@ export class SsoClient extends ClientBase {
       response.data
     );
 
-    return response.data.map((d) => new UserSubscription(d));
+    return response.data.map((d) => ({ ...d, Expires: new Date(d.Expires) }));
   }
 
-  async GetRefreshToken(grant: UserGrant) {
-    const response = await this.get(
+  async GetRefreshToken(grant: UserGrant): Promise<UserGrant> {
+    const { data } = await this.get(
       Url("/api/v1/auth/refresh-token", { token: grant.RefreshToken })
     );
 
@@ -104,14 +114,22 @@ export class SsoClient extends ClientBase {
         RefreshToken: IsString,
         Expires: IsString,
       }),
-      response.data
+      data
     );
 
-    return new UserGrant(response.data);
+    return {
+      AdminHeaders: {
+        Authorization: `Bearer ${data.AdminToken}`,
+      },
+      RefreshToken: data.RefreshToken,
+      ServerToken: data.ServerToken,
+      UserId: data.UserId,
+      Expires: new Date(data.Expires),
+    };
   }
 
-  async GetToken(email: string, password: string) {
-    const response = await this.get(
+  async GetToken(email: string, password: string): Promise<UserGrant> {
+    const { data } = await this.get(
       Url("/api/v1/auth/token", { email, password })
     );
 
@@ -123,10 +141,18 @@ export class SsoClient extends ClientBase {
         RefreshToken: IsString,
         Expires: IsString,
       }),
-      response.data
+      data
     );
 
-    return new UserGrant(response.data);
+    return {
+      AdminHeaders: {
+        Authorization: `Bearer ${data.AdminToken}`,
+      },
+      RefreshToken: data.RefreshToken,
+      ServerToken: data.ServerToken,
+      UserId: data.UserId,
+      Expires: new Date(data.Expires),
+    };
   }
 
   async GetUserFromToken(grant: UserGrant) {
@@ -186,8 +212,8 @@ export class SsoClient extends ClientBase {
     user_name: string;
     email: string;
     password: string;
-  }) {
-    const response = await this.post("/api/v1/users", {
+  }): Promise<UserGrant> {
+    const { data } = await this.post("/api/v1/users", {
       UserName: model.user_name,
       Email: model.email,
       Password: model.password,
@@ -201,10 +227,18 @@ export class SsoClient extends ClientBase {
         RefreshToken: IsString,
         Expires: IsString,
       }),
-      response.data
+      data
     );
 
-    return new UserGrant(response.data);
+    return {
+      AdminHeaders: {
+        Authorization: `Bearer ${data.AdminToken}`,
+      },
+      RefreshToken: data.RefreshToken,
+      ServerToken: data.ServerToken,
+      UserId: data.UserId,
+      Expires: new Date(data.Expires),
+    };
   }
 
   async PutProfile(
@@ -218,7 +252,7 @@ export class SsoClient extends ClientBase {
     },
     grant: UserGrant
   ) {
-    const response = await this.put(
+    const { data } = await this.put(
       "/api/v1/user/profile",
       {
         UserName: model.user_name,
@@ -248,10 +282,18 @@ export class SsoClient extends ClientBase {
           })
         ),
       }),
-      response.data
+      data
     );
 
-    return new UserProfile(response.data);
+    return {
+      ...data,
+      RegisteredAt: new Date(data.RegisteredAt),
+      LastSignIn: new Date(data.LastSignIn),
+      Servers: data.Servers.map((s) => ({
+        Url: s.Url,
+        JoinedAt: new Date(s.JoinedAt),
+      })),
+    };
   }
 
   async HeartBeatOptions() {

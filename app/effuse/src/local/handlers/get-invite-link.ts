@@ -1,4 +1,9 @@
-import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
+import {
+  EmptyResponse,
+  HttpMethod,
+  JsonResponse,
+  PureRequest,
+} from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
 import { IParameterClient } from "integrations/i-parameter-client";
 import { NewParameterClient } from "local/bootstrap/integrations/parameter-client";
@@ -21,22 +26,18 @@ export default class GetInviteLink extends Handler {
 
   async Process(request: PureRequest) {
     await this.#auth_service.RequireAdmin(request);
-    const { publicurl, embedpassword, admin } = request.Parameters({
+    const { publicurl, embedded_role, admin } = request.Parameters({
       publicurl: IsString,
-      embedpassword: IsString,
-      admin: IsString,
+      embedded_role: IsString,
     });
 
     const url = new URL("", process.env.UI_URL);
     url.searchParams.set("action", "join");
     url.searchParams.set("server_url", publicurl);
-    if (embedpassword === "true") {
-      url.searchParams.set(
-        "password",
-        admin === "true"
-          ? await this.#parameters.GetParameter("SERVER_ADMIN_PASSWORD")
-          : await this.#parameters.GetParameter("SERVER_PASSWORD")
-      );
+    if (embedded_role) {
+      const role = this.State.roles[embedded_role];
+      if (!role) return new EmptyResponse("NotFound");
+      url.searchParams.set("password", role.password);
     }
 
     return new JsonResponse("Created", { Url: url.href });

@@ -13,7 +13,6 @@ export const Channel = new Union(
     version: new Literal(1),
     type: new Enum("Messages", "Forum", "Call", "Calendar"),
     name: new UTF8(),
-    public: new Bool(),
   })
 );
 

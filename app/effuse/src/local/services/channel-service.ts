@@ -15,20 +15,13 @@ export class ChannelService {
 
   UserMayRead(channel_id: string, user: User, role?: Role) {
     return (
-      user.admin ||
-      role?.admin ||
-      !!user.policies.find((p) => p.channel_id === channel_id) ||
-      !!role?.policies.find((p) => p.channel_id === channel_id)
+      role?.admin || !!role?.policies.find((p) => p.channel_id === channel_id)
     );
   }
 
   UserMayWrite(channel_id: string, user: User, role?: Role) {
     return (
-      user.admin ||
       role?.admin ||
-      !!user.policies.find(
-        (p) => p.channel_id === channel_id && p.access === "Write"
-      ) ||
       !!role?.policies.find(
         (p) => p.channel_id === channel_id && p.access === "Write"
       )
@@ -39,10 +32,7 @@ export class ChannelService {
     const { user, role } = await this.#auth_service.GetUser(request);
     if (!user) return false;
     return (
-      user.admin ||
-      role?.admin ||
-      !!user.policies.find((p) => p.channel_id === channel_id) ||
-      !!role?.policies.find((p) => p.channel_id === channel_id)
+      role?.admin || !!role?.policies.find((p) => p.channel_id === channel_id)
     );
   }
 
@@ -50,11 +40,7 @@ export class ChannelService {
     const { user, role } = await this.#auth_service.GetUser(request);
     if (!user) return false;
     return (
-      user.admin ||
       role?.admin ||
-      !!user.policies.find(
-        (p) => p.channel_id === channel_id && p.access === "Write"
-      ) ||
       !!role?.policies.find(
         (p) => p.channel_id === channel_id && p.access === "Write"
       )
