@@ -60,7 +60,14 @@ tasks:
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
       - rm -rf dist
-      - npm run build
+      - npx tsc
+      - npx webpack
+      
+  effuse:run-ui:
+    deps: [effuse:build]
+    dir: "{{.TASKFILE_DIR}}/app/effuse"
+    cmds:
+      - npx webpack serve
 
   effuse:api-test:
     dir: "{{.TASKFILE_DIR}}/app/effuse"
