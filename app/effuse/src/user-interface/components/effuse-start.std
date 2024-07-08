@@ -1,0 +1,24 @@
+<s:meta name="effuse-start" />
+
+<script>
+  import { SsoClient } from "../integrations/sso";
+
+  let sso = undefined;
+
+  function on_login(event) {
+    debugger;
+  }
+</script>
+
+<style>
+  div {
+    color: red;
+  }
+</style>
+
+<s:if check=":!sso">
+  <f-form submit="event-only" on:Submitted="on_login">
+    <f-input name="Email">Email</f-input>
+    <f-input name="Password" sensitive>Password</f-input>
+  </f-form>
+</s:if>

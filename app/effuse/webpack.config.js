@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VirtualModulesPlugin = require("webpack-virtual-modules");
+const CopyPlugin = require("copy-webpack-plugin");
 const { favicons } = require("favicons");
 const { Compilation, sources } = require("webpack");
 const path = require("path");
@@ -104,6 +105,7 @@ module.exports = async () => {
           <head>
             ${htmlWebpackPlugin.tags.headTags}
             ${response.html.join("")}
+            <script src="/index.js"></script>
             <style>
               html,
               body {
@@ -122,7 +124,7 @@ module.exports = async () => {
       `,
       }),
       new VirtualModulesPlugin({
-        "node_modules/@effuse/config.js": `module.exports = ${JSON.stringify(
+        "node_modules/effuse-config.js": `module.exports = ${JSON.stringify(
           config
         )};`,
       }),
@@ -149,6 +151,14 @@ module.exports = async () => {
           );
         });
       },
+      new CopyPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, "../../lib/bakery/dist/native"),
+            to: ".",
+          },
+        ],
+      }),
     ],
     mode: isProd ? "production" : "development",
     ...(!isProd

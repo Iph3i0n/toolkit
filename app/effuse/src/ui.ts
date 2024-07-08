@@ -1,1 +1,1 @@
-import "./user-interface/start.std";
+import "./user-interface/components/effuse-start.std";

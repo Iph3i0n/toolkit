@@ -62,6 +62,9 @@ tasks:
       - rm -rf dist
       - npx tsc
       - npx webpack
+    env:
+      PROD: 'true'
+      SSO_BASE_URL: http://localhost:3000/
       
   effuse:run-ui:
     deps: [effuse:build]
@@ -99,3 +102,9 @@ tasks:
       DATA_DIR: ./data
       SSO_URL: http://localhost:3000/
       UI_URL: http://localhost:3001/
+
+  effuse:run-all:
+    deps:
+      - effuse:run-ui
+      - effuse:run-sso
+      - effuse:run-local
