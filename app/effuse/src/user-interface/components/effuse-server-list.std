@@ -4,6 +4,15 @@
 
 <script>
   let profile = await self.client.GetProfile();
+  const get_servers = async () =>
+    await Promise.all(
+      profile.Servers.map(async (s) => ({
+        ...s,
+        Client: await self.client.GetLocalClient(s.Url),
+      }))
+    );
+
+  let servers = await get_servers();
 
   let open = false;
 
@@ -18,6 +27,10 @@
     });
 
     profile = await self.client.GetProfile();
+  }
+
+  $after: {
+    servers = await get_servers();
   }
 </script>
 
@@ -53,10 +66,8 @@
 
 <o-offcanvas open=":open" size="small" on:CloseRequested="() => (open = false)">
   <span slot="title">Servers</span>
-  <s:for subject=":profile.Servers" key="server">
-    <t-link href=":`/server/${server.Id}`" block spa>
-      <s:text use=":server.Id" />
-    </t-link>
+  <s:for subject=":servers" key="server">
+    <effuse-server-list-item client=":server.Client" server_id=":server.Id" />
   </s:for>
   <f-button type="link" href="/join-server" on:click="() => (open = false)" spa>
     +

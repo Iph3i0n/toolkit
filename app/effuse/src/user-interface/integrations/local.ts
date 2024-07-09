@@ -17,4 +17,18 @@ export class LocalClient {
     this.#grant_manager = grant_manager;
     this.#client = new ApiClient(base_url);
   }
+
+  async GetMetadata() {
+    return this.#client.Send({
+      method: "GET",
+      url: "/api/v1/server/metadata",
+      expect: IsObject({
+        ServerName: IsString,
+        Icon: IsObject({
+          Base64Data: IsString,
+          MimeType: IsString,
+        }),
+      }),
+    });
+  }
 }

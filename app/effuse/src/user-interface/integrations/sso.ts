@@ -59,9 +59,26 @@ export class SsoClient {
     this.#client = new ApiClient(SSO_BASE);
   }
 
-  static Attempt() {
-    const data = JSON.parse(localStorage.getItem("grant") ?? "{}");
+  static async Attempt() {
+    let data = JSON.parse(localStorage.getItem("grant") ?? "{}");
     if (!data || !Grant(data)) return undefined;
+
+    if (new Date(data.Expires).getTime() <= new Date().getTime()) {
+      try {
+        const client = new ApiClient(SSO_BASE);
+        data = await client.Send({
+          method: "GET",
+          url: "/api/v1/auth/refresh-token",
+          params: { token: data.RefreshToken },
+          expect: Grant,
+        });
+
+        localStorage.setTime("grant", JSON.stringify(data));
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
+    }
 
     return new SsoClient({
       AdminHeaders: {

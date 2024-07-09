@@ -65,6 +65,7 @@ export default abstract class ComponentWrapper<
   }
 
   setAttribute(qualifiedName: string, value: any): void {
+    super.setAttribute(qualifiedName, value);
     this.#instance.then((i: any) => {
       i[qualifiedName] = value;
     });

@@ -5,7 +5,7 @@
 <script>
   import { SsoClient } from "../integrations/sso";
 
-  let sso = SsoClient.Attempt();
+  let sso = await SsoClient.Attempt();
   let mode = "login";
 
   async function on_login({ FormData }) {

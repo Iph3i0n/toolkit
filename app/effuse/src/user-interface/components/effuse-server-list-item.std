@@ -1,0 +1,12 @@
+<s:meta name="effuse-server-list-item">
+  <attr name="client" />
+  <attr name="server_id" />
+</s:meta>
+
+<script>
+  const details = await self.client.GetMetadata();
+</script>
+
+<t-link href=":`/server/${self.server_id}`" block spa>
+  <s:text use=":details.ServerName" />
+</t-link>
