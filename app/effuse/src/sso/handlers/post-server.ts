@@ -1,6 +1,6 @@
 import { NewAuthService } from "sso/bootstrap/services/auth-service";
 import { AuthService } from "sso/services/auth-service";
-import { Handler, Result, State } from "sso/server";
+import { Handler, Result } from "sso/server";
 import {
   EmptyResponse,
   HttpMethod,
@@ -9,6 +9,7 @@ import {
 } from "@ipheion/puristee";
 import { IsObject, IsString, Optional } from "@ipheion/safe-type";
 import Axios from "axios";
+import { v4 as Guid } from "uuid";
 
 export default class PostServer extends Handler {
   readonly #auth_service: AuthService;
@@ -33,13 +34,16 @@ export default class PostServer extends Handler {
       })
     );
 
-    await Axios.post("/api/v1/users", {
-      baseURL: body.ServerUrl,
-      data: {
+    await Axios.post(
+      "/api/v1/users",
+      {
         ServerToken: body.ServerToken,
         Password: body.Password,
       },
-    });
+      {
+        baseURL: body.ServerUrl,
+      }
+    );
 
     return new Result(new JsonResponse("Ok", { Success: true }), {
       users: {
@@ -47,7 +51,7 @@ export default class PostServer extends Handler {
           ...user,
           servers: [
             ...user.servers,
-            { url: body.ServerUrl, joined_at: new Date() },
+            { id: Guid(), url: body.ServerUrl, joined_at: new Date() },
           ],
         },
       },

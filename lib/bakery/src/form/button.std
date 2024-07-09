@@ -55,16 +55,18 @@
     })
   );
 
-  const observer = new MutationObserver(() => {
-    if (!self) {
-      observer.disconnect();
-      return;
-    }
+  if (self.parentElement) {
+    const observer = new MutationObserver(() => {
+      if (!self) {
+        observer.disconnect();
+        return;
+      }
 
-    self.should_render();
-  });
+      self.should_render();
+    });
 
-  observer.observe(self.parentElement, { childList: true });
+    observer.observe(self.parentElement, { childList: true });
+  }
 
   const is_last_button = () => {
     const next = self.nextSibling;
@@ -109,6 +111,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5em;
     theme.colour(c);
     theme.padding("small_block");

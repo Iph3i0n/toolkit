@@ -165,9 +165,7 @@ module.exports = async () => {
       ? {
           devServer: {
             port: 3001,
-            historyApiFallback: {
-              index: "index.html",
-            },
+            historyApiFallback: true,
           },
         }
       : {}),

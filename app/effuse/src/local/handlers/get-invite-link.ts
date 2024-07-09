@@ -31,8 +31,7 @@ export default class GetInviteLink extends Handler {
       embedded_role: IsString,
     });
 
-    const url = new URL("", process.env.UI_URL);
-    url.searchParams.set("action", "join");
+    const url = new URL("/join-server", process.env.UI_URL);
     url.searchParams.set("server_url", publicurl);
     if (embedded_role) {
       const role = this.State.roles[embedded_role];

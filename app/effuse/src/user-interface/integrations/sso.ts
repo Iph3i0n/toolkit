@@ -16,6 +16,14 @@ import { GrantManager } from "./grant-manager";
 import { ServerGrant } from "user-interface/models/server-grant";
 import { LocalClient } from "./local";
 
+const Grant = IsObject({
+  AdminToken: IsString,
+  ServerToken: IsString,
+  UserId: IsString,
+  RefreshToken: IsString,
+  Expires: IsString,
+});
+
 export class SsoClient {
   readonly #grant_manager: GrantManager<UserGrant>;
   readonly #client: ApiClient;
@@ -29,14 +37,10 @@ export class SsoClient {
           method: "GET",
           url: "/api/v1/auth/refresh-token",
           params: { token: grant.RefreshToken },
-          expect: IsObject({
-            AdminToken: IsString,
-            ServerToken: IsString,
-            UserId: IsString,
-            RefreshToken: IsString,
-            Expires: IsString,
-          }),
+          expect: Grant,
         });
+
+        localStorage.setTime("grant", JSON.stringify(data));
 
         return [
           {
@@ -55,21 +59,31 @@ export class SsoClient {
     this.#client = new ApiClient(SSO_BASE);
   }
 
+  static Attempt() {
+    const data = JSON.parse(localStorage.getItem("grant") ?? "{}");
+    if (!data || !Grant(data)) return undefined;
+
+    return new SsoClient({
+      AdminHeaders: {
+        Authorization: `Bearer ${data.AdminToken}`,
+      },
+      RefreshToken: data.RefreshToken,
+      ServerToken: data.ServerToken,
+      UserId: data.UserId,
+      Expires: new Date(data.Expires),
+    });
+  }
+
   static async Login(email: string, password: string) {
     const client = new ApiClient(SSO_BASE);
     const data = await client.Send({
       method: "GET",
       url: "/api/v1/auth/token",
       params: { email, password },
-      expect: IsObject({
-        AdminToken: IsString,
-        ServerToken: IsString,
-        UserId: IsString,
-        RefreshToken: IsString,
-        Expires: IsString,
-      }),
+      expect: Grant,
     });
 
+    localStorage.setItem("grant", JSON.stringify(data));
     return new SsoClient({
       AdminHeaders: {
         Authorization: `Bearer ${data.AdminToken}`,
@@ -95,15 +109,10 @@ export class SsoClient {
         Email: model.email,
         Password: model.password,
       },
-      expect: IsObject({
-        AdminToken: IsString,
-        ServerToken: IsString,
-        UserId: IsString,
-        RefreshToken: IsString,
-        Expires: IsString,
-      }),
+      expect: Grant,
     });
 
+    localStorage.setTime("grant", JSON.stringify(data));
     return new SsoClient({
       AdminHeaders: {
         Authorization: `Bearer ${data.AdminToken}`,
@@ -141,6 +150,7 @@ export class SsoClient {
         LastSignIn: IsString,
         Servers: IsArray(
           IsObject({
+            Id: IsString,
             Url: IsString,
             JoinedAt: IsString,
           })
@@ -153,6 +163,7 @@ export class SsoClient {
       RegisteredAt: new Date(data.RegisteredAt),
       LastSignIn: new Date(data.LastSignIn),
       Servers: data.Servers.map((s) => ({
+        Id: s.Id,
         Url: s.Url,
         JoinedAt: new Date(s.JoinedAt),
       })),
@@ -209,16 +220,13 @@ export class SsoClient {
     });
   }
 
-  async PostServer(
-    model: { server_url: string; password?: string },
-    grant: UserGrant
-  ) {
+  async PostServer(model: { server_url: string; password?: string }) {
     await this.#client.Send({
       method: "POST",
       url: "/api/v1/user/servers",
       headers: await this.#headers,
       body: {
-        ServerToken: grant.ServerToken,
+        ServerToken: (await this.#grant_manager.GetGrant()).ServerToken,
         ServerUrl: model.server_url,
         Password: model.password,
       },

@@ -4,6 +4,93 @@
 
 <script>
   let profile = await self.client.GetProfile();
+
+  let open = false;
+
+  const search = new URLSearchParams(location.search);
+  const prefill_url = search.get("server_url") ?? "";
+  const prefill_password = search.get("password") ?? "";
+
+  async function join_server({ FormData }) {
+    await self.client.PostServer({
+      server_url: FormData.ServerUrl,
+      password: FormData.Password,
+    });
+
+    profile = await self.client.GetProfile();
+  }
 </script>
 
-<div><s:text use=":profile.Email" /></div>
+<style>
+  .list-trigger {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+  }
+
+  o-offcanvas f-button {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+    box-sizing: border-box;
+  }
+
+  .join-form {
+    margin: auto;
+    max-width: 400px;
+    padding: 1rem;
+  }
+</style>
+
+<div class="list-trigger">
+  <f-button type="button" on:click="() => (open = true)">
+    <t-icon name="menu-3" size="body" colour="primary" text />
+  </f-button>
+</div>
+
+<o-offcanvas open=":open" size="small" on:CloseRequested="() => (open = false)">
+  <span slot="title">Servers</span>
+  <s:for subject=":profile.Servers" key="server">
+    <t-link href=":`/server/${server.Id}`" block spa>
+      <s:text use=":server.Id" />
+    </t-link>
+  </s:for>
+  <f-button type="link" href="/join-server" on:click="() => (open = false)" spa>
+    +
+  </f-button>
+</o-offcanvas>
+
+<u-route path="/join-server">
+  <div class="join-form">
+    <f-form submit="event-only" on:Submitted="join_server">
+      <l-row>
+        <l-col xs="12">
+          <t-heading level="h3">Join a Server</t-heading>
+        </l-col>
+      </l-row>
+      <l-row>
+        <l-col xs="12">
+          <f-input name="ServerUrl" prefill=":prefill_url" required>
+            Server URL
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-input
+            name="Password"
+            prefill=":prefill_password"
+            required
+            sensitive
+          >
+            Password
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-button type="submit">Join</f-button>
+        </l-col>
+      </l-row>
+    </f-form>
+  </div>
+</u-route>

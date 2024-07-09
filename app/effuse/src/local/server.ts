@@ -8,7 +8,7 @@ import { StateReader } from "@ipheion/fs-db";
 import CreateServer from "@ipheion/puristee";
 import { ServerMetadata } from "./models/server-metadata";
 
-const InitalState = {
+export const Schema = {
   users: User,
   channels: Channel,
   roles: Role,
@@ -20,9 +20,9 @@ const InitalState = {
 
 export const DataDir = process.env.DATA_DIR ?? "./data";
 
-export type State = StateReader<typeof InitalState>;
+export type State = StateReader<typeof Schema>;
 
-const Server = CreateServer(Path.resolve(DataDir, "local"), InitalState, {
+const Server = CreateServer(Path.resolve(DataDir, "local"), Schema, {
   "Access-Control-Allow-Origin": process.env.UI_URL ?? "*",
   "Access-Control-Allow-Methods": "OPTIONS, GET, PUT, POST, DELETE",
   "Access-Control-Allow-Headers": "Authorization, Content-Type",

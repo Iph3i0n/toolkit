@@ -1,6 +1,7 @@
 import {
   Array,
   DateTime,
+  Guid,
   Literal,
   Record,
   Serialised,
@@ -27,6 +28,7 @@ export const User = new Union(
     last_sign_in: new DateTime(),
     servers: new Array(
       new Struct({
+        id: new Guid(),
         url: new UTF8(),
         joined_at: new DateTime(),
       })

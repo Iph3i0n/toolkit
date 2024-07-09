@@ -32,6 +32,7 @@ export default class GetProfile extends Handler {
         RegisteredAt: user.registered_at.toISOString(),
         LastSignIn: user.last_sign_in.toISOString(),
         Servers: user.servers.map((s) => ({
+          Id: s.id,
           Url: s.url,
           JoinedAt: s.joined_at.toISOString(),
         })),
