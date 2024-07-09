@@ -59,6 +59,10 @@
   <form />
 </s:meta>
 
+<script>
+  import c from "../utils/html/classes";
+</script>
+
 <style>
   @js const [theme, spec] = require("../global/theme");
   @insert ../styles/input.pss;

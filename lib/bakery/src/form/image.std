@@ -67,6 +67,8 @@
       reader.addEventListener("load", () => {
         res(reader.result);
       });
+
+      reader.readAsDataURL(file);
     });
   };
 

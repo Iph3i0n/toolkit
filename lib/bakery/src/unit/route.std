@@ -33,6 +33,14 @@
 
 <script>
   import { MatchEvent } from "../global/events/routing";
+
+  document.addEventListener("NavigationEvent", () => {
+    self.should_render();
+  });
+
+  document.addEventListener("popstate", () => {
+    self.should_render();
+  });
 </script>
 
 <s:if check=":self.Matches.match">

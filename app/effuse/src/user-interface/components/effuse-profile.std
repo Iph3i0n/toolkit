@@ -3,7 +3,40 @@
 </s:meta>
 
 <script>
-  console.log("Profile");
+  import { SSO_BASE } from "effuse-config";
+
+  let profile = await self.client.GetProfile();
+
+  const to_buffer = (file) => {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        res(reader.result);
+      });
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  async function update_profile({ FormData }) {
+    const buffer = await to_buffer(FormData.profile);
+    const base64 = btoa(
+      String.fromCharCode.apply(null, new Uint8Array(buffer))
+    );
+    profile = await self.client.PutProfile({
+      user_name: FormData.username,
+      biography: FormData.biography,
+      picture: {
+        base64data: base64,
+        mime_type: FormData.profile.type,
+      },
+    });
+  }
+
+  const picture_url = new URL(
+    `/profile/pictures/${encodeURIComponent(profile.UserId)}`,
+    SSO_BASE
+  );
 </script>
 
 <style>
@@ -14,4 +47,37 @@
   }
 </style>
 
-<div class="join-form">Hello world</div>
+<l-container>
+  <f-form submit="event-only" on:Submitted="update_profile">
+    <l-row>
+      <l-col xs="12" md="8">
+        <l-row no-padding>
+          <l-col xs="12">
+            <f-input name="username" prefill=":profile.UserName" required>
+              Username
+            </f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-textarea name="biography" prefill=":profile.Biography">
+              Biography
+            </f-textarea>
+          </l-col>
+        </l-row>
+      </l-col>
+      <l-col xs="12" md="4">
+        <l-row no-padding>
+          <l-col xs="12">
+            <f-image name="profile" prefill=":picture_url.href">
+              Profile Picture
+            </f-image>
+          </l-col>
+        </l-row>
+      </l-col>
+    </l-row>
+    <l-row>
+      <l-col xs="12">
+        <f-button type="submit">Update</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</l-container>

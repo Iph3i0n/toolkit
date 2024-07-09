@@ -1,4 +1,4 @@
-import { ShouldRender, RenderEvent } from "@ipheion/wholemeal";
+import { RenderEvent } from "@ipheion/wholemeal";
 import PaginationEvent from "../events/pagination";
 import BakeryBase from "./main";
 import { MatchEvent } from "../events/routing";
@@ -9,7 +9,7 @@ const NavigationEventKey = "NavigationEvent";
 
 class NavigateEvent extends Event {
   constructor() {
-    super(NavigationEventKey);
+    super(NavigationEventKey, { bubbles: true, composed: true });
   }
 }
 
@@ -48,14 +48,6 @@ export default abstract class Router extends BakeryBase {
   abstract exact: boolean;
 
   #previous = false;
-
-  [`$${NavigationEventKey}`]() {
-    this.should_render();
-  }
-
-  $popstate() {
-    this.should_render();
-  }
 
   [RenderEvent.ListenerKey]() {
     const current = this.Matches;

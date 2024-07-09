@@ -258,7 +258,7 @@ export class SsoClient {
       base64data: string;
       mime_type: string;
     };
-  }) {
+  }): Promise<UserProfile> {
     const data = await this.#client.Send({
       method: "PUT",
       url: "/api/v1/user/profile",

@@ -73,7 +73,7 @@ export default abstract class RichText extends FormElement {
 
   $input(e: Event) {
     const target = e.target;
-    if (!(target instanceof Node)) return;
+    if (!(target instanceof Node) || !(e as any).data) return;
     const child = target.firstChild;
 
     if (child && child.nodeType === child.TEXT_NODE) this.Format = "p";
@@ -92,7 +92,7 @@ export default abstract class RichText extends FormElement {
     this.#update_state();
   }
 
-  $keyup() {
+  $keyup(e: Event) {
     this.#update_state();
   }
 
