@@ -1,0 +1,9 @@
+<s:meta name="effuse-server-list">
+  <attr name="client">The API client for the SSO Server</attr>
+</s:meta>
+
+<script>
+  let profile = await self.client.GetProfile();
+</script>
+
+<div><s:text use=":profile.Email" /></div>

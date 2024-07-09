@@ -41,7 +41,7 @@ tasks:
     deps: [safe-type:build]
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"
     cmds:
-      - npm run build
+      - npx tsc
 
   wholemeal:test:
     deps: [safe-type:build]
@@ -61,16 +61,27 @@ tasks:
     cmds:
       - rm -rf dist
       - npx tsc
+    env:
+      SSO_BASE: http://localhost:3000
+      UI_URL: http://localhost:3001
+
+  effuse:build-ui:
+    deps: [safe-type:build, wholemeal:build, bakery:build]
+    dir: "{{.TASKFILE_DIR}}/app/effuse"
+    cmds:
       - npx webpack
     env:
-      PROD: 'true'
-      SSO_BASE_URL: http://localhost:3000/
-      
+      PROD: "true"
+      SSO_BASE: http://localhost:3000
+      UI_URL: http://localhost:3001
+
   effuse:run-ui:
-    deps: [effuse:build]
+    deps: [safe-type:build, wholemeal:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
       - npx webpack serve
+    env:
+      SSO_BASE: http://localhost:3000
 
   effuse:api-test:
     dir: "{{.TASKFILE_DIR}}/app/effuse"
@@ -78,9 +89,9 @@ tasks:
       - rm -rf ./data/db
       - node --test --import tsx ./tests/**/*.test.ts
     env:
-      SSO_BASE: http://localhost:3000/
-      LOCAL_BASE: http://localhost:3002/
-      UI_URL: http://localhost:3001/
+      SSO_BASE: http://localhost:3000
+      LOCAL_BASE: http://localhost:3002
+      UI_URL: http://localhost:3001
 
   effuse:run-sso:
     deps: [effuse:build]
@@ -90,7 +101,7 @@ tasks:
     env:
       NODE_PATH: ./dist/src
       DATA_DIR: ./data
-      UI_URL: http://localhost:3001/
+      UI_URL: http://localhost:3001
 
   effuse:run-local:
     deps: [effuse:build]
@@ -100,8 +111,13 @@ tasks:
     env:
       NODE_PATH: ./dist/src
       DATA_DIR: ./data
-      SSO_URL: http://localhost:3000/
-      UI_URL: http://localhost:3001/
+      SSO_URL: http://localhost:3000
+      UI_URL: http://localhost:3001
+
+  effuse:run-backend:
+    deps:
+      - effuse:run-sso
+      - effuse:run-local
 
   effuse:run-all:
     deps:

@@ -16,6 +16,11 @@ export class ApiClient {
     this.#base_url = base_url;
   }
 
+  get #base() {
+    if (this.#base_url.endsWith("/")) return this.#base_url;
+    return this.#base_url + "/";
+  }
+
   #url(url: string, parameters: Record<string, string> = {}) {
     const ps = { ...parameters };
 
@@ -30,9 +35,9 @@ export class ApiClient {
     for (const key in ps) params.set(key, ps[key]);
 
     const searchString = params.toString();
-    if (searchString) return url + "?" + searchString;
+    if (searchString) return new URL(url + "?" + searchString, this.#base).href;
 
-    return new URL(url, this.#base_url).href;
+    return new URL(url, this.#base).href;
   }
 
   #create_error(message: string, data: Record<string, string>) {
@@ -57,6 +62,7 @@ export class ApiClient {
 
     if (!response.ok)
       throw this.#create_error("Fetch failed", {
+        base: this.#base_url,
         url: config.url,
         method: config.method,
         status: response.status.toString(),

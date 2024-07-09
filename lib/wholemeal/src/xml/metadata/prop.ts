@@ -2,6 +2,7 @@ import MetadataItem from "./base";
 import Description from "./description";
 import ToPascal from "./to-pascal";
 import * as Ts from "../../ts-writer";
+import ToSnake from "./to-snake";
 
 export default class Prop extends MetadataItem {
   get Name() {
@@ -10,6 +11,10 @@ export default class Prop extends MetadataItem {
 
   get JsName() {
     return ToPascal(this.Name);
+  }
+
+  get PrivateName() {
+    return "_" + ToSnake(this.Name);
   }
 
   get Type() {

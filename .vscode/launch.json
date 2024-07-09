@@ -11,6 +11,20 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "task",
       "runtimeArgs": ["effuse:run-sso"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Effuse Local",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "task",
+      "runtimeArgs": ["effuse:run-local"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Effuse",
+      "configurations": ["Launch Effuse SSO", "Launch Effuse Local"]
     }
   ]
 }

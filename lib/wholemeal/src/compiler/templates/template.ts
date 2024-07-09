@@ -123,7 +123,7 @@ export default class Template {
           ),
           ...this.#data.Metadata.Attr.flatMap((a) => [
             new Js.Assign(
-              new Js.Reference("#" + a.JsName),
+              new Js.Reference(a.PrivateName),
               new Js.Reference("null")
             ),
             new Js.Function(
@@ -136,7 +136,7 @@ export default class Template {
                       new Js.If(
                         new Js.Comparison(
                           new Js.Access(
-                            "#" + a.JsName,
+                            a.PrivateName,
                             new Js.Reference("this")
                           ),
                           "not_equals",
@@ -146,7 +146,7 @@ export default class Template {
                           new Js.Operator(
                             new Js.Modifier(
                               new Js.Access(
-                                "#" + a.JsName,
+                                a.PrivateName,
                                 new Js.Reference("this")
                               ),
                               "!!"
@@ -154,7 +154,7 @@ export default class Template {
                             "||",
                             new Js.Comparison(
                               new Js.Access(
-                                "#" + a.JsName,
+                                a.PrivateName,
                                 new Js.Reference("this")
                               ),
                               "equals",
@@ -199,7 +199,7 @@ export default class Template {
                         new Js.Operator(
                           new Js.Operator(
                             new Js.Access(
-                              "#" + a.JsName,
+                              a.PrivateName,
                               new Js.Reference("this")
                             ),
                             "??",
@@ -226,8 +226,19 @@ export default class Template {
               "method",
               a.Name,
               new Js.Block(
+                new Js.Declare(
+                  "const",
+                  "old",
+                  new Js.Access(a.PrivateName, new Js.Reference("this"))
+                ),
                 new Js.Assign(
-                  new Js.Access("#" + a.JsName, new Js.Reference("this")),
+                  new Js.Access(a.PrivateName, new Js.Reference("this")),
+                  new Js.Reference("value")
+                ),
+                new Js.Call(
+                  new Js.Reference("this.attributeChangedCallback"),
+                  new Js.String(a.Name),
+                  new Js.Reference("old"),
                   new Js.Reference("value")
                 )
               ),

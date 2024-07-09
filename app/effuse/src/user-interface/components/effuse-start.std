@@ -1,24 +1,88 @@
-<s:meta name="effuse-start" />
+<s:meta name="effuse-start">
+  <attr name="client">The API client for the SSO Server</attr>
+</s:meta>
 
 <script>
   import { SsoClient } from "../integrations/sso";
 
   let sso = undefined;
+  let mode = "login";
 
-  function on_login(event) {
-    debugger;
+  async function on_login({ FormData }) {
+    sso = await SsoClient.Login(FormData.Email, FormData.Password);
+  }
+
+  async function on_register({ FormData }) {
+    sso = await SsoClient.Register({
+      user_name: FormData.UserName,
+      email: FormData.Email,
+      password: FormData.Password,
+    });
   }
 </script>
 
 <style>
-  div {
-    color: red;
+  .login-form {
+    margin: auto;
+    max-width: 400px;
+    padding: 1rem;
   }
 </style>
 
 <s:if check=":!sso">
-  <f-form submit="event-only" on:Submitted="on_login">
-    <f-input name="Email">Email</f-input>
-    <f-input name="Password" sensitive>Password</f-input>
-  </f-form>
+  <div class="login-form">
+    <s:if check=":mode === 'login'">
+      <f-form submit="event-only" on:Submitted="on_login">
+        <l-row>
+          <l-col xs="12">
+            <f-input name="Email" required>Email</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="Password" required sensitive>Password</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-button type="submit">Login</f-button>
+            <f-button
+              type="button"
+              colour="contrast"
+              on:click="() => (mode = 'register')"
+            >
+              New to Effuse?
+            </f-button>
+          </l-col>
+        </l-row>
+      </f-form>
+    </s:if>
+    <s:if check=":mode === 'register'">
+      <f-form submit="event-only" on:Submitted="on_register">
+        <l-row>
+          <l-col xs="12">
+            <f-input name="UserName" validate="^[a-zA-Z0-9]+$" required>
+              Username
+            </f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="Email" type="email" required>Email</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="Password" required sensitive>Password</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-button type="submit">Register</f-button>
+            <f-button
+              type="button"
+              colour="contrast"
+              on:click="() => (mode = 'login')"
+            >
+              Already got an account?
+            </f-button>
+          </l-col>
+        </l-row>
+      </f-form>
+    </s:if>
+  </div>
+</s:if>
+
+<s:if check=":sso">
+  <effuse-server-list client=":sso"></effuse-server-list>
 </s:if>

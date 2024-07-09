@@ -7,7 +7,7 @@ const path = require("path");
 const isProd = process.env.PROD === "true";
 
 const config = {
-  SSO_BASE: process.env.SSO_BASE_URL,
+  SSO_BASE: process.env.SSO_BASE,
 };
 
 module.exports = async () => {

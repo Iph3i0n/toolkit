@@ -19,6 +19,6 @@ export default class ClassWriter extends BaseWriter {
   toString(): string {
     return `class ${this.#name} ${
       this.#base ? `extends ${this.#base} ` : ""
-    }{${this.#children.map((c) => c.toString()).join(";")}}`;
+    }{${this.#children.map((c) => c.toString()).join("\n")}}`;
   }
 }

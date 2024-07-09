@@ -63,4 +63,10 @@ export default abstract class ComponentWrapper<
   attributeChangedCallback(name: string, old: string, next: string) {
     this.#instance.then((i) => i.attributeChangedCallback(name, old, next));
   }
+
+  setAttribute(qualifiedName: string, value: any): void {
+    this.#instance.then((i: any) => {
+      i[qualifiedName] = value;
+    });
+  }
 }
