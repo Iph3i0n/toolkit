@@ -84,5 +84,15 @@
 </s:if>
 
 <s:if check=":sso">
-  <effuse-server-list client=":sso"></effuse-server-list>
+  <l-header logo="/favicon-48x48.png" logo-alt="Effuse">
+    <t-link slot="right" href="/profile" spa>
+      <t-icon name="user" size="body" colour="primary" size="h6" text />
+    </t-link>
+  </l-header>
+
+  <effuse-server-list client=":sso" />
+
+  <u-route path="/join-server">
+    <effuse-join-server client=":sso" />
+  </u-route>
 </s:if>

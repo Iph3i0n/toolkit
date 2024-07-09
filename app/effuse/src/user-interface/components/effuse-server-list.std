@@ -3,35 +3,24 @@
 </s:meta>
 
 <script>
-  let profile = await self.client.GetProfile();
-  const get_servers = async () =>
-    await Promise.all(
+  const get_servers = async () => {
+    const profile = await self.client.GetProfile();
+    return await Promise.all(
       profile.Servers.map(async (s) => ({
         ...s,
         Client: await self.client.GetLocalClient(s.Url),
       }))
     );
+  };
 
   let servers = await get_servers();
 
   let open = false;
 
-  const search = new URLSearchParams(location.search);
-  const prefill_url = search.get("server_url") ?? "";
-  const prefill_password = search.get("password") ?? "";
-
-  async function join_server({ FormData }) {
-    await self.client.PostServer({
-      server_url: FormData.ServerUrl,
-      password: FormData.Password,
-    });
-
-    profile = await self.client.GetProfile();
-  }
-
-  $after: {
+  document.addEventListener("joined_server", async () => {
     servers = await get_servers();
-  }
+    self.should_render();
+  });
 </script>
 
 <style>
@@ -50,12 +39,6 @@
     margin: 0.5rem;
     box-sizing: border-box;
   }
-
-  .join-form {
-    margin: auto;
-    max-width: 400px;
-    padding: 1rem;
-  }
 </style>
 
 <div class="list-trigger">
@@ -73,35 +56,3 @@
     +
   </f-button>
 </o-offcanvas>
-
-<u-route path="/join-server">
-  <div class="join-form">
-    <f-form submit="event-only" on:Submitted="join_server">
-      <l-row>
-        <l-col xs="12">
-          <t-heading level="h3">Join a Server</t-heading>
-        </l-col>
-      </l-row>
-      <l-row>
-        <l-col xs="12">
-          <f-input name="ServerUrl" prefill=":prefill_url" required>
-            Server URL
-          </f-input>
-        </l-col>
-        <l-col xs="12">
-          <f-input
-            name="Password"
-            prefill=":prefill_password"
-            required
-            sensitive
-          >
-            Password
-          </f-input>
-        </l-col>
-        <l-col xs="12">
-          <f-button type="submit">Join</f-button>
-        </l-col>
-      </l-row>
-    </f-form>
-  </div>
-</u-route>
