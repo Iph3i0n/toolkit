@@ -1,0 +1,17 @@
+<s:meta name="effuse-profile">
+  <attr name="client">The API client for the SSO Server</attr>
+</s:meta>
+
+<script>
+  console.log("Profile");
+</script>
+
+<style>
+  .join-form {
+    margin: auto;
+    max-width: 400px;
+    padding: 1rem;
+  }
+</style>
+
+<div class="join-form">Hello world</div>

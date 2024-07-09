@@ -95,4 +95,7 @@
   <u-route path="/join-server">
     <effuse-join-server client=":sso" />
   </u-route>
+  <u-route path="/profile">
+    <effuse-profile client=":sso" />
+  </u-route>
 </s:if>
