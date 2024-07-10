@@ -15,6 +15,7 @@ import { ApiClient } from "./api-client";
 import { GrantManager } from "./grant-manager";
 import { ServerGrant } from "user-interface/models/server-grant";
 import { LocalClient } from "./local";
+import { TransformFile } from "./file";
 
 const Grant = IsObject({
   AdminToken: IsString,
@@ -200,9 +201,7 @@ export class SsoClient {
     });
   }
 
-  async GetPushSubscriptions(
-    grant: UserGrant
-  ): Promise<Array<UserSubscription>> {
+  async GetPushSubscriptions(): Promise<Array<UserSubscription>> {
     const data = await this.#client.Send({
       method: "GET",
       url: "/api/v1/user/push-subscriptions",
@@ -254,11 +253,9 @@ export class SsoClient {
   async PutProfile(model: {
     user_name: string;
     biography: string;
-    picture: {
-      base64data: string;
-      mime_type: string;
-    };
+    picture: File;
   }): Promise<UserProfile> {
+    const { base64, mime } = await TransformFile(model.picture);
     const data = await this.#client.Send({
       method: "PUT",
       url: "/api/v1/user/profile",
@@ -267,8 +264,8 @@ export class SsoClient {
         UserName: model.user_name,
         Biography: model.biography,
         Picture: {
-          Base64Data: model.picture.base64data,
-          MimeType: model.picture.mime_type,
+          Base64Data: base64,
+          MimeType: mime,
         },
       },
       expect: IsObject({
@@ -280,6 +277,7 @@ export class SsoClient {
         LastSignIn: IsString,
         Servers: IsArray(
           IsObject({
+            Id: IsString,
             Url: IsString,
             JoinedAt: IsString,
           })
@@ -292,6 +290,7 @@ export class SsoClient {
       RegisteredAt: new Date(data.RegisteredAt),
       LastSignIn: new Date(data.LastSignIn),
       Servers: data.Servers.map((s) => ({
+        Id: s.Id,
         Url: s.Url,
         JoinedAt: new Date(s.JoinedAt),
       })),

@@ -1,15 +1,10 @@
-import {
-  EmptyResponse,
-  HttpMethod,
-  JsonResponse,
-  PureRequest,
-} from "@ipheion/puristee";
+import { EmptyResponse, HttpMethod, PureRequest } from "@ipheion/puristee";
 import { IsObject, IsString } from "@ipheion/safe-type";
 import { NewAuthService } from "local/bootstrap/services/auth-service";
 import { Handler, Result } from "local/server";
 import { AuthService } from "local/services/auth-service";
 
-export default class GetMetadata extends Handler {
+export default class PutMetadata extends Handler {
   readonly #auth_service: AuthService;
 
   constructor(auth_service?: AuthService) {

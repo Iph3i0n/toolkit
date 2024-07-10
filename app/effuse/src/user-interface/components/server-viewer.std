@@ -1,20 +1,36 @@
 <s:meta name="server-viewer">
   <attr name="sso_client">The API client for the SSO Server</attr>
-  <attr name="server_id" />
 </s:meta>
 
 <script>
   const get_server_id = () =>
     window.location.pathname.split("/").filter((e) => e)[1];
 
-  let server_id = get_server_id();
+  const get_server = async (server_id) => {
+    const profile = await self.sso_client.GetProfile();
+    return profile.Servers.find((s) => s.Id === server_id);
+  };
 
   document.addEventListener("NavigationEvent", () => {
-    server_id = get_server_id();
+    self.should_render();
   });
 </script>
 
-<div>
-  The server is
-  <s:text use=":server_id" />
-</div>
+<script on="mut">
+  const server_id = get_server_id();
+  const server = await get_server(server_id);
+
+  const client = await self.sso_client.GetLocalClient(server.Url);
+
+  const metadata = await client.GetMetadata();
+</script>
+
+<t-heading level="h1">
+  <s:text use=":metadata.ServerName" />
+</t-heading>
+
+<s:if check=":await client.IsAdmin()">
+  <u-route path="/metadata">
+    <server-metadata client=":client" />
+  </u-route>
+</s:if>

@@ -7,32 +7,16 @@
 
   let profile = await self.client.GetProfile();
 
-  const to_buffer = (file) => {
-    return new Promise((res, rej) => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        res(reader.result);
-      });
-
-      reader.readAsArrayBuffer(file);
-    });
-  };
-
   async function update_profile({ FormData }) {
-    const buffer = await to_buffer(FormData.profile);
-    const base64 = btoa(
-      String.fromCharCode.apply(null, new Uint8Array(buffer))
-    );
     profile = await self.client.PutProfile({
       user_name: FormData.username,
       biography: FormData.biography,
-      picture: {
-        base64data: base64,
-        mime_type: FormData.profile.type,
-      },
+      picture: FormData.profile,
     });
   }
+</script>
 
+<script on="mut">
   const picture_url = new URL(
     `/profile/pictures/${encodeURIComponent(profile.UserId)}`,
     SSO_BASE

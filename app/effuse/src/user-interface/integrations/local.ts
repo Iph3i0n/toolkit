@@ -1,13 +1,8 @@
-import {
-  IsArray,
-  IsDictionary,
-  IsLiteral,
-  IsObject,
-  IsString,
-} from "@ipheion/safe-type";
+import { DoNotCare, IsObject, IsString } from "@ipheion/safe-type";
 import { ApiClient } from "./api-client";
 import { GrantManager } from "./grant-manager";
 import { ServerGrant } from "user-interface/models/server-grant";
+import { TransformFile } from "./file";
 
 export class LocalClient {
   readonly #grant_manager: GrantManager<ServerGrant>;
@@ -16,6 +11,10 @@ export class LocalClient {
   constructor(base_url: string, grant_manager: GrantManager<ServerGrant>) {
     this.#grant_manager = grant_manager;
     this.#client = new ApiClient(base_url);
+  }
+
+  get #headers() {
+    return this.#grant_manager.GetGrant().then((r) => r.LocalHeaders);
   }
 
   async GetMetadata() {
@@ -30,5 +29,25 @@ export class LocalClient {
         }),
       }),
     });
+  }
+
+  async PutMetadata(name: string, image: File) {
+    const { base64, mime } = await TransformFile(image);
+
+    await this.#client.Send({
+      method: "PUT",
+      url: "/api/v1/server/metadata",
+      headers: await this.#headers,
+      body: {
+        ServerName: name,
+        IconBase64: base64,
+        IconMimeType: mime,
+      },
+      expect: DoNotCare,
+    });
+  }
+
+  async IsAdmin() {
+    return (await this.#grant_manager.GetGrant()).IsAdmin;
   }
 }

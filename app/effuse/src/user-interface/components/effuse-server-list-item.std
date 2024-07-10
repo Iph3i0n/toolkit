@@ -3,7 +3,7 @@
   <attr name="server_id" />
 </s:meta>
 
-<script>
+<script on="mut">
   const details = await self.client.GetMetadata();
 </script>
 

@@ -6,7 +6,7 @@ type RequestConfig<T> = {
   params?: Record<string, string>;
   body?: unknown;
   headers?: Record<string, string>;
-  expect: Checker<T>;
+  expect?: Checker<T>;
 };
 
 export class ApiClient {
@@ -46,7 +46,7 @@ export class ApiClient {
     );
   }
 
-  async Send<T>(config: RequestConfig<T>) {
+  async Send<T>(config: RequestConfig<T>): Promise<T> {
     const response = await fetch(this.#url(config.url, config.params), {
       method: config.method,
       headers: {
@@ -67,6 +67,8 @@ export class ApiClient {
         method: config.method,
         status: response.status.toString(),
       });
+
+    if (!config.expect) return {} as any;
 
     const data = await response.json();
     Assert(config.expect, data);
