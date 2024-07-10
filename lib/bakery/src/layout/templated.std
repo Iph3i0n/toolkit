@@ -122,14 +122,13 @@
 
   let old_remote;
   let old_use;
-
-  $after: {
-    const use = self.use_string_context("use");
-    if (!use) return;
-    const data = await get_data(use);
-    self.root.replaceChildren(data.content);
-    self.style.display = "block";
-  }
+</script>
+<script on="after">
+  const use = self.use_string_context("use");
+  if (!use) return;
+  const data = await get_data(use);
+  self.root.replaceChildren(data.content);
+  self.style.display = "block";
 </script>
 
 <d-loading open="true"></d-loading>

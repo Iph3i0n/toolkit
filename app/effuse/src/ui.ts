@@ -3,3 +3,4 @@ import "./user-interface/components/effuse-server-list.std";
 import "./user-interface/components/effuse-server-list-item.std";
 import "./user-interface/components/effuse-join-server.std";
 import "./user-interface/components/effuse-profile.std";
+import "./user-interface/components/server-viewer.std";

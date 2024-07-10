@@ -17,16 +17,6 @@
   let value = self.use_string_context("var");
   self.provide_context(self.name, value);
 
-  $after: {
-    value = self.use_string_context("var");
-    self.provide_context(self.name, value);
-  }
-
-  $props: {
-    value = self.use_string_context("var");
-    self.provide_context(self.name, value);
-  }
-
   self.addEventListener(SetContextEventKey, (event) => {
     if (event.Key !== self.name) return;
 
@@ -34,6 +24,16 @@
     event.stopPropagation();
     self.provide_context(self.name, event.Data);
   });
+</script>
+
+<script on="after">
+  value = self.use_string_context("var");
+  self.provide_context(self.name, value);
+</script>
+
+<script on="props">
+  value = self.use_string_context("var");
+  self.provide_context(self.name, value);
 </script>
 
 <slot />

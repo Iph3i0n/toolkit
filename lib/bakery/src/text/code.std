@@ -79,10 +79,9 @@
   }
 
   build_code();
-
-  $after: {
-    build_code();
-  }
+</script>
+<script on="after">
+  build_code();
 </script>
 
 <style>

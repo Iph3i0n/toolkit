@@ -24,21 +24,6 @@
   let current = 0;
   let context = "";
 
-  $load: {
-    slots = [...self.children]
-      .map((d) => ({
-        slot: d.getAttribute("slot"),
-        colour: d.getAttribute("colour") ?? "body",
-      }))
-      .filter((s) => s);
-    if (slots.length !== self.children.length)
-      console.warn(
-        "A child of the carousel is without slot. This element will not be visible"
-      );
-
-    self.should_render();
-  }
-
   function set_current(slide, ctx) {
     return () => {
       context = ctx;
@@ -49,6 +34,22 @@
 
   const colour = () => slots[current]?.colour ?? "body";
 </script>
+
+<script on="load">
+  slots = [...self.children]
+    .map((d) => ({
+      slot: d.getAttribute("slot"),
+      colour: d.getAttribute("colour") ?? "body",
+    }))
+    .filter((s) => s);
+  if (slots.length !== self.children.length)
+    console.warn(
+      "A child of the carousel is without slot. This element will not be visible"
+    );
+
+  self.should_render();
+</script>
+
 <style>
   @js const [theme, spec] = require("../global/theme");
 

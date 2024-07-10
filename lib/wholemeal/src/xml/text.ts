@@ -5,15 +5,18 @@ import Node from "./node";
 export default class Text extends Node {
   readonly #data: string;
 
-  constructor(code: Code) {
+  constructor(code: Code | string) {
     super();
-    let result = "";
-    while (!code.Done && !code.IsKeyword) {
-      result += code.Current;
-      code.Continue();
-    }
+    if (typeof code === "string") this.#data = code;
+    else {
+      let result = "";
+      while (!code.Done && !code.IsKeyword) {
+        result += code.Current;
+        code.Continue();
+      }
 
-    this.#data = result;
+      this.#data = result;
+    }
   }
 
   get JavaScript() {

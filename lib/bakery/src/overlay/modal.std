@@ -84,23 +84,21 @@
   function on_footer(e) {
     has_footer = e.currentTarget.assignedNodes().length > 0;
   }
+</script>
+<script on="after">
+  self.inert = !is_open();
+</script>
+<script on="load">
+  if (self.trigger) {
+    const off_click = On("click", self.trigger, () => {
+      if (typeof self === "undefined") {
+        off_click();
+        return;
+      }
 
-  $after: {
-    self.inert = !is_open();
-  }
-
-  $load: {
-    if (self.trigger) {
-      const off_click = On("click", self.trigger, () => {
-        if (typeof self === "undefined") {
-          off_click();
-          return;
-        }
-
-        open = true;
-        self.dispatchEvent(new ShouldRender());
-      });
-    }
+      open = true;
+      self.dispatchEvent(new ShouldRender());
+    });
   }
 </script>
 <style>

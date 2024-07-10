@@ -72,6 +72,12 @@ export default class Template {
     ];
   }
 
+  readonly #blocks = [
+    ["before", "before_render"],
+    ["after", "after_render"],
+    ["props", "after_props"],
+  ];
+
   get Module() {
     const base = this.#data.Metadata.Base?.Name ?? "ComponentBase";
 
@@ -284,11 +290,61 @@ export default class Template {
                 )
               ),
               new Js.Reference(this.#data.ScriptMain),
+              ...Object.keys(this.#data.Handlers)
+                .filter((h) => h !== "mut")
+                .map((h) => {
+                  const text = this.#data.Handlers[h];
+
+                  const [, name] =
+                    this.#blocks.find(([find]) => h === find) ?? [];
+                  if (name)
+                    return new Js.Assign(
+                      new Js.Access(name, new Js.Reference("self")),
+                      new Js.Function(
+                        [new Js.Reference("event")],
+                        "arrow",
+                        undefined,
+                        new Js.Block(new Js.Reference(text)),
+                        ["async"]
+                      )
+                    );
+
+                  return new Js.Assign(
+                    new Js.Access(
+                      "handler",
+                      new Js.Call(
+                        new Js.Access("handler_for", new Js.Reference("self")),
+                        new Js.String(h)
+                      )
+                    ),
+                    new Js.Function(
+                      [new Js.Reference("event")],
+                      "arrow",
+                      undefined,
+                      new Js.Block(new Js.Reference(text)),
+                      ["async"]
+                    )
+                  );
+                }),
               new Js.Return(
-                new Js.Object({
-                  html: this.#data.Html,
-                  css: this.#data.Css.JavaScript,
-                })
+                new Js.Function(
+                  [],
+                  "arrow",
+                  undefined,
+                  new Js.Block(
+                    ...(this.#data.Handlers.mut
+                      ? [new Js.Reference(this.#data.Handlers.mut)]
+                      : []),
+                    ...this.#data.Html,
+                    new Js.Return(
+                      new Js.Array(
+                        new Js.Reference("result"),
+                        this.#data.Css.JavaScript
+                      )
+                    )
+                  ),
+                  ["async"]
+                )
               )
             ),
             ["async"]

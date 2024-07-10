@@ -56,10 +56,6 @@
   const width = () => self.width ?? `${target?.clientWidth ?? 0}px`;
   const height = () => (body.current?.clientHeight ?? 0) + "px";
 
-  $after: {
-    self.inert = !open;
-  }
-
   window.addEventListener("scroll", () => {
     const target = modal.current;
     if (!target) return;
@@ -76,6 +72,9 @@
       },
     })
   );
+</script>
+<script on="after">
+  self.inert = !open;
 </script>
 <style>
   @js const [theme, spec] = require("../global/theme");

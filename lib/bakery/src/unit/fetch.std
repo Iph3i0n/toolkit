@@ -40,35 +40,6 @@
     return this.Render(self.url);
   };
 
-  $after: {
-    const next = rendered_url();
-    if (!next || next === existing_route) return;
-    existing_route = next;
-
-    if (!self["no-cache"]) {
-      const cached = window.localStorage.getItem(DATA_KEY());
-      if (cached) self.provide_context(self.name, JSON.parse(cached));
-    }
-
-    const r = await fetch(next);
-    let final;
-
-    if (!r.ok)
-      if (self.fallback) {
-        console.error(r);
-        const res = await fetch(this.Render(self.fallback));
-
-        if (!res.ok) throw res;
-
-        final = await res.json();
-      } else throw r;
-    else final = await r.json();
-
-    self.provide_context(self.name, final);
-    if (!self["no-cache"])
-      window.localStorage.setItem(DATA_KEY(), JSON.stringify(final));
-  }
-
   const handler = () => {
     self.should_render();
   };
@@ -87,6 +58,34 @@
     event.stopPropagation();
     self.provide_context(self.name, event.Data);
   });
+</script>
+<script on="after">
+  const next = rendered_url();
+  if (!next || next === existing_route) return;
+  existing_route = next;
+
+  if (!self["no-cache"]) {
+    const cached = window.localStorage.getItem(DATA_KEY());
+    if (cached) self.provide_context(self.name, JSON.parse(cached));
+  }
+
+  const r = await fetch(next);
+  let final;
+
+  if (!r.ok)
+    if (self.fallback) {
+      console.error(r);
+      const res = await fetch(this.Render(self.fallback));
+
+      if (!res.ok) throw res;
+
+      final = await res.json();
+    } else throw r;
+  else final = await r.json();
+
+  self.provide_context(self.name, final);
+  if (!self["no-cache"])
+    window.localStorage.setItem(DATA_KEY(), JSON.stringify(final));
 </script>
 
 <slot></slot>

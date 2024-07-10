@@ -17,64 +17,82 @@ export default class Element extends Node {
 
   constructor(code: Code) {
     super();
-    if (code.Current !== "<")
-      throw this.#error("Elements must start with a <", {});
-    code.Continue("skip-whitespace");
-
-    this.#tag = code.Current;
-    code.Continue("skip-whitespace");
-
-    while (!code.Done && !code.IsKeyword) {
-      const name = code.Current;
+    if (code.Current.startsWith("<script")) {
+      const text = code.Current;
       code.Continue("skip-whitespace");
-      if ((code.Current as string) !== "=") {
-        this.#attributes[name] = true;
-        continue;
+      this.#tag = "script";
+      const on_text_checker = /<script\s+on="([a-zA-Z0-9]+)"\s*>/gm;
+      const [, on_text] = on_text_checker.exec(text) ?? [];
+      this.#attributes.on = on_text;
+
+      const content_checker =
+        /<script(?:\s+on="[a-zA-Z0-9]+")?\s*>((?:.|\n)*?)<\/script>/gm;
+      const [, content] = content_checker.exec(text) ?? [];
+      if (!content) throw new Error("Could parse script");
+
+      this.#children = [];
+      this.#text_content = content;
+    } else {
+      if (code.Current !== "<")
+        throw this.#error("Elements must start with a <", {});
+      code.Continue("skip-whitespace");
+
+      this.#tag = code.Current;
+      code.Continue("skip-whitespace");
+
+      while (!code.Done && !code.IsKeyword) {
+        const name = code.Current;
+        code.Continue("skip-whitespace");
+        if ((code.Current as string) !== "=") {
+          this.#attributes[name] = true;
+          continue;
+        }
+
+        code.Continue("skip-whitespace");
+        if (!code.Current.startsWith('"'))
+          throw this.#error("Attributes values must start with strings", {
+            tag: this.#tag,
+            name,
+            symbol: code.Current,
+          });
+
+        this.#attributes[name] = code.Current.substring(
+          1,
+          code.Current.length - 1
+        );
+
+        code.Continue("skip-whitespace");
       }
 
-      code.Continue("skip-whitespace");
-      if (!code.Current.startsWith('"'))
-        throw this.#error("Attributes values must start with strings", {
-          tag: this.#tag,
-          name,
-          symbol: code.Current,
-        });
+      if ((code.Current as string) === ">") {
+        code.Continue("skip-whitespace");
+        while (!code.Done && (code.Current as string) !== "</")
+          if (AllText.includes(this.#tag)) {
+            this.#text_content += code.Current;
+            code.Continue();
+          } else if (code.Current === "<")
+            this.#children.push(new Element(code));
+          else this.#children.push(new Text(code));
 
-      this.#attributes[name] = code.Current.substring(
-        1,
-        code.Current.length - 1
-      );
+        code.Continue("skip-whitespace");
+        if (code.Current !== this.#tag)
+          throw this.#error("Element closing tag mismatch", {
+            tag: this.#tag,
+            attributes: this.#attributes,
+            symbol: code.Current,
+          });
 
-      code.Continue("skip-whitespace");
-    }
-
-    if ((code.Current as string) === ">") {
-      code.Continue("skip-whitespace");
-      while (!code.Done && (code.Current as string) !== "</")
-        if (AllText.includes(this.#tag)) {
-          this.#text_content += code.Current;
-          code.Continue();
-        } else if (code.Current === "<") this.#children.push(new Element(code));
-        else this.#children.push(new Text(code));
-
-      code.Continue("skip-whitespace");
-      if (code.Current !== this.#tag)
-        throw this.#error("Element closing tag mismatch", {
-          tag: this.#tag,
-          attributes: this.#attributes,
-          symbol: code.Current,
-        });
-
-      code.Continue("skip-whitespace");
-      if ((code.Current as string) !== ">")
-        throw this.#error("No closing tag", {
-          tag: this.#tag,
-          attributes: this.#attributes,
-          symbol: code.Current,
-        });
-      code.Continue("skip-whitespace");
-    } else {
-      code.Continue("skip-whitespace");
+        code.Continue("skip-whitespace");
+        if ((code.Current as string) !== ">")
+          throw this.#error("No closing tag", {
+            tag: this.#tag,
+            attributes: this.#attributes,
+            symbol: code.Current,
+          });
+        code.Continue("skip-whitespace");
+      } else {
+        code.Continue("skip-whitespace");
+      }
     }
   }
 

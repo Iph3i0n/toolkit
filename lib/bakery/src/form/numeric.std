@@ -72,10 +72,6 @@
     return result.substring(result.length - 1);
   };
 
-  $on_focus: {
-    textarea.current.focus();
-  }
-
   const multiplier = () => Math.pow(10, parseInt(self["decimal-places"]));
 
   function add() {
@@ -88,35 +84,6 @@
 
     current--;
     self.value = current_text();
-  }
-
-  $props: {
-    if (event.Key === "prefill") current = parseFloat(self.prefill || "0");
-  }
-
-  $on_keypress: {
-    event.preventDefault();
-    if (event.key === "-" && !self["no-negative"]) {
-      current -= current * 2;
-      self.value = current_text();
-    }
-
-    const subject = parseInt(event.key);
-    if (isNaN(subject)) return;
-
-    let is_negative = current < 0;
-
-    if (is_negative) current = Math.abs(current);
-    current *= multiplier();
-    current *= 10;
-    current += subject;
-    current = Math.floor(current);
-    current /= multiplier();
-
-    if (is_negative) current -= current * 2;
-
-    self.value = current_text();
-    self.dispatchEvent(new ShouldRender());
   }
 
   self.addEventListener(
@@ -139,6 +106,36 @@
       },
     })
   );
+</script>
+<script on="props">
+  if (event.Key === "prefill") current = parseFloat(self.prefill || "0");
+</script>
+<script on="keypress">
+  event.preventDefault();
+  if (event.key === "-" && !self["no-negative"]) {
+    current -= current * 2;
+    self.value = current_text();
+  }
+
+  const subject = parseInt(event.key);
+  if (isNaN(subject)) return;
+
+  let is_negative = current < 0;
+
+  if (is_negative) current = Math.abs(current);
+  current *= multiplier();
+  current *= 10;
+  current += subject;
+  current = Math.floor(current);
+  current /= multiplier();
+
+  if (is_negative) current -= current * 2;
+
+  self.value = current_text();
+  self.dispatchEvent(new ShouldRender());
+</script>
+<script on="focus">
+  textarea.current.focus();
 </script>
 
 <style>

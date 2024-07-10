@@ -98,4 +98,8 @@
   <u-route path="/profile">
     <effuse-profile client=":sso" />
   </u-route>
+
+  <u-route path="/server/:server_id">
+    <server-viewer sso_client=":sso" />
+  </u-route>
 </s:if>

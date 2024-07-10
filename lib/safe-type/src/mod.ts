@@ -225,6 +225,6 @@ export function IsKeyOf<T extends object>(
   return subject in checker && checker.hasOwnProperty(subject);
 }
 
-export function IsInstanceOf<T>(constructor: new (...args: unknown[]) => T) {
+export function IsInstanceOf<T>(constructor: new (...args: any[]) => T) {
   return (arg: unknown): arg is T => arg instanceof constructor;
 }

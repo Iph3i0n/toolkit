@@ -85,32 +85,6 @@
     }
   };
 
-  $on_drop: {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    process_file(file);
-  }
-
-  $on_dragover: {
-    event.preventDefault();
-    const old = dragging;
-    dragging = true;
-    if (old !== dragging) self.should_render();
-    clear();
-  }
-
-  $on_click: {
-    const file = await get_file();
-    process_file(file);
-  }
-
-  $on_ValueChanged: {
-    if (typeof self.value === "string" && preview !== self.value) {
-      preview = self.value;
-      self.should_render();
-    }
-  }
-
   function debounce(func, timeout = 300) {
     let timer;
     return (...args) => {
@@ -136,6 +110,29 @@
       },
     })
   );
+</script>
+
+<script on="drop">
+  event.preventDefault();
+  const drop_file = event.dataTransfer.files[0];
+  process_file(drop_file);
+</script>
+<script on="dragover">
+  event.preventDefault();
+  const old = dragging;
+  dragging = true;
+  if (old !== dragging) self.should_render();
+  clear();
+</script>
+<script on="click">
+  const click_file = await get_file();
+  process_file(click_file);
+</script>
+<script on="ValueChanged">
+  if (typeof self.value === "string" && preview !== self.value) {
+    preview = self.value;
+    self.should_render();
+  }
 </script>
 
 <style>

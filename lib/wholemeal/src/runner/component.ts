@@ -33,6 +33,8 @@ function* AllFunctions(subject: any): Generator<string> {
   } while ((obj = Object.getPrototypeOf(obj)));
 }
 
+type ContentFactory = () => Promise<[Ast.Html.Dom, () => Ast.Css.Sheet]>;
+
 abstract class Base {
   readonly #ele: HTMLElement;
   readonly #root: ShadowRoot;
@@ -40,14 +42,10 @@ abstract class Base {
   readonly #styles: HTMLStyleElement;
   readonly #virtual_dom: VirtualDom;
 
-  #html: () => Ast.Html.Dom = () => [];
-  #css: () => Ast.Css.Sheet = () => [];
+  #content: ContentFactory = () => Promise.resolve([] as any);
 
   abstract readonly aria: Record<string, string>;
-  abstract start(): Promise<{
-    html: () => Ast.Html.Dom;
-    css: () => Ast.Css.Sheet;
-  }>;
+  abstract start(): Promise<ContentFactory>;
 
   constructor(ele: HTMLElement) {
     this.#ele = ele;
@@ -110,9 +108,8 @@ abstract class Base {
     for (const key in this.aria)
       if (key === "role") internals.role = this.aria[key];
       else internals[`aria${key}`] = this.aria[key];
-    const { html, css } = await this.start();
-    this.#html = html;
-    this.#css = css;
+    const content = await this.start();
+    this.#content = content;
 
     this.#render();
 
@@ -134,10 +131,11 @@ abstract class Base {
 
   adoptedCallback() {}
 
-  #render() {
+  async #render() {
     this.#ele.dispatchEvent(new BeforeRenderEvent());
-    this.styles = RenderSheet(this.#css());
-    this.#virtual_dom.Merge(this.#html());
+    const [html, css] = await this.#content();
+    this.styles = RenderSheet(css());
+    this.#virtual_dom.Merge(html);
     this.#ele.dispatchEvent(new RenderEvent());
   }
 

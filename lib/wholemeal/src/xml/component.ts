@@ -5,46 +5,42 @@ import Element from "./element";
 import Sheet from "../pss/sheet";
 import * as Js from "../writer/mod";
 import Metadata from "./metadata/mod";
+import { Assert, IsInstanceOf } from "@ipheion/safe-type";
 
 const IsImport = /import (?:(?:[^;'"]|\n)+ from )?['"].+['"]/gm;
 
-const Blocks: Array<(s: string) => string> = [
-  (s) =>
-    s.replaceAll(
-      /([^,{\s(=])\s*\$before:\s*{/gm,
-      `$1;\nself.before_render = async (event) => {`
-    ),
-  (s) =>
-    s.replaceAll(
-      /([^,{\s(=])\s*\$after:\s*{/gm,
-      `$1;\nself.after_render = async (event) => {`
-    ),
-  (s) =>
-    s.replaceAll(
-      /([^,{\s(=])\s*\$load:\s*{/gm,
-      `$1;\nself.after_load = async (event) => {`
-    ),
-  (s) =>
-    s.replaceAll(
-      /([^,{\s(=])\s*\$props:\s*{/gm,
-      `$1;\nself.after_props = async (event) => {`
-    ),
-  (s) =>
-    s.replaceAll(
-      /([^,{\s(=])\s*\$on_([a-zA-Z0-9_]+):\s*{/gm,
-      `$1;\nself.handler_for("$2").handler = async (event) => {`
-    ),
-];
+type ScriptContents = {
+  main: string;
+  handlers: Record<string, string>;
+};
 
 export default class Component {
   readonly #children: Array<Node> = [];
+  readonly #script_contents: ScriptContents;
 
   constructor(code: string) {
     const code_object = new Code(code);
     while (!code_object.Done)
-      if (code_object.Current === "<")
+      if (
+        code_object.Current === "<" ||
+        code_object.Current.startsWith("<script") ||
+        code_object.Current.startsWith("<style")
+      )
         this.#children.push(new Element(code_object));
       else this.#children.push(new Text(code_object));
+    this.#script_contents = this.#children
+      .filter((c) => c instanceof Element && c.TagName === "script")
+      .reduce(
+        (c, n) => {
+          Assert(IsInstanceOf(Element), n);
+          const data = n.TextContent;
+          const handler = n.RawAttribute.on;
+          if (!handler || typeof handler !== "string")
+            return { ...c, main: data };
+          return { ...c, handlers: { ...c.handlers, [handler]: data } };
+        },
+        { main: "", handlers: {} as Record<string, string> }
+      );
   }
 
   #find_tag(name: string) {
@@ -55,22 +51,18 @@ export default class Component {
     return target;
   }
 
-  get #script_content() {
-    const result = this.#find_tag("script");
-    if (!result) return "";
-    let text = result.TextContent;
-    for (const block of Blocks) text = block(text);
-    return text;
-  }
-
   get ScriptMain() {
-    return this.#script_content.replaceAll(IsImport, "").trim();
+    return this.#script_contents.main.replaceAll(IsImport, "").trim();
   }
 
   get ScriptImports() {
-    return [...(this.#script_content.match(IsImport) ?? [])]
+    return [...(this.#script_contents.main.match(IsImport) ?? [])]
       .map((s) => s)
       .join(";");
+  }
+
+  get Handlers() {
+    return this.#script_contents.handlers;
   }
 
   get Css() {
@@ -83,18 +75,12 @@ export default class Component {
   }
 
   get Html() {
-    return new Js.Function(
-      [],
-      "arrow",
-      undefined,
-      new Js.Block(
-        new Js.Declare("const", "result", new Js.Array()),
-        ...this.#children
-          .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
-          .map((c) => c.JavaScript),
-        new Js.Return(new Js.Reference("result"))
-      )
-    );
+    return [
+      new Js.Declare("const", "result", new Js.Array()),
+      ...this.#children
+        .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
+        .map((c) => c.JavaScript),
+    ];
   }
 
   get Metadata() {

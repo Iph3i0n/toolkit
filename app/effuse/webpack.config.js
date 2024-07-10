@@ -85,6 +85,7 @@ module.exports = async () => {
     output: {
       filename: "[contenthash].js",
       path: path.resolve(__dirname, "dist/ui"),
+      publicPath: "/",
     },
     mode: process.env.PRODUCTION ? "production" : "development",
     externals: {

@@ -95,11 +95,10 @@
       },
     })
   );
-
-  $on_blur: {
-    open = "";
-    self.should_render();
-  }
+</script>
+<script on="blur">
+  open = "";
+  self.should_render();
 </script>
 <style>
   @js const [theme, spec] = require("../global/theme");

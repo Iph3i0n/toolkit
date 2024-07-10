@@ -1,0 +1,20 @@
+<s:meta name="server-viewer">
+  <attr name="sso_client">The API client for the SSO Server</attr>
+  <attr name="server_id" />
+</s:meta>
+
+<script>
+  const get_server_id = () =>
+    window.location.pathname.split("/").filter((e) => e)[1];
+
+  let server_id = get_server_id();
+
+  document.addEventListener("NavigationEvent", () => {
+    server_id = get_server_id();
+  });
+</script>
+
+<div>
+  The server is
+  <s:text use=":server_id" />
+</div>

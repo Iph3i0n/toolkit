@@ -60,7 +60,6 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
     component,
     this.resourcePath
   );
-
   if (!this.resourceQuery) {
     return template.Wrapper.join(";");
   }

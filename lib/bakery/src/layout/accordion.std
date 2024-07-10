@@ -41,12 +41,11 @@
   const height = () => {
     return open ? title_height() + body_height() : title_height();
   };
-
-  $load: {
-    const ob = new ResizeObserver(() => self.dispatchEvent(new ShouldRender()));
-    ob.observe(title.current);
-    ob.observe(body.current);
-  }
+</script>
+<script on="load">
+  const ob = new ResizeObserver(() => self.dispatchEvent(new ShouldRender()));
+  ob.observe(title.current);
+  ob.observe(body.current);
 </script>
 <style>
   @js const [theme, spec] = require("../global/theme");

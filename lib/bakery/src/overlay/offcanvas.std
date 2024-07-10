@@ -59,24 +59,6 @@
     has_footer = e.currentTarget.assignedNodes().length > 0;
   }
 
-  $load: {
-    if (self.trigger) {
-      const off_click = On("click", self.trigger, () => {
-        if (typeof self === "undefined") {
-          off_click();
-          return;
-        }
-
-        open = true;
-        self.dispatchEvent(new ShouldRender());
-      });
-    }
-  }
-
-  $after: {
-    self.inert = !is_open();
-  }
-
   function close() {
     self.dispatchEvent(new CloseRequestedEvent());
     if (self.trigger) {
@@ -101,6 +83,22 @@
     if (self.path) return self.Matches;
     return false;
   }
+</script>
+<script on="load">
+  if (self.trigger) {
+    const off_click = On("click", self.trigger, () => {
+      if (typeof self === "undefined") {
+        off_click();
+        return;
+      }
+
+      open = true;
+      self.dispatchEvent(new ShouldRender());
+    });
+  }
+</script>
+<script on="after">
+  self.inert = !is_open();
 </script>
 <style>
   @js const [theme, spec] = require("../global/theme");

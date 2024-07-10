@@ -64,23 +64,6 @@
     }
   }
 
-  $on_drop: {
-    event.preventDefault();
-    update_value([...event.dataTransfer.files]);
-  }
-
-  $on_dragover: {
-    event.preventDefault();
-    const old = dragging;
-    dragging = true;
-    if (old !== dragging) self.should_render();
-    clear();
-  }
-
-  $on_click: {
-    update_value([await get_file(self.accept)]);
-  }
-
   function debounce(func, timeout = 300) {
     let timer;
     return (...args) => {
@@ -119,6 +102,20 @@
       }
     };
   }
+</script>
+<script on="drop">
+  event.preventDefault();
+  update_value([...event.dataTransfer.files]);
+</script>
+<script on="dragover">
+  event.preventDefault();
+  const old = dragging;
+  dragging = true;
+  if (old !== dragging) self.should_render();
+  clear();
+</script>
+<script on="click">
+  update_value([await get_file(self.accept)]);
 </script>
 
 <style>

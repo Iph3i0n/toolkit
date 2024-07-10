@@ -41,10 +41,9 @@
       self.dispatchEvent(new PaginationEvent(skip, take()));
     };
   }
-
-  $load: {
-    self.dispatchEvent(new PaginationEvent(skip, take()));
-  }
+</script>
+<script on="load">
+  self.dispatchEvent(new PaginationEvent(skip, take()));
 </script>
 
 <style>

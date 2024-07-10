@@ -108,16 +108,15 @@
       }
     }
   }
-
-  $after: {
-    const c = content.current;
-    if (!c) return;
-    c.innerHTML = "";
-    for (const root of data()) {
-      const input = document.createElement(root.tag);
-      insert_children(input, root.children);
-      c.appendChild(input);
-    }
+</script>
+<script on="after">
+  const c = content.current;
+  if (!c) return;
+  c.innerHTML = "";
+  for (const root of data()) {
+    const input = document.createElement(root.tag);
+    insert_children(input, root.children);
+    c.appendChild(input);
   }
 </script>
 <style>

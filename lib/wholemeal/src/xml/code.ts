@@ -1,8 +1,6 @@
-export default class Code {
-  static get #splitter() {
-    return /((?<=<script>)(?:.|\n)*(?=<\/script>)|(?<=<style>)(?:.|\n)*(?=<\/style>)|"[^"]*"|<\/|\/>|<|>|\s|=)/gm;
-  }
+import { SplitCode } from "./splitter";
 
+export default class Code {
   static get #key_worder() {
     return /(<\/|\/>|<|>)/gm;
   }
@@ -13,10 +11,7 @@ export default class Code {
 
   constructor(code: string) {
     this.#code = code.trim();
-    this.#data = this.#code
-      .trim()
-      .split(Code.#splitter)
-      .filter((t) => t);
+    this.#data = SplitCode(this.#code);
   }
 
   *[Symbol.iterator]() {

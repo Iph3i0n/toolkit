@@ -13,11 +13,6 @@
 
   self.provide_context(self.name, window[self.var] ?? default_value);
 
-  $props: {
-    const default_value = new Function("return " + self.default)();
-    self.provide_context(self.name, window[self.var] ?? default_value);
-  }
-
   self.addEventListener(SetContextEventKey, (event) => {
     if (event.Key !== self.name) return;
 
@@ -25,6 +20,10 @@
     event.stopPropagation();
     self.provide_context(self.name, event.Data);
   });
+</script>
+<script on="props">
+  const new_default = new Function("return " + self.default)();
+  self.provide_context(self.name, window[self.var] ?? new_default);
 </script>
 
 <slot />

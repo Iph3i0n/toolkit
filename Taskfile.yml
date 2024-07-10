@@ -9,7 +9,7 @@ tasks:
     cmds:
       - npx webpack
     env:
-      PRODUCTION: 'true'
+      PRODUCTION: "true"
 
   bakery:dev:
     deps: [safe-type:build, wholemeal:build]
@@ -47,10 +47,9 @@ tasks:
       - npx tsc
 
   wholemeal:test:
-    deps: [safe-type:build]
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"
     cmds:
-      - npm run test
+      - node --test --import tsx ./src/**/*.test.ts
 
   effuse:setup:
     cmds:

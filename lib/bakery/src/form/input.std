@@ -57,14 +57,6 @@
   const slot = slotted();
   const textarea = CreateRef();
 
-  $on_focus: {
-    textarea.current.focus();
-  }
-
-  $after: {
-    textarea.current.value = self.value ?? "";
-  }
-
   self.addEventListener(
     "keydown",
     on_key_handler({
@@ -78,6 +70,12 @@
   function update_value() {
     self.value = textarea.current.value;
   }
+</script>
+<script on="after">
+  textarea.current.value = self.value ?? "";
+</script>
+<script on="focus">
+  textarea.current.focus();
 </script>
 <style>
   @insert ../styles/single-line-input.pss;
