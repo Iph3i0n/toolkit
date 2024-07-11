@@ -76,6 +76,16 @@ export class LocalClient {
     });
   }
 
+  async PutChannel(channel_id: string, name: string) {
+    return await this.#client.Send({
+      method: "PUT",
+      url: "/api/v1/channels/:channel_id",
+      params: { channel_id },
+      headers: await this.#headers,
+      body: { Name: name },
+    });
+  }
+
   async PostChannel(name: string, type: string) {
     return await this.#client.Send({
       method: "POST",

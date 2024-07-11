@@ -23,6 +23,11 @@
     await self.client.PutRole(role.RoleId, name, role.Password);
   }
 
+  async function rename_channel(channel, name) {
+    if (channel.Name === name) return;
+    await self.client.PutChannel(channel.ChannelId, name);
+  }
+
   async function set_password(role, password) {
     if (role.Password === password) return;
     await self.client.PutRole(role.RoleId, role.Name, password);
@@ -95,30 +100,6 @@
 <l-row no-padding>
   <l-col xs="12">
     <d-card>
-      <span slot="title">Create a Channel</span>
-      <f-form submit="event-only" on:Submitted="create_channel">
-        <l-row>
-          <l-col xs="12">
-            <f-input name="name" required>Channel Name</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-select name="type" required>
-              <option value="Messages">Text Chat</option>
-              <option value="Forum">Forum</option>
-              <option value="Call">Voice Chat</option>
-              <option value="Calendar">Calendar</option>
-              <span slot="label">Channel Type</span>
-            </f-select>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Create</f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </d-card>
-  </l-col>
-  <l-col xs="12">
-    <d-card>
       <span slot="title">Server Metadata</span>
       <f-form submit="event-only" on:Submitted="update_metadata">
         <l-row>
@@ -134,6 +115,50 @@
           </l-col>
           <l-col xs="12">
             <f-button type="submit">Update</f-button>
+          </l-col>
+        </l-row>
+      </f-form>
+    </d-card>
+  </l-col>
+  <l-col xs="12">
+    <d-card>
+      <span slot="title">Channels</span>
+      <s:for subject=":channels" key="channel">
+        <l-accordion>
+          <span slot="title">
+            <s:text use=":channel.Name" />
+          </span>
+          <l-row>
+            <l-col xs="12">
+              <f-input
+                prefill=":channel.Name"
+                on:ValueChanged="e => rename_channel(channel, e.Value)"
+              >
+                Name
+              </f-input>
+            </l-col>
+          </l-row>
+        </l-accordion>
+      </s:for>
+      <f-form submit="event-only" on:Submitted="create_channel">
+        <l-row>
+          <l-col xs="12">
+            <t-heading level="h6">Create Channel</t-heading>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="name" required>Channel Name</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-select name="type" required>
+              <option value="Messages">Text Chat</option>
+              <option value="Forum">Forum</option>
+              <option value="Call">Voice Chat</option>
+              <option value="Calendar">Calendar</option>
+              <span slot="label">Channel Type</span>
+            </f-select>
+          </l-col>
+          <l-col xs="12">
+            <f-button type="submit">Create</f-button>
           </l-col>
         </l-row>
       </f-form>

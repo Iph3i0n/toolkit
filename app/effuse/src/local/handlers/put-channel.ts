@@ -23,7 +23,7 @@ export default class PutChannel extends Handler {
   async Process(request: PureRequest) {
     await this.#auth_service.RequireAdmin(request);
     const { channel_id } = request.Parameters({ channel_id: IsString });
-    const body = request.Body(IsObject({ Name: IsString, Public: IsBoolean }));
+    const body: any = request.body;
 
     const existing = this.State.channels[channel_id];
     if (!existing) return new EmptyResponse("NotFound");
@@ -33,7 +33,6 @@ export default class PutChannel extends Handler {
         ChannelId: channel_id,
         Type: existing.type,
         Name: body.Name,
-        Public: body.Public,
       }),
       {
         channels: {
