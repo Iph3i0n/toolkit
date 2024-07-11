@@ -61,8 +61,11 @@
   <l-col xs="12" md="9" lg="10">
     <s:if check=":is_admin">
       <u-route path="/admin">
-        <server-metadata client=":client" />
-        <server-create-channel client=":client" />
+        <l-container>
+          <server-metadata client=":client" />
+          <server-create-channel client=":client" />
+          <server-user-management client=":client" />
+        </l-container>
       </u-route>
     </s:if>
   </l-col>

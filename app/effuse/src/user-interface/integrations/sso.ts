@@ -325,6 +325,7 @@ export class SsoClient {
     const start_grant = await create_grant();
 
     return new LocalClient(
+      this,
       server_url,
       new GrantManager(start_grant, start_grant.Expires.getTime(), async () => {
         const result = await create_grant();

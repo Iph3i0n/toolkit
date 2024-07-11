@@ -6,3 +6,5 @@ import "./user-interface/components/effuse-profile.std";
 import "./user-interface/components/server-viewer.std";
 import "./user-interface/components/server-metadata.std";
 import "./user-interface/components/server-create-channel.std";
+import "./user-interface/components/server-user-management.std";
+import "./user-interface/components/user-card.std";

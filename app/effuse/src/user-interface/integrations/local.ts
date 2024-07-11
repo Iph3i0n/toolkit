@@ -1,16 +1,34 @@
-import { DoNotCare, IsArray, IsObject, IsString } from "@ipheion/safe-type";
+import {
+  DoNotCare,
+  IsArray,
+  IsBoolean,
+  IsLiteral,
+  IsObject,
+  IsString,
+} from "@ipheion/safe-type";
 import { ApiClient } from "./api-client";
 import { GrantManager } from "./grant-manager";
 import { ServerGrant } from "user-interface/models/server-grant";
 import { TransformFile } from "./file";
+import { SsoClient } from "./sso";
 
 export class LocalClient {
+  readonly #sso: SsoClient;
   readonly #grant_manager: GrantManager<ServerGrant>;
   readonly #client: ApiClient;
 
-  constructor(base_url: string, grant_manager: GrantManager<ServerGrant>) {
+  constructor(
+    sso: SsoClient,
+    base_url: string,
+    grant_manager: GrantManager<ServerGrant>
+  ) {
+    this.#sso = sso;
     this.#grant_manager = grant_manager;
     this.#client = new ApiClient(base_url);
+  }
+
+  get Sso() {
+    return this.#sso;
   }
 
   get #headers() {
@@ -72,6 +90,70 @@ export class LocalClient {
         Type: IsString,
         Name: IsString,
       }),
+    });
+  }
+
+  async GetAllBannedUsers() {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/banned-users",
+      headers: await this.#headers,
+      expect: IsArray(IsObject({ UserId: IsString })),
+    });
+  }
+
+  async PostBannedUser(user_id: string) {
+    return await this.#client.Send({
+      method: "POST",
+      url: "/api/v1/banned-users",
+      body: { UserId: user_id },
+      headers: await this.#headers,
+      expect: IsObject({ Message: IsLiteral("Success") }),
+    });
+  }
+
+  async GetAllUsers() {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/users",
+      headers: await this.#headers,
+      expect: IsArray(IsObject({ UserId: IsString, Role: IsString })),
+    });
+  }
+
+  async GetAllRoles() {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/roles",
+      headers: await this.#headers,
+      expect: IsArray(
+        IsObject({
+          RoleId: IsString,
+          Name: IsString,
+        })
+      ),
+    });
+  }
+
+  async GetAllRolesAdmin() {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/roles",
+      params: { with_permissions: "true" },
+      headers: await this.#headers,
+      expect: IsArray(
+        IsObject({
+          RoleId: IsString,
+          Name: IsString,
+          Admin: IsBoolean,
+          Policies: IsArray(
+            IsObject({
+              ChannelId: IsString,
+              Write: IsBoolean,
+            })
+          ),
+        })
+      ),
     });
   }
 

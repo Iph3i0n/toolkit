@@ -15,23 +15,21 @@
   const picture_url = `data:${MimeType};base64,${Base64Data}`;
 </script>
 
-<l-container>
-  <f-form submit="event-only" on:Submitted="update_metadata">
-    <l-row no-padding>
-      <l-col xs="12">
-        <t-heading level="h6">Server Metadata</t-heading>
-      </l-col>
-      <l-col xs="12">
-        <f-input name="name" prefill=":metadata.ServerName" required>
-          Server Name
-        </f-input>
-      </l-col>
-      <l-col xs="12">
-        <f-image name="picture" prefill=":picture_url">Profile Picture</f-image>
-      </l-col>
-      <l-col xs="12">
-        <f-button type="submit">Update</f-button>
-      </l-col>
-    </l-row>
-  </f-form>
-</l-container>
+<f-form submit="event-only" on:Submitted="update_metadata">
+  <l-row>
+    <l-col xs="12">
+      <t-heading level="h6">Server Metadata</t-heading>
+    </l-col>
+    <l-col xs="12">
+      <f-input name="name" prefill=":metadata.ServerName" required>
+        Server Name
+      </f-input>
+    </l-col>
+    <l-col xs="12">
+      <f-image name="picture" prefill=":picture_url">Profile Picture</f-image>
+    </l-col>
+    <l-col xs="12">
+      <f-button type="submit">Update</f-button>
+    </l-col>
+  </l-row>
+</f-form>

@@ -1,0 +1,62 @@
+<s:meta name="server-user-management">
+  <attr name="client">The API client for the SSO Server</attr>
+</s:meta>
+
+<script>
+  let editing = undefined;
+
+  function on_start_editing(event) {
+    editing = event.detail;
+  }
+
+  function ban_user() {
+    return self.client
+      .PostBannedUser(editing.profile.UserId)
+      .then(() => self.should_render());
+  }
+
+function change_role() {
+  return self.client
+    .PostBannedUser(editing.profile.UserId)
+    .then(() => self.should_render());
+}
+</script>
+
+<script on="mut">
+  const users = await self.client.GetAllUsers();
+  const banned = await self.client.GetAllBannedUsers();
+</script>
+
+<l-row>
+  <s:for subject=":users" key="user">
+    <l-col xs="12" md="6" lg="3">
+      <user-card
+        client=":self.client"
+        user_id=":user.UserId"
+        role_id=":user.Role"
+        on:request_edit="on_start_editing"
+      />
+    </l-col>
+  </s:for>
+  <s:if check=":banned.length">
+    <l-col xs="12">
+      <t-heading level="h6">Banned Users</t-heading>
+    </l-col>
+    <s:for subject=":banned" key="user">
+      <l-col xs="12" md="6" lg="3">
+        <user-card
+          client=":self.client"
+          user_id=":user.UserId"
+          role_id=":user.Role"
+          on:request_edit="on_start_editing"
+        />
+      </l-col>
+    </s:for>
+  </s:if>
+</l-row>
+
+<s:if check=":!!editing">
+  <o-modal open on:CloseRequested="() => (editing = undefined)">
+    <span slot="title"><s:text use=":editing.profile.UserName" /></span>
+  </o-modal>
+</s:if>

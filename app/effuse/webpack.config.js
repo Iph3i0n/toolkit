@@ -107,15 +107,6 @@ module.exports = async () => {
             ${htmlWebpackPlugin.tags.headTags}
             ${response.html.join("")}
             <script src="/index.js"></script>
-            <style>
-              html,
-              body {
-                height: 100%;
-              }
-              body {
-                overflow: hidden;
-              }
-            </style>
           </head>
           <body>
             <effuse-start></effuse-start>
