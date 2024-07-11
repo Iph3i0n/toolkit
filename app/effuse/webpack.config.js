@@ -106,6 +106,7 @@ module.exports = async () => {
           <head>
             ${htmlWebpackPlugin.tags.headTags}
             ${response.html.join("")}
+            <title>Effuse</title>
             <script src="/index.js"></script>
           </head>
           <body>

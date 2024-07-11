@@ -146,6 +146,7 @@ export class LocalClient {
           RoleId: IsString,
           Name: IsString,
           Admin: IsBoolean,
+          Password: IsString,
           Policies: IsArray(
             IsObject({
               ChannelId: IsString,
@@ -154,6 +155,61 @@ export class LocalClient {
           ),
         })
       ),
+    });
+  }
+
+  async PutRole(role_id: string, name: string, password: string) {
+    return await this.#client.Send({
+      method: "PUT",
+      url: "/api/v1/roles/:role_id",
+      params: { role_id },
+      body: { Name: name, Password: password },
+      headers: await this.#headers,
+      expect: IsObject({
+        RoleId: IsString,
+        Name: IsString,
+      }),
+    });
+  }
+
+  async PostAdminRole(role_id: string) {
+    return await this.#client.Send({
+      method: "POST",
+      url: "/api/v1/admin-roles",
+      body: { RoleId: role_id },
+      headers: await this.#headers,
+    });
+  }
+
+  async DeleteAdminRole(role_id: string) {
+    return await this.#client.Send({
+      method: "DELETE",
+      url: "/api/v1/admin-roles/:role_id",
+      params: { role_id },
+      headers: await this.#headers,
+    });
+  }
+
+  async PostRoleChannel(
+    role_id: string,
+    channel_id: string,
+    allow_write: boolean
+  ) {
+    return await this.#client.Send({
+      method: "POST",
+      url: "/api/v1/roles/:role_id/channels",
+      params: { role_id },
+      body: { ChannelId: channel_id, AllowWrite: allow_write },
+      headers: await this.#headers,
+    });
+  }
+
+  async DeleteRoleChannel(role_id: string, channel_id: string) {
+    return await this.#client.Send({
+      method: "DELETE",
+      url: "/api/v1/roles/:role_id/channels/:channel_id",
+      params: { role_id, channel_id },
+      headers: await this.#headers,
     });
   }
 

@@ -23,29 +23,23 @@
   const body = CreateRef();
   let open = self.open ?? false;
 
-  if (open) self.dispatchEvent(new AccordionOpenEvent(id));
-
   self.parentElement.addEventListener("AccordionOpened", (e) => {
     if (!self.independent && e.Id !== id) open = false;
-    self.dispatchEvent(new ShouldRender());
+    self.should_render();
   });
-
-  function toggle() {
-    open = !open;
-    if (open) self.dispatchEvent(new AccordionOpenEvent(id));
-  }
-
-  const title_height = () => title.current?.clientHeight ?? 0;
-  const body_height = () => body.current?.clientHeight ?? 0;
-
-  const height = () => {
-    return open ? title_height() + body_height() : title_height();
-  };
 </script>
 <script on="load">
-  const ob = new ResizeObserver(() => self.dispatchEvent(new ShouldRender()));
+  const ob = new ResizeObserver(() => self.should_render());
   ob.observe(title.current);
   ob.observe(body.current);
+</script>
+<script on="mut">
+  const title_height = title.current?.clientHeight ?? 0;
+  const body_height = body.current?.clientHeight ?? 0;
+
+  const height = open ? title_height + body_height : title_height;
+
+  if (open) self.dispatchEvent(new AccordionOpenEvent(id));
 </script>
 <style>
   @js const [theme, spec] = require("../global/theme");
@@ -55,7 +49,7 @@
     theme.border("body");
     overflow: hidden;
     theme.margin("block", "top", "bottom");
-    height: ":height() + 'px'";
+    height: ":height + 'px'";
     theme.transition("fast", "height");
   }
 
@@ -86,7 +80,7 @@
   }
 </style>
 
-<div class="title" s:ref="title" on:click="toggle">
+<div class="title" s:ref="title" on:click="() => (open = !open)">
   <slot name="title"></slot>
 
   <t-icon name="arrow-down-s" colour="body" size="h6" text></t-icon>

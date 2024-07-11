@@ -76,6 +76,7 @@ export default class Template {
     ["before", "before_render"],
     ["after", "after_render"],
     ["props", "after_props"],
+    ["load", "after_load"],
   ];
 
   get Module() {

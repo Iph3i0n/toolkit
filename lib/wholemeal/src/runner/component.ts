@@ -111,7 +111,7 @@ abstract class Base {
     const content = await this.start();
     this.#content = content;
 
-    this.#render();
+    await this.#render();
 
     const on_render = (() => {
       let timeout: number | NodeJS.Timeout = 0;

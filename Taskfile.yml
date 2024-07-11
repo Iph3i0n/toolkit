@@ -96,7 +96,6 @@ tasks:
       UI_URL: http://localhost:3001
 
   effuse:run-sso:
-    deps: [effuse:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
       - node ./dist/src/sso.js
@@ -106,7 +105,6 @@ tasks:
       UI_URL: http://localhost:3001
 
   effuse:run-local:
-    deps: [effuse:build]
     dir: "{{.TASKFILE_DIR}}/app/effuse"
     cmds:
       - node ./dist/src/local.js

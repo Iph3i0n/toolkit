@@ -4,7 +4,5 @@ import "./user-interface/components/effuse-server-list-item.std";
 import "./user-interface/components/effuse-join-server.std";
 import "./user-interface/components/effuse-profile.std";
 import "./user-interface/components/server-viewer.std";
-import "./user-interface/components/server-metadata.std";
-import "./user-interface/components/server-create-channel.std";
-import "./user-interface/components/server-user-management.std";
+import "./user-interface/components/server-admin.std";
 import "./user-interface/components/user-card.std";

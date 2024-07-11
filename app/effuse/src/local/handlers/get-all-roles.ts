@@ -24,6 +24,7 @@ export default class GetAllRoles extends Handler {
           RoleId: id,
           Name: item.name,
           Admin: item.admin,
+          Password: item.password,
           Policies: item.policies.map((p) => ({
             ChannelId: p.channel_id,
             Write: p.access === "Write",
