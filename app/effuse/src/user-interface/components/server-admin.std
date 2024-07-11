@@ -56,6 +56,27 @@
     await self.client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
     await self.client.PostRoleChannel(role.RoleId, channel.ChannelId, true);
   }
+
+  let user_names = {};
+  async function get_user_name(user_id) {
+    const profile = await self.client.Sso.GetPublicProfile(user_id);
+
+    const name = profile.UserName;
+    user_names[user_id] = name;
+    return name;
+  }
+
+  async function set_user_role(user_id, role_id) {
+    await self.client.PutUserRole(user_id, role_id);
+  }
+
+  async function ban_user(user_id) {
+    await self.client.PostBannedUser(user_id);
+  }
+
+  async function unban_user(user_id) {
+    await self.client.DeleteBannedUser(user_id);
+  }
 </script>
 
 <script on="mut">
@@ -191,13 +212,40 @@
       <span slot="title">Users</span>
       <l-row>
         <s:for subject=":users" key="user">
-          <l-col xs="12" md="6" lg="3">
-            <user-card
-              client=":self.client"
-              user_id=":user.UserId"
-              role_id=":user.Role"
-              on:request_edit="on_start_editing"
-            />
+          <l-col xs="12" md="6" lg="4" xl="3">
+            <s:use get=":roles.find(r => r.RoleId === user.Role)" as="role">
+              <d-panel colour="body" bordered>
+                <l-row>
+                  <l-col xs="6">
+                    <t-paragraph>
+                      <async-text data=":get_user_name(user.UserId)" />
+                    </t-paragraph>
+                  </l-col>
+                  <l-col xs="6" style="text-align: right">
+                    <f-button
+                      type="button"
+                      on:click="() => ban_user(user.UserId)"
+                    >
+                      Ban User
+                    </f-button>
+                  </l-col>
+                  <l-col xs="12">
+                    <f-select
+                      name="type"
+                      prefill=":role.RoleId"
+                      on:ValueChanged="e => set_user_role(user.UserId, e.Value)"
+                    >
+                      <s:for subject=":roles" as="role">
+                        <option value=":role.RoleId">
+                          <s:text use=":role.Name" />
+                        </option>
+                      </s:for>
+                      <span slot="label">Role</span>
+                    </f-select>
+                  </l-col>
+                </l-row>
+              </d-panel>
+            </s:use>
           </l-col>
         </s:for>
         <s:if check=":banned.length">
@@ -206,12 +254,23 @@
           </l-col>
           <s:for subject=":banned" key="user">
             <l-col xs="12" md="6" lg="3">
-              <user-card
-                client=":self.client"
-                user_id=":user.UserId"
-                role_id=":user.Role"
-                on:request_edit="on_start_editing"
-              />
+              <d-panel colour="body" bordered>
+                <l-row>
+                  <l-col xs="6">
+                    <t-paragraph>
+                      <async-text data=":get_user_name(user.UserId)" />
+                    </t-paragraph>
+                  </l-col>
+                  <l-col xs="6" style="text-align: right">
+                    <f-button
+                      type="button"
+                      on:click="() => unban_user(user.UserId)"
+                    >
+                      Unban User
+                    </f-button>
+                  </l-col>
+                </l-row>
+              </d-panel>
             </l-col>
           </s:for>
         </s:if>

@@ -1,0 +1,9 @@
+<s:meta name="async-text">
+  <attr name="data" />
+</s:meta>
+
+<script on="mut">
+  const content = await self.data;
+</script>
+
+<s:text use=":content" />

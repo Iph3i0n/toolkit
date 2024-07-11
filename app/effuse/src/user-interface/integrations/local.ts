@@ -108,7 +108,15 @@ export class LocalClient {
       url: "/api/v1/banned-users",
       body: { UserId: user_id },
       headers: await this.#headers,
-      expect: IsObject({ Message: IsLiteral("Success") }),
+    });
+  }
+
+  async DeleteBannedUser(user_id: string) {
+    return await this.#client.Send({
+      method: "DELETE",
+      url: "/api/v1/banned-users/:user_id",
+      params: { user_id },
+      headers: await this.#headers,
     });
   }
 
@@ -118,6 +126,16 @@ export class LocalClient {
       url: "/api/v1/users",
       headers: await this.#headers,
       expect: IsArray(IsObject({ UserId: IsString, Role: IsString })),
+    });
+  }
+
+  async PutUserRole(user_id: string, role_id: string) {
+    return await this.#client.Send({
+      method: "PUT",
+      url: "/api/v1/users/:user_id/role",
+      params: { user_id },
+      body: { RoleId: role_id },
+      headers: await this.#headers,
     });
   }
 

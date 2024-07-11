@@ -6,3 +6,4 @@ import "./user-interface/components/effuse-profile.std";
 import "./user-interface/components/server-viewer.std";
 import "./user-interface/components/server-admin.std";
 import "./user-interface/components/user-card.std";
+import "./user-interface/components/async-text.std";
