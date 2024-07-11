@@ -1,36 +1,67 @@
 <s:meta name="server-viewer">
   <attr name="sso_client">The API client for the SSO Server</attr>
+  <attr name="server_id" />
 </s:meta>
 
 <script>
-  const get_server_id = () =>
-    window.location.pathname.split("/").filter((e) => e)[1];
+  const channel_url = (channel) =>
+    `/server/${self.server_id}/channels/${channel.ChannelId}`;
 
-  const get_server = async (server_id) => {
+  const get_server = async () => {
     const profile = await self.sso_client.GetProfile();
-    return profile.Servers.find((s) => s.Id === server_id);
+    return profile.Servers.find((s) => s.Id === self.server_id);
   };
 
-  document.addEventListener("NavigationEvent", () => {
-    self.should_render();
-  });
+  document.addEventListener("NavigationEvent", () => self.should_render());
 </script>
 
 <script on="mut">
-  const server_id = get_server_id();
-  const server = await get_server(server_id);
+  const server = await get_server();
 
   const client = await self.sso_client.GetLocalClient(server.Url);
 
   const metadata = await client.GetMetadata();
+  const channels = await client.GetAllChannels();
+  const is_admin = await client.IsAdmin();
+
+  const admin_url = `/server/${self.server_id}/admin`;
 </script>
 
-<t-heading level="h1">
-  <s:text use=":metadata.ServerName" />
-</t-heading>
+<style>
+  t-paragraph[slot="title"] {
+    position: relative;
+  }
 
-<s:if check=":await client.IsAdmin()">
-  <u-route path="/metadata">
-    <server-metadata client=":client" />
-  </u-route>
-</s:if>
+  t-paragraph[slot="title"] t-link {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+  }
+</style>
+
+<l-row>
+  <l-col xs="12" md="3" lg="2">
+    <d-card>
+      <t-paragraph slot="title">
+        <s:text use=":metadata.ServerName" />
+        <s:if check=":is_admin">
+          <t-link href=":admin_url" spa>
+            <t-icon name="settings-2" size="body" colour="body" text />
+          </t-link>
+        </s:if>
+      </t-paragraph>
+      <s:for subject=":channels" key="channel">
+        <t-link href=":channel_url(channel)" block spa>
+          <s:text use=":channel.Name" />
+        </t-link>
+      </s:for>
+    </d-card>
+  </l-col>
+  <l-col xs="12" md="9" lg="10">
+    <s:if check=":is_admin">
+      <u-route path="/admin">
+        <server-metadata client=":client" />
+      </u-route>
+    </s:if>
+  </l-col>
+</l-row>

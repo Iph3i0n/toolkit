@@ -17,7 +17,7 @@
 
 <l-container>
   <f-form submit="event-only" on:Submitted="update_metadata">
-    <l-row>
+    <l-row no-padding>
       <l-col xs="12">
         <f-input name="name" prefill=":metadata.ServerName" required>
           Server Name
@@ -26,8 +26,6 @@
       <l-col xs="12">
         <f-image name="picture" prefill=":picture_url">Profile Picture</f-image>
       </l-col>
-    </l-row>
-    <l-row>
       <l-col xs="12">
         <f-button type="submit">Update</f-button>
       </l-col>

@@ -21,6 +21,11 @@
     servers = await get_servers();
     self.should_render();
   });
+
+  document.addEventListener("NavigationEvent", () => {
+    open = false;
+    self.should_render();
+  });
 </script>
 
 <style>

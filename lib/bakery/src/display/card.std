@@ -8,6 +8,13 @@
   >
     A colour to fill the card with.
   </attr>
+  <attr
+    name="title-level"
+    type="import('../global/types/theme').HeadingLevel"
+    default="h6"
+  >
+    The size of the title text
+  </attr>
   <slot>The body of the card.</slot>
   <slot name="title">
     The title content of the card. Does not require text styling.
@@ -42,7 +49,7 @@
     theme.padding("block");
     theme.colour("body");
     theme.border("body", "contrast", "bottom");
-    theme.text("h6", "no-margin");
+    theme.text(self["title-level"], "no-margin");
   }
 </style>
 

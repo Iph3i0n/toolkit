@@ -8,6 +8,9 @@
   let sso = await SsoClient.Attempt();
   let mode = "login";
 
+  const get_server_id = () =>
+    window.location.pathname.split("/").filter((e) => e)[1];
+
   async function on_login({ FormData }) {
     sso = await SsoClient.Login(FormData.Email, FormData.Password);
   }
@@ -19,6 +22,12 @@
       password: FormData.Password,
     });
   }
+
+  document.addEventListener("NavigationEvent", () => self.should_render());
+</script>
+
+<script on="mut">
+  const server_id = get_server_id();
 </script>
 
 <style>
@@ -100,6 +109,8 @@
   </u-route>
 
   <u-route path="/server/:server_id">
-    <server-viewer sso_client=":sso" />
+    <s:if check=":!!server_id">
+      <server-viewer sso_client=":sso" server_id=":server_id" />
+    </s:if>
   </u-route>
 </s:if>

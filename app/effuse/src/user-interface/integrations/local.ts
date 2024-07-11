@@ -1,4 +1,4 @@
-import { DoNotCare, IsObject, IsString } from "@ipheion/safe-type";
+import { DoNotCare, IsArray, IsObject, IsString } from "@ipheion/safe-type";
 import { ApiClient } from "./api-client";
 import { GrantManager } from "./grant-manager";
 import { ServerGrant } from "user-interface/models/server-grant";
@@ -44,6 +44,17 @@ export class LocalClient {
         IconMimeType: mime,
       },
       expect: DoNotCare,
+    });
+  }
+
+  async GetAllChannels() {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels",
+      headers: await this.#headers,
+      expect: IsArray(
+        IsObject({ ChannelId: IsString, Type: IsString, Name: IsString })
+      ),
     });
   }
 

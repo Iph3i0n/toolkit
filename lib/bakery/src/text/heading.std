@@ -2,7 +2,7 @@
   A HTML heading tag.
   <attr
     name="level"
-    type="mport('../global/types/theme').HeadingLevel"
+    type="import('../global/types/theme').HeadingLevel"
     default="h1"
   >
     The heading level.
