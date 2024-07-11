@@ -186,6 +186,15 @@ export class LocalClient {
     });
   }
 
+  async PostRole(name: string, password: string) {
+    return await this.#client.Send({
+      method: "POST",
+      url: "/api/v1/roles",
+      body: { Name: name, Password: password },
+      headers: await this.#headers,
+    });
+  }
+
   async PutRole(role_id: string, name: string, password: string) {
     return await this.#client.Send({
       method: "PUT",

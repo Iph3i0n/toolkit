@@ -18,6 +18,10 @@
     document.dispatchEvent(new CustomEvent("ChannelsUpdated"));
   }
 
+  async function create_role({ FormData }) {
+    await self.client.PostRole(FormData.name, FormData.password);
+  }
+
   async function rename_role(role, name) {
     if (role.Name === name) return;
     await self.client.PutRole(role.RoleId, name, role.Password);
@@ -230,6 +234,23 @@
           </l-row>
         </l-accordion>
       </s:for>
+
+      <f-form submit="event-only" on:Submitted="create_role">
+        <l-row>
+          <l-col xs="12">
+            <t-heading level="h6">Create Role</t-heading>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="name" required>Role Name</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-input name="password" required sensitive>Password</f-input>
+          </l-col>
+          <l-col xs="12">
+            <f-button type="submit">Create</f-button>
+          </l-col>
+        </l-row>
+      </f-form>
     </d-card>
   </l-col>
   <l-col xs="12">
