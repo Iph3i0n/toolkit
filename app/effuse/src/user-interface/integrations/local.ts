@@ -58,6 +58,23 @@ export class LocalClient {
     });
   }
 
+  async PostChannel(name: string, type: string) {
+    return await this.#client.Send({
+      method: "POST",
+      url: "/api/v1/channels",
+      headers: await this.#headers,
+      body: {
+        Name: name,
+        Type: type,
+      },
+      expect: IsObject({
+        ChannelId: IsString,
+        Type: IsString,
+        Name: IsString,
+      }),
+    });
+  }
+
   async IsAdmin() {
     return (await this.#grant_manager.GetGrant()).IsAdmin;
   }

@@ -19,6 +19,9 @@
   <f-form submit="event-only" on:Submitted="update_metadata">
     <l-row no-padding>
       <l-col xs="12">
+        <t-heading level="h6">Server Metadata</t-heading>
+      </l-col>
+      <l-col xs="12">
         <f-input name="name" prefill=":metadata.ServerName" required>
           Server Name
         </f-input>

@@ -13,6 +13,7 @@
   };
 
   document.addEventListener("NavigationEvent", () => self.should_render());
+  document.addEventListener("ChannelsUpdated", () => self.should_render());
 </script>
 
 <script on="mut">
@@ -61,6 +62,7 @@
     <s:if check=":is_admin">
       <u-route path="/admin">
         <server-metadata client=":client" />
+        <server-create-channel client=":client" />
       </u-route>
     </s:if>
   </l-col>

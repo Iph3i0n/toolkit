@@ -20,6 +20,6 @@ export class Enum<T extends string> implements ISerialiseable<T> {
   }
 
   Confirm(value: unknown): value is T {
-    return typeof value === "number";
+    return typeof value === "string" && this.#options.includes(value as T);
   }
 }

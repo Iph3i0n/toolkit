@@ -1,0 +1,35 @@
+<s:meta name="server-create-channel">
+  <attr name="client">The API client for the SSO Server</attr>
+</s:meta>
+
+<script>
+  async function create_channel({ FormData }) {
+    await self.client.PostChannel(FormData.name, FormData.type);
+    document.dispatchEvent(new CustomEvent("ChannelsUpdated"));
+  }
+</script>
+
+<l-container>
+  <f-form submit="event-only" on:Submitted="create_channel">
+    <l-row no-padding>
+      <l-col xs="12">
+        <t-heading level="h6">Create a Channel</t-heading>
+      </l-col>
+      <l-col xs="12">
+        <f-input name="name" required>Channel Name</f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-select name="type" required>
+          <option value="Messages">Text Chat</option>
+          <option value="Forum">Forum</option>
+          <option value="Call">Voice Chat</option>
+          <option value="Calendar">Calendar</option>
+          <span slot="label">Channel Type</span>
+        </f-select>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</l-container>

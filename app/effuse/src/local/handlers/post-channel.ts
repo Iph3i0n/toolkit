@@ -22,7 +22,6 @@ export default class PostChannel extends Handler {
       IsObject({
         Name: IsString,
         Type: IsOneOf("Messages", "Forum", "Call", "Calendar"),
-        Public: IsBoolean,
       })
     );
 
@@ -33,7 +32,6 @@ export default class PostChannel extends Handler {
         ChannelId: id,
         Type: body.Type,
         Name: body.Name,
-        Public: body.Public,
       }),
       {
         channels: {

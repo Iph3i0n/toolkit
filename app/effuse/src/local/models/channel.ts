@@ -1,5 +1,4 @@
 import {
-  Bool,
   Enum,
   Literal,
   Serialised,
