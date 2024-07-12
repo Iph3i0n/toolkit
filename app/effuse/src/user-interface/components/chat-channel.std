@@ -7,10 +7,7 @@
 <script>
   import { SSO_BASE } from "effuse-config";
 
-  let offset = 0n;
-  let messages = (
-    await self.client.GetMessages(self.channel_id, offset)
-  ).reverse();
+  let messages = (await self.client.GetMessages(self.channel_id, 0n)).reverse();
   const users = (
     await Promise.all(
       (
@@ -40,6 +37,23 @@
     const text = self.querySelector("#input-box");
     await self.client.PostMessage(self.channel_id, FormData.text);
     text.value = "";
+  }
+
+  let waiting = undefined;
+
+  function on_scroll(event) {
+    const target = event.target;
+    const position =
+      target.scrollTop + target.scrollHeight - target.clientHeight;
+
+    if (position < 20 && !waiting)
+      waiting = self.client
+        .GetMessages(self.channel_id, BigInt(messages.length))
+        .then((r) => {
+          messages.push(...r.reverse());
+        });
+
+    return waiting;
   }
 </script>
 
@@ -96,7 +110,7 @@
 </style>
 
 <d-panel class="chat-box" colour="surface">
-  <div class="messages">
+  <div class="messages" on:scroll="on_scroll">
     <s:for subject=":messages" key="message">
       <s:use get=":users[message.Who]" as="user">
         <l-row class="message">
