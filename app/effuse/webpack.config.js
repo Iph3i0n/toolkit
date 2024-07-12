@@ -108,6 +108,11 @@ module.exports = async () => {
             ${response.html.join("")}
             <title>Effuse</title>
             <script src="/index.js"></script>
+            <script type="module">
+              if (!("anchorName" in document.documentElement.style)) {
+                import("https://unpkg.com/@oddbird/css-anchor-positioning");
+              }
+            </script>
           </head>
           <body>
             <effuse-start></effuse-start>

@@ -1,7 +1,9 @@
 import {
+  Assert,
   DoNotCare,
   IsArray,
   IsBoolean,
+  IsLiteral,
   IsObject,
   IsString,
 } from "@ipheion/safe-type";
@@ -255,6 +257,81 @@ export class LocalClient {
       params: { role_id },
       headers: await this.#headers,
       expect: IsObject({ Url: IsString }),
+    });
+  }
+
+  async GetMessages(channel_id: string, offset: bigint) {
+    const result = await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels/:channel_id/messages",
+      params: { channel_id, offset: offset.toString() },
+      headers: await this.#headers,
+      expect: IsArray(
+        IsObject({
+          Text: IsString,
+          When: IsString,
+          Who: IsString,
+        })
+      ),
+    });
+
+    return result.map((r) => ({ ...r, When: new Date(r.When) }));
+  }
+
+  async Subscribe(
+    channel_id: string,
+    bind: HTMLElement,
+    handler: (message: { Text: string; When: Date; Who: string }) => void
+  ) {
+    const grant = await this.#grant_manager.GetGrant();
+    const connection = new WebSocket(
+      this.#client.Url("/ws/chat/:channel_id", {
+        channel_id,
+        token: grant.LocalToken,
+      })
+    );
+
+    connection.onmessage = (ev) => {
+      const data = JSON.parse(ev.data);
+      Assert(
+        IsObject({
+          Text: IsString,
+          Type: IsLiteral("Message"),
+          When: IsString,
+          Who: IsString,
+        }),
+        data
+      );
+
+      handler({ ...data, When: new Date(data.When) });
+
+      if (!bind.parentElement) connection.close();
+    };
+  }
+
+  async GetChannelUsers(channel_id: string) {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels/:channel_id/users",
+      params: { channel_id },
+      headers: await this.#headers,
+      expect: IsArray(
+        IsObject({
+          UserId: IsString,
+          MayRead: IsBoolean,
+          MayWrite: IsBoolean,
+        })
+      ),
+    });
+  }
+
+  async PostMessage(channel_id: string, text: string) {
+    return this.#client.Send({
+      method: "POST",
+      url: "/api/v1/channels/:channel_id/messages",
+      params: { channel_id },
+      headers: await this.#headers,
+      body: { Text: text },
     });
   }
 

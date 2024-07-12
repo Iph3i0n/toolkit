@@ -21,7 +21,7 @@ export class ApiClient {
     return this.#base_url + "/";
   }
 
-  #url(url: string, parameters: Record<string, string> = {}) {
+  Url(url: string, parameters: Record<string, string> = {}) {
     const ps = { ...parameters };
 
     for (const key in ps)
@@ -47,7 +47,7 @@ export class ApiClient {
   }
 
   async Send<T>(config: RequestConfig<T>): Promise<T> {
-    const response = await fetch(this.#url(config.url, config.params), {
+    const response = await fetch(this.Url(config.url, config.params), {
       method: config.method,
       headers: {
         ...config.headers,

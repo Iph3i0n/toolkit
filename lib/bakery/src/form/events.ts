@@ -18,7 +18,7 @@ export class SubmittedEvent extends Event {
   readonly #data: FormValue;
 
   constructor(data: FormValue) {
-    super("Submitted", { bubbles: true });
+    super("Submitted", { bubbles: true, composed: true });
     this.#data = data;
   }
 
@@ -31,7 +31,7 @@ export class AfterSubmitEvent extends Event {
   readonly #data: FormValue;
 
   constructor(data: FormValue) {
-    super("AfterSubmit", { bubbles: true });
+    super("AfterSubmit", { bubbles: true, composed: true });
     this.#data = data;
   }
 
@@ -45,7 +45,7 @@ export class ValueChangedEvent extends Event {
   readonly #value: FormElementValue;
 
   constructor(key: string, value: FormElementValue) {
-    super("ValueChanged", { bubbles: true, cancelable: false });
+    super("ValueChanged", { bubbles: true, cancelable: false, composed: true });
     this.#key = key;
     this.#value = value;
   }

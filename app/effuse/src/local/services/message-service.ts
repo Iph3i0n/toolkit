@@ -19,23 +19,22 @@ export class MessageService {
   }
 
   Range(channel_id: string, offset: bigint) {
-    const count = this.#state.message_counts[channel_id];
-    if (offset <= count) return {};
+    const count = this.#state.message_counts[channel_id] ?? 0n;
+    if (offset >= count) return [];
     const message_index = count - offset - 1n;
     const start = this.#LineNumber(message_index);
 
-    return {
-      data:
-        this.#state.messages[
-          `${channel_id}.${this.#LogFileIndex(message_index)}`
-        ] ?? [],
-      start: start,
-      finish: Math.max(start - MessageService.#LogsPerRequest, 0),
-    };
+    const data =
+      this.#state.messages[
+        `${channel_id}.${this.#LogFileIndex(message_index)}`
+      ] ?? [];
+
+    const final = Math.max(start - MessageService.#LogsPerRequest, 0);
+    return data.slice(final, start + 1);
   }
 
   Latest(channel_id: string) {
-    const count = this.#state.message_counts[channel_id];
+    const count = this.#state.message_counts[channel_id] ?? 0n;
 
     const name = `${channel_id}.${this.#LogFileIndex(count)}`;
     return {

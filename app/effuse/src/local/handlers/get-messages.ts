@@ -36,16 +36,7 @@ export default class GetMessages extends Handler {
     if (!(await this.#channel_service.MayRead(request, channel_id)))
       return new EmptyResponse("Unauthorised");
 
-    const { data, start, finish } = this.#message_service.Range(
-      channel_id,
-      BigInt(offset)
-    );
-    if (!data) return new EmptyResponse("NotFound");
-
-    const result: Array<Message> = [];
-    for (let i = start; start >= finish; i--) {
-      result.push(data[i]);
-    }
+    const result = this.#message_service.Range(channel_id, BigInt(offset));
 
     return new JsonResponse(
       "Ok",

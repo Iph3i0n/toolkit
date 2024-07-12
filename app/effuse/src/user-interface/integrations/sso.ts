@@ -316,6 +316,7 @@ export class SsoClient {
         LocalHeaders: {
           Authorization: `Bearer ${data.LocalToken}`,
         },
+        LocalToken: data.LocalToken,
         IsAdmin: data.IsAdmin,
         UserId: data.UserId,
         Expires: new Date(data.Expires),

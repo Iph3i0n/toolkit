@@ -234,11 +234,6 @@ export default abstract class FormElement extends ContextFetcher {
     this.should_render();
   }
 
-  $AfterSubmit() {
-    this.value = this.use_string_context("prefill");
-    this.#touched = false;
-  }
-
   [LoadedEvent.ListenerKey]() {
     this.#default_value = this.use_string_context("prefill");
     this.value = this.#default_value;
@@ -257,6 +252,11 @@ export default abstract class FormElement extends ContextFetcher {
       this.#touched = true;
       if (!this.validity.valid) event.preventDefault();
       this.should_render();
+    });
+
+    form.addEventListener("AfterSubmit", () => {
+      this.value = this.use_string_context("prefill");
+      this.#touched = false;
     });
   }
 

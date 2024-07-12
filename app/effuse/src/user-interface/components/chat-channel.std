@@ -5,7 +5,124 @@
 </s:meta>
 
 <script>
-  console.log(self.server_id, self.channel_id);
+  import { SSO_BASE } from "effuse-config";
+
+  let offset = 0n;
+  let messages = (
+    await self.client.GetMessages(self.channel_id, offset)
+  ).reverse();
+  const users = (
+    await Promise.all(
+      (
+        await self.client.GetChannelUsers(self.channel_id)
+      ).map(async (u) => ({
+        ...u,
+        ...(await self.client.Sso.GetPublicProfile(u.UserId)),
+      }))
+    )
+  ).reduce(
+    (c, n) => ({
+      ...c,
+      [n.UserId]: {
+        ...n,
+        Url: new URL(`/profile/pictures/${n.UserId}`, SSO_BASE).href,
+      },
+    }),
+    {}
+  );
+
+  self.client.Subscribe(self.channel_id, self, (message) => {
+    messages.unshift(message);
+    self.should_render();
+  });
+
+  async function message({ FormData }) {
+    const text = self.querySelector("#input-box");
+    await self.client.PostMessage(self.channel_id, FormData.text);
+    text.value = "";
+  }
 </script>
 
-<div>Hello Chat</div>
+<style>
+  .chat-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .messages {
+    flex: 1;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: scroll;
+  }
+
+  .poster {
+    width: 100%;
+    display: flex;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .poster f-input {
+    flex: 1;
+    margin-right: 0.5rem;
+  }
+
+  .message t-paragraph {
+    margin: 0;
+  }
+
+  .message-heading {
+    display: flex;
+    align-items: center;
+  }
+
+  .message-heading img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+
+  .message-heading t-paragraph {
+    flex: 1;
+    font-weight: bold;
+  }
+
+  .message-heading small {
+    font-weight: normal;
+    opacity: 0.7;
+  }
+</style>
+
+<d-panel class="chat-box" colour="surface">
+  <div class="messages">
+    <s:for subject=":messages" key="message">
+      <s:use get=":users[message.Who]" as="user">
+        <l-row class="message">
+          <l-col xs="12" class="message-heading">
+            <img src=":user.Url" />
+            <t-paragraph>
+              <s:text use=":user.UserName + ' '" />
+              <small>
+                <s:text use=":message.When.toLocaleString()" />
+              </small>
+            </t-paragraph>
+          </l-col>
+          <l-col xs="12">
+            <t-paragraph>
+              <s:text use=":message.Text" />
+            </t-paragraph>
+          </l-col>
+        </l-row>
+      </s:use>
+    </s:for>
+    <div class="anchor" />
+  </div>
+  <f-form class="poster" submit="event-only" on:Submitted="message">
+    <f-input id="input-box" name="text" required>Message</f-input>
+    <f-button type="submit">
+      <t-icon name="send-plane-2" size="body" colour="primary" text />
+    </f-button>
+  </f-form>
+</d-panel>
