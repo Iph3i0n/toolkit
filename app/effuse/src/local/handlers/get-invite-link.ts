@@ -17,7 +17,7 @@ export default class GetInviteLink extends Handler {
     this.#auth_service = auth_service ?? NewAuthService(this.State);
   }
 
-  readonly Method = HttpMethod.Post;
+  readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/invite-link";
 
   async Process(request: PureRequest) {

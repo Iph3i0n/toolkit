@@ -248,6 +248,16 @@ export class LocalClient {
     });
   }
 
+  async GetInviteLink(role_id: string) {
+    return await this.#client.Send({
+      method: "GET",
+      url: "/api/v1/invite-link",
+      params: { role_id },
+      headers: await this.#headers,
+      expect: IsObject({ Url: IsString }),
+    });
+  }
+
   async IsAdmin() {
     return (await this.#grant_manager.GetGrant()).IsAdmin;
   }

@@ -82,6 +82,18 @@
   async function unban_user(user_id) {
     await self.client.DeleteBannedUser(user_id);
   }
+
+  async function invite(role_id) {
+    const { Url } = await self.client.GetInviteLink(role_id);
+    try {
+      await navigator.clipboard.writeText(Url);
+    } catch (err) {
+      console.error(err);
+      alert(
+        `Automatic clipboard copy has been blocked! The URL is below:\n${Url}`
+      );
+    }
+  }
 </script>
 
 <script on="mut">
@@ -218,6 +230,15 @@
                 </f-toggle>
               </l-col>
             </s:for>
+            <l-col xs="12">
+              <f-button
+                type="button"
+                colour="rainbow_5"
+                on:click="() => invite(role.RoleId)"
+              >
+                Copy Invite Link to Clipboard
+              </f-button>
+            </l-col>
           </l-row>
         </l-accordion>
       </s:for>
