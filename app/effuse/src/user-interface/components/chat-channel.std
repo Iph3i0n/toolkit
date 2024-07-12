@@ -1,0 +1,11 @@
+<s:meta name="chat-channel">
+  <attr name="client" />
+  <attr name="server_id" />
+  <attr name="channel_id" />
+</s:meta>
+
+<script>
+  console.log(self.server_id, self.channel_id);
+</script>
+
+<div>Hello Chat</div>

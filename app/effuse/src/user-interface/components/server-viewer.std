@@ -7,6 +7,9 @@
   let old_url = "";
   let client;
 
+  const get_channel_id = () =>
+    window.location.pathname.split("/").filter((e) => e)[3];
+
   const channel_url = (channel) =>
     `/server/${self.server_id}/channels/${channel.ChannelId}`;
 
@@ -31,6 +34,9 @@
   const is_admin = await client.IsAdmin();
 
   const admin_url = `/server/${self.server_id}/admin`;
+
+  const channel_id = get_channel_id();
+  const channel = channels.find((c) => c.ChannelId === channel_id);
 </script>
 
 <style>
@@ -96,5 +102,15 @@
         </l-container>
       </u-route>
     </s:if>
+
+    <u-route path="/channels/:channel_id">
+      <s:if check=":channel?.Type === 'Messages'">
+        <chat-channel
+          client=":client"
+          server_id=":self.server_id"
+          channel_id=":channel_id"
+        />
+      </s:if>
+    </u-route>
   </div>
 </div>
