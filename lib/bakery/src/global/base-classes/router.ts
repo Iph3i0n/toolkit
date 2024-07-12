@@ -127,3 +127,5 @@ export default abstract class Router extends BakeryBase {
     };
   }
 }
+
+(window as any).Router = Router;

@@ -2,18 +2,21 @@
   <attr name="client">The API client for the SSO Server</attr>
 </s:meta>
 
-<script>
+<script on="mut">
   const search = new URLSearchParams(location.search);
-  const prefill_url = search.get("server_url") ?? "";
-  const prefill_password = search.get("password") ?? "";
+  const url = search.get("server_url") ?? "";
+  const name = search.get("server_name") ?? "";
+  const token = search.get("token") ?? "";
 
-  async function join_server({ FormData }) {
+  async function join_server() {
     await self.client.PostServer({
-      server_url: FormData.ServerUrl,
-      password: FormData.Password,
+      server_url: url,
+      token: token,
     });
 
     document.dispatchEvent(new CustomEvent("joined_server"));
+
+    Router.Push(`/`);
   }
 </script>
 
@@ -26,26 +29,18 @@
 </style>
 
 <div class="join-form">
-  <f-form submit="event-only" on:Submitted="join_server">
-    <l-row>
-      <l-col xs="12">
-        <t-heading level="h3">Join a Server</t-heading>
-      </l-col>
-    </l-row>
-    <l-row>
-      <l-col xs="12">
-        <f-input name="ServerUrl" prefill=":prefill_url" required>
-          Server URL
-        </f-input>
-      </l-col>
-      <l-col xs="12">
-        <f-input name="Password" prefill=":prefill_password" required sensitive>
-          Password
-        </f-input>
-      </l-col>
-      <l-col xs="12">
-        <f-button type="submit">Join</f-button>
-      </l-col>
-    </l-row>
-  </f-form>
+  <l-row>
+    <l-col xs="12">
+      <t-heading level="h3">Server Invitation</t-heading>
+      <t-heading level="h4">
+        <s:text use=":name" />
+      </t-heading>
+      <t-paragraph>
+        You have been invited to join a server. Click the button below to join.
+      </t-paragraph>
+    </l-col>
+    <l-col xs="12">
+      <f-button type="button" on:click="join_server">Join</f-button>
+    </l-col>
+  </l-row>
 </div>

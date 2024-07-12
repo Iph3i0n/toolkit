@@ -41,7 +41,7 @@ export class SsoClient {
           expect: Grant,
         });
 
-        localStorage.setTime("grant", JSON.stringify(data));
+        localStorage.setItem("grant", JSON.stringify(data));
 
         return [
           {
@@ -74,7 +74,7 @@ export class SsoClient {
           expect: Grant,
         });
 
-        localStorage.setTime("grant", JSON.stringify(data));
+        localStorage.setItem("grant", JSON.stringify(data));
       } catch (err) {
         console.error(err);
         return undefined;
@@ -130,7 +130,7 @@ export class SsoClient {
       expect: Grant,
     });
 
-    localStorage.setTime("grant", JSON.stringify(data));
+    localStorage.setItem("grant", JSON.stringify(data));
     return new SsoClient({
       AdminHeaders: {
         Authorization: `Bearer ${data.AdminToken}`,
@@ -236,7 +236,7 @@ export class SsoClient {
     });
   }
 
-  async PostServer(model: { server_url: string; password?: string }) {
+  async PostServer(model: { server_url: string; token: string }) {
     await this.#client.Send({
       method: "POST",
       url: "/api/v1/user/servers",
@@ -244,7 +244,7 @@ export class SsoClient {
       body: {
         ServerToken: (await this.#grant_manager.GetGrant()).ServerToken,
         ServerUrl: model.server_url,
-        Password: model.password,
+        RoleToken: model.token,
       },
       expect: IsObject({ Success: IsLiteral(true) }),
     });

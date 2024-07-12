@@ -3,13 +3,10 @@ import {
   DateTime,
   Guid,
   Struct,
-  Optional,
-  Array,
   Serialised,
   Union,
   Literal,
 } from "@ipheion/moulding-tin";
-import { UserPolicy } from "./user-policy";
 
 export const User = new Union(
   new Struct({

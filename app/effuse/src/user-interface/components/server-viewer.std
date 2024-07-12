@@ -4,6 +4,9 @@
 </s:meta>
 
 <script>
+  let old_url = "";
+  let client;
+
   const channel_url = (channel) =>
     `/server/${self.server_id}/channels/${channel.ChannelId}`;
 
@@ -19,7 +22,9 @@
 <script on="mut">
   const server = await get_server();
 
-  const client = await self.sso_client.GetLocalClient(server.Url);
+  if (!client || old_url !== server.Url)
+    client = await self.sso_client.GetLocalClient(server.Url);
+  old_url = server.Url;
 
   const metadata = await client.GetMetadata();
   const channels = await client.GetAllChannels();

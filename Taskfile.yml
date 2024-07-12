@@ -113,6 +113,7 @@ tasks:
       DATA_DIR: ./data
       SSO_URL: http://localhost:3000
       UI_URL: http://localhost:3001
+      SERVER_URL: http://localhost:3002
 
   effuse:run-backend:
     deps:

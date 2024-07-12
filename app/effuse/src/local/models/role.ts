@@ -15,7 +15,6 @@ export const Role = new Union(
     name: new UTF8(),
     admin: new Bool(),
     policies: new Array(UserPolicy),
-    password: new UTF8(),
   })
 );
 

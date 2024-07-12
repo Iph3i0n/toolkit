@@ -2,7 +2,6 @@ import {
   DoNotCare,
   IsArray,
   IsBoolean,
-  IsLiteral,
   IsObject,
   IsString,
 } from "@ipheion/safe-type";
@@ -174,7 +173,6 @@ export class LocalClient {
           RoleId: IsString,
           Name: IsString,
           Admin: IsBoolean,
-          Password: IsString,
           Policies: IsArray(
             IsObject({
               ChannelId: IsString,
@@ -186,21 +184,21 @@ export class LocalClient {
     });
   }
 
-  async PostRole(name: string, password: string) {
+  async PostRole(name: string) {
     return await this.#client.Send({
       method: "POST",
       url: "/api/v1/roles",
-      body: { Name: name, Password: password },
+      body: { Name: name },
       headers: await this.#headers,
     });
   }
 
-  async PutRole(role_id: string, name: string, password: string) {
+  async PutRole(role_id: string, name: string) {
     return await this.#client.Send({
       method: "PUT",
       url: "/api/v1/roles/:role_id",
       params: { role_id },
-      body: { Name: name, Password: password },
+      body: { Name: name },
       headers: await this.#headers,
       expect: IsObject({
         RoleId: IsString,

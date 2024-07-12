@@ -18,7 +18,7 @@ export default class PostRole extends Handler {
 
   async Process(request: PureRequest) {
     await this.#auth_service.RequireAdmin(request);
-    const body = request.Body(IsObject({ Name: IsString, Password: IsString }));
+    const body = request.Body(IsObject({ Name: IsString }));
 
     const id = Guid();
 
@@ -34,7 +34,6 @@ export default class PostRole extends Handler {
             name: body.Name,
             admin: false,
             policies: [],
-            password: body.Password,
           },
         },
       }

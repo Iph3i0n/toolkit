@@ -23,7 +23,7 @@ export default class PutRole extends Handler {
 
   async Process(request: PureRequest) {
     await this.#auth_service.RequireAdmin(request);
-    const body = request.Body(IsObject({ Name: IsString, Password: IsString }));
+    const body = request.Body(IsObject({ Name: IsString }));
     const { role_id } = request.Parameters({ role_id: IsString });
 
     const role = this.State.roles[role_id];
@@ -39,7 +39,6 @@ export default class PutRole extends Handler {
           [role_id]: {
             ...role,
             name: body.Name,
-            password: body.Password,
           },
         },
       }

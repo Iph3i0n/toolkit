@@ -19,22 +19,17 @@
   }
 
   async function create_role({ FormData }) {
-    await self.client.PostRole(FormData.name, FormData.password);
+    await self.client.PostRole(FormData.name);
   }
 
   async function rename_role(role, name) {
     if (role.Name === name) return;
-    await self.client.PutRole(role.RoleId, name, role.Password);
+    await self.client.PutRole(role.RoleId, name);
   }
 
   async function rename_channel(channel, name) {
     if (channel.Name === name) return;
     await self.client.PutChannel(channel.ChannelId, name);
-  }
-
-  async function set_password(role, password) {
-    if (role.Password === password) return;
-    await self.client.PutRole(role.RoleId, role.Name, password);
   }
 
   async function set_admin(role, admin) {
@@ -52,7 +47,8 @@
       return;
 
     await self.client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
-    await self.client.PostRoleChannel(role.RoleId, channel.ChannelId, false);
+    if (may_read)
+      await self.client.PostRoleChannel(role.RoleId, channel.ChannelId, false);
   }
 
   async function give_write(role, channel, may_write) {
@@ -186,15 +182,6 @@
               </f-input>
             </l-col>
             <l-col xs="12">
-              <f-input
-                sensitive
-                prefill=":role.Password"
-                on:ValueChanged="e => set_password(role, e.Value)"
-              >
-                Password
-              </f-input>
-            </l-col>
-            <l-col xs="12">
               <f-toggle
                 prefill=":role.Admin ? 'on' : 'off'"
                 on:ValueChanged="e => set_admin(role, e.Value)"
@@ -244,9 +231,6 @@
             <f-input name="name" required>Role Name</f-input>
           </l-col>
           <l-col xs="12">
-            <f-input name="password" required sensitive>Password</f-input>
-          </l-col>
-          <l-col xs="12">
             <f-button type="submit">Create</f-button>
           </l-col>
         </l-row>
@@ -276,24 +260,26 @@
                     </f-button>
                   </l-col>
                   <l-col xs="12">
-                    <f-select
+                    <f-singleselect
                       name="type"
                       prefill=":role.RoleId"
                       on:ValueChanged="e => set_user_role(user.UserId, e.Value)"
                     >
-                      <s:for subject=":roles" as="role">
-                        <option value=":role.RoleId">
-                          <s:text use=":role.Name" />
+                      <s:for subject=":roles" key="r">
+                        <option value=":r.RoleId">
+                          <s:text use=":r.Name" />
                         </option>
                       </s:for>
                       <span slot="label">Role</span>
-                    </f-select>
+                    </f-singleselect>
                   </l-col>
                 </l-row>
               </d-panel>
             </s:use>
           </l-col>
         </s:for>
+      </l-row>
+      <l-row>
         <s:if check=":banned.length">
           <l-col xs="12">
             <t-heading level="h6">Banned Users</t-heading>
@@ -302,12 +288,12 @@
             <l-col xs="12" md="6" lg="3">
               <d-panel colour="body" bordered>
                 <l-row>
-                  <l-col xs="6">
+                  <l-col xs="12">
                     <t-paragraph>
                       <async-text data=":get_user_name(user.UserId)" />
                     </t-paragraph>
                   </l-col>
-                  <l-col xs="6" style="text-align: right">
+                  <l-col xs="12" style="text-align: right">
                     <f-button
                       type="button"
                       on:click="() => unban_user(user.UserId)"
