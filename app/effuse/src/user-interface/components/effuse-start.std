@@ -31,6 +31,29 @@
 </script>
 
 <style>
+  :host {
+    display: block;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-body l-header {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .app-content {
+    width: 100%;
+    flex: 1;
+  }
+
   .login-form {
     margin: auto;
     max-width: 400px;
@@ -93,24 +116,22 @@
 </s:if>
 
 <s:if check=":sso">
-  <l-header logo="/favicon-48x48.png" logo-alt="Effuse">
-    <t-link slot="right" href="/profile" spa>
-      <t-icon name="user" size="body" colour="primary" size="h6" text />
-    </t-link>
-  </l-header>
+  <effuse-config client=":sso" />
+  <div class="app-body">
 
-  <effuse-server-list client=":sso" />
+    <l-container flush class="app-content">
+      <u-route path="/join-server">
+        <effuse-join-server client=":sso" />
+      </u-route>
+      <u-route path="/profile">
+        <effuse-profile client=":sso" />
+      </u-route>
 
-  <u-route path="/join-server">
-    <effuse-join-server client=":sso" />
-  </u-route>
-  <u-route path="/profile">
-    <effuse-profile client=":sso" />
-  </u-route>
-
-  <u-route path="/server/:server_id">
-    <s:if check=":!!server_id">
-      <server-viewer sso_client=":sso" server_id=":server_id" />
-    </s:if>
-  </u-route>
+      <u-route path="/server/:server_id">
+        <s:if check=":!!server_id">
+          <server-viewer sso_client=":sso" server_id=":server_id" />
+        </s:if>
+      </u-route>
+    </l-container>
+  </div>
 </s:if>

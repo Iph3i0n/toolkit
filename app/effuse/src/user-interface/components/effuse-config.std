@@ -1,4 +1,4 @@
-<s:meta name="effuse-server-list">
+<s:meta name="effuse-config">
   <attr name="client">The API client for the SSO Server</attr>
 </s:meta>
 
@@ -35,6 +35,17 @@
     left: 0;
     padding: 1rem;
   }
+
+  .action-buttons {
+    position: absolute;
+    bottom: 1rem;
+    width: 100%;
+  }
+
+  .action-buttons f-button {
+    width: calc(100% - 2rem);
+    box-sizing: border-box;
+  }
 </style>
 
 <div class="list-trigger">
@@ -48,4 +59,10 @@
   <s:for subject=":servers" key="server">
     <effuse-server-list-item client=":server.Client" server_id=":server.Id" />
   </s:for>
+
+  <div class="action-buttons">
+    <f-button href="/profile" spa>
+      <t-icon name="user" size="body" colour="primary" size="body" text />
+    </f-button>
+  </div>
 </o-offcanvas>

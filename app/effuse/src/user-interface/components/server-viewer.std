@@ -34,6 +34,11 @@
 </script>
 
 <style>
+  :host {
+    display: block;
+    height: 100%;
+  }
+
   t-paragraph[slot="title"] {
     position: relative;
   }
@@ -43,27 +48,47 @@
     top: 0.1rem;
     right: 0.1rem;
   }
+
+  .channels-card {
+    width: 200px;
+    align-self: flex-start;
+    margin: 1rem;
+    margin-right: 0;
+  }
+
+  .content {
+    display: flex;
+    max-height: 100%;
+  }
+
+  .app-content {
+    flex: 1;
+    max-height: 100%;
+    overflow-y: scroll;
+  }
+
+  .app-content l-container {
+    padding: 1rem;
+  }
 </style>
 
-<l-row>
-  <l-col xs="12" md="3" lg="2">
-    <d-card>
-      <t-paragraph slot="title">
-        <s:text use=":metadata.ServerName" />
-        <s:if check=":is_admin">
-          <t-link href=":admin_url" spa>
-            <t-icon name="settings-2" size="body" colour="body" text />
-          </t-link>
-        </s:if>
-      </t-paragraph>
-      <s:for subject=":channels" key="channel">
-        <t-link href=":channel_url(channel)" block spa>
-          <s:text use=":channel.Name" />
+<div class="content">
+  <d-card class="channels-card">
+    <t-paragraph slot="title">
+      <s:text use=":metadata.ServerName" />
+      <s:if check=":is_admin">
+        <t-link href=":admin_url" spa>
+          <t-icon name="settings-2" size="body" colour="body" text />
         </t-link>
-      </s:for>
-    </d-card>
-  </l-col>
-  <l-col xs="12" md="9" lg="10">
+      </s:if>
+    </t-paragraph>
+    <s:for subject=":channels" key="channel">
+      <t-link href=":channel_url(channel)" block spa>
+        <s:text use=":channel.Name" />
+      </t-link>
+    </s:for>
+  </d-card>
+  <div class="app-content">
     <s:if check=":is_admin">
       <u-route path="/admin">
         <l-container>
@@ -71,5 +96,5 @@
         </l-container>
       </u-route>
     </s:if>
-  </l-col>
-</l-row>
+  </div>
+</div>
