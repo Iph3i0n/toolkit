@@ -7,7 +7,7 @@ import { Message } from "./models/message";
 import { StateReader } from "@ipheion/fs-db";
 import CreateServer from "@ipheion/puristee";
 import { ServerMetadata } from "./models/server-metadata";
-import { ForumTopic, ForumTopicList } from "./models/forum";
+import { ForumResponse, ForumTopic, ForumTopicList } from "./models/forum";
 
 export const Schema = {
   users: User,
@@ -19,6 +19,7 @@ export const Schema = {
   server_metadata: ServerMetadata,
   forum_topics: ForumTopic,
   forum_topic_lists: ForumTopicList,
+  forum_responses: ForumResponse,
 };
 
 export const DataDir = process.env.DATA_DIR ?? "./data";

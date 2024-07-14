@@ -1,6 +1,6 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { v4 as Guid } from "uuid";
-import { IsBoolean, IsObject, IsOneOf, IsString } from "@ipheion/safe-type";
+import { IsObject, IsOneOf, IsString } from "@ipheion/safe-type";
 import { NewAuthService } from "local/bootstrap/services/auth-service";
 import { Handler, Result } from "local/server";
 import { AuthService } from "local/services/auth-service";
@@ -43,6 +43,9 @@ export default class PostChannel extends Handler {
         },
         message_counts: {
           [id]: 0n,
+        },
+        forum_topic_lists: {
+          [id]: { version: 1, topics: [] },
         },
       }
     );

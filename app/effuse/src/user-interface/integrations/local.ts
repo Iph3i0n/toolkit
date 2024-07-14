@@ -335,6 +335,144 @@ export class LocalClient {
     });
   }
 
+  async GetTopics(channel_id: string) {
+    return this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels/:channel_id/topics",
+      params: { channel_id },
+      headers: await this.#headers,
+      expect: IsObject({
+        Id: IsString,
+        Pinned: IsBoolean,
+        When: IsString,
+        Title: IsString,
+      }),
+    });
+  }
+
+  async PostTopic(
+    channel_id: string,
+    title: string,
+    text: string,
+    pinned: boolean
+  ) {
+    return this.#client.Send({
+      method: "POST",
+      url: "/api/v1/channels/:channel_id/topics",
+      params: { channel_id },
+      headers: await this.#headers,
+      body: { title, text, pinned },
+      expect: IsObject({
+        Id: IsString,
+        Title: IsString,
+        Text: IsString,
+        Who: IsString,
+        Created: IsString,
+        Updated: IsString,
+        Responses: IsArray(IsString),
+      }),
+    });
+  }
+
+  async GetTopic(channel_id: string, topic_id: string) {
+    return this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels/:channel_id/topics/:topic_id",
+      params: { channel_id, topic_id },
+      headers: await this.#headers,
+      expect: IsObject({
+        Id: IsString,
+        Title: IsString,
+        Text: IsString,
+        Who: IsString,
+        Created: IsString,
+        Updated: IsString,
+        Responses: IsArray(IsString),
+      }),
+    });
+  }
+
+  async PutTopic(
+    channel_id: string,
+    topic_id: string,
+    title: string,
+    text: string,
+    pinned: boolean
+  ) {
+    return this.#client.Send({
+      method: "PUT",
+      url: "/api/v1/channels/:channel_id/topics/:topic_id",
+      params: { channel_id, topic_id },
+      headers: await this.#headers,
+      body: { title, text, pinned },
+      expect: IsObject({
+        Id: IsString,
+        Title: IsString,
+        Text: IsString,
+        Who: IsString,
+        Created: IsString,
+        Updated: IsString,
+        Responses: IsArray(IsString),
+      }),
+    });
+  }
+
+  async GetTopicResponse(
+    channel_id: string,
+    topic_id: string,
+    response_id: string
+  ) {
+    return this.#client.Send({
+      method: "GET",
+      url: "/api/v1/channels/:channel_id/topics/:topic_id/responses/:response_id",
+      params: { channel_id, topic_id, response_id },
+      headers: await this.#headers,
+      expect: IsObject({
+        Id: IsString,
+        Text: IsString,
+        Who: IsString,
+        When: IsString,
+      }),
+    });
+  }
+
+  async PostTopicResponse(channel_id: string, topic_id: string, text: string) {
+    return this.#client.Send({
+      method: "POST",
+      url: "/api/v1/channels/:channel_id/topics/:topic_id/responses",
+      params: { channel_id, topic_id },
+      headers: await this.#headers,
+      body: { text },
+      expect: IsObject({
+        Id: IsString,
+        Text: IsString,
+        Who: IsString,
+        When: IsString,
+      }),
+    });
+  }
+
+  async PutTopicResponse(
+    channel_id: string,
+    topic_id: string,
+    repsonse_id: string,
+    text: string
+  ) {
+    return this.#client.Send({
+      method: "POST",
+      url: "/api/v1/channels/:channel_id/topics/:topic_id/responses/:response_od",
+      params: { channel_id, topic_id, repsonse_id },
+      headers: await this.#headers,
+      body: { text },
+      expect: IsObject({
+        Id: IsString,
+        Text: IsString,
+        Who: IsString,
+        When: IsString,
+      }),
+    });
+  }
+
   async IsAdmin() {
     return (await this.#grant_manager.GetGrant()).IsAdmin;
   }

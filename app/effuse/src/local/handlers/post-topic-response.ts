@@ -12,7 +12,7 @@ import { AuthService } from "local/services/auth-service";
 import { ChannelService } from "local/services/channel-service";
 import { v4 as Guid } from "uuid";
 
-export default class PostTopic extends Handler {
+export default class PostTopicResponse extends Handler {
   readonly #channel_service: ChannelService;
   readonly #auth_service: AuthService;
 
@@ -22,63 +22,48 @@ export default class PostTopic extends Handler {
     this.#auth_service = auth_service ?? NewAuthService(this.State);
   }
 
-  readonly Method = HttpMethod.Post;
-  readonly Url = "/api/v1/channels/:channel_id/topics";
+  readonly Method = HttpMethod.Put;
+  readonly Url = "/api/v1/channels/:channel_id/topics/:topic_id/responses";
 
   async Process(request: PureRequest) {
-    const { channel_id } = request.Parameters({ channel_id: IsString });
+    const { channel_id, topic_id } = request.Parameters({
+      channel_id: IsString,
+      topic_id: IsString,
+    });
     await this.#channel_service.RequireWrite(request, channel_id);
     const { user_id } = await this.#auth_service.GetUser(request);
     if (!user_id) return new EmptyResponse("Unauthorised");
 
-    const body = request.Body(
-      IsObject({
-        title: IsString,
-        text: IsString,
-        pinned: IsBoolean,
-      })
-    );
-    const id = Guid();
+    const body = request.Body(IsObject({ text: IsString }));
     const now = new Date();
-    const existing = this.State.forum_topic_lists[channel_id];
-    if (!existing) return new EmptyResponse("NotFound");
+    const items = this.State.forum_topic_lists[channel_id];
+    if (!items || !items.topics.find((t) => t.id === topic_id))
+      return new EmptyResponse("NotFound");
+    const topic = this.State.forum_topics[topic_id];
+    if (!topic) return new EmptyResponse("NotFound");
+
+    const id = Guid();
 
     return new Result(
       new JsonResponse("Created", {
         Id: id,
-        Title: body.title,
         Text: body.text,
         Who: user_id,
-        Created: now.toISOString(),
-        Updated: now.toISOString(),
-        Responses: [],
+        When: now.toISOString(),
       }),
       {
         forum_topics: {
-          [id]: {
-            version: 1,
-            title: body.title,
-            text: body.text,
-            who: user_id,
-            created: now,
-            updated: now,
-            responses: [],
+          [topic_id]: {
+            ...topic,
+            responses: [...topic.responses, id],
           },
         },
-        forum_topic_lists: {
-          [channel_id]: {
+        forum_responses: {
+          [id]: {
             version: 1,
-            topics: [
-              ...(existing.topics ?? []),
-              { id, pinned: body.pinned, when: now, title: body.title },
-            ].sort((a, b) => {
-              if (a.pinned && b.pinned)
-                return a.when.getTime() - b.when.getTime();
-              if (a.pinned) return -1;
-              if (b.pinned) return 1;
-
-              return a.when.getTime() - b.when.getTime();
-            }),
+            text: body.text,
+            who: user_id,
+            when: now,
           },
         },
       }
