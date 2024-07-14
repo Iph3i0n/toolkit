@@ -4,12 +4,10 @@
 
 <script>
   import { SsoClient } from "../integrations/sso";
+  import { UseUrlParameters } from "../integrations/url";
 
   let sso = await SsoClient.Attempt();
   let mode = "login";
-
-  const get_server_id = () =>
-    window.location.pathname.split("/").filter((e) => e)[1];
 
   async function on_login({ FormData }) {
     sso = await SsoClient.Login(FormData.Email, FormData.Password);
@@ -22,12 +20,10 @@
       password: FormData.Password,
     });
   }
-
-  document.addEventListener("NavigationEvent", () => self.should_render());
 </script>
 
 <script on="mut">
-  const server_id = get_server_id();
+  const { server_id } = UseUrlParameters(self, "/servers/:server_id");
 </script>
 
 <style>
@@ -118,7 +114,6 @@
 <s:if check=":sso">
   <effuse-config client=":sso" />
   <div class="app-body">
-
     <l-container flush class="app-content">
       <u-route path="/join-server">
         <effuse-join-server client=":sso" />
@@ -127,9 +122,9 @@
         <effuse-profile client=":sso" />
       </u-route>
 
-      <u-route path="/server/:server_id">
+      <u-route path="/servers/:server_id">
         <s:if check=":!!server_id">
-          <server-viewer sso_client=":sso" server_id=":server_id" />
+          <server-viewer sso_client=":sso" />
         </s:if>
       </u-route>
     </l-container>

@@ -7,6 +7,6 @@
   const details = await self.client.GetMetadata();
 </script>
 
-<t-link href=":`/server/${self.server_id}`" block spa>
+<t-link href=":`/servers/${self.server_id}`" block spa>
   <s:text use=":details.ServerName" />
 </t-link>

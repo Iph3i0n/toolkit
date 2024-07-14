@@ -1,0 +1,11 @@
+<s:meta name="forum-topic">
+  <attr name="client" />
+</s:meta>
+
+<script>
+  import { UseUrlParameters } from "../integrations/url";
+  const { server_id, channel_id } = UseUrlParameters(
+    self,
+    "/servers/:server_id/channels/:channel_id/topics/:topic_id"
+  );
+</script>

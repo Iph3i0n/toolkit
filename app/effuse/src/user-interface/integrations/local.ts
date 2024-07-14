@@ -307,6 +307,8 @@ export class LocalClient {
 
       if (!bind.parentElement) connection.close();
     };
+
+    return () => connection.close();
   }
 
   async GetChannelUsers(channel_id: string) {
@@ -341,12 +343,14 @@ export class LocalClient {
       url: "/api/v1/channels/:channel_id/topics",
       params: { channel_id },
       headers: await this.#headers,
-      expect: IsObject({
-        Id: IsString,
-        Pinned: IsBoolean,
-        When: IsString,
-        Title: IsString,
-      }),
+      expect: IsArray(
+        IsObject({
+          Id: IsString,
+          Pinned: IsBoolean,
+          When: IsString,
+          Title: IsString,
+        })
+      ),
     });
   }
 

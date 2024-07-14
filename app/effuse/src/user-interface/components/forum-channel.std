@@ -1,0 +1,28 @@
+<s:meta name="forum-channel">
+  <attr name="client" />
+</s:meta>
+
+<script>
+  import { UseUrlParameters } from "../integrations/url";
+  const { server_id, channel_id } = UseUrlParameters(
+    self,
+    "/servers/:server_id/channels/:channel_id"
+  );
+
+  const topic_route = CreateRef();
+</script>
+
+<script on="mut">
+  const topics = (await self.client.GetTopics(channel_id)).map((t) => ({
+    ...t,
+    Url: `/servers/${server_id}/channels/${channel_id}/topics/${t.Id}`,
+  }));
+</script>
+
+<s:for subject=":topics" key="topic">
+  <t-link href=":topic.Id" spa block><s:text use=":topic.Title" /></t-link>
+</s:for>
+
+<u-route path="/topics/:topic_id">
+  <div>Topic</div>
+</u-route>
