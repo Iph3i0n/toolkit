@@ -63,6 +63,7 @@ export class LocalClient {
         IconMimeType: mime,
       },
       expect: DoNotCare,
+      invalidates: ["/api/v1/server/metadata"],
     });
   }
 
@@ -84,6 +85,7 @@ export class LocalClient {
       params: { channel_id },
       headers: await this.#headers,
       body: { Name: name },
+      invalidates: ["/api/v1/channels"],
     });
   }
 
@@ -101,6 +103,7 @@ export class LocalClient {
         Type: IsString,
         Name: IsString,
       }),
+      invalidates: ["/api/v1/channels"],
     });
   }
 
@@ -119,6 +122,7 @@ export class LocalClient {
       url: "/api/v1/banned-users",
       body: { UserId: user_id },
       headers: await this.#headers,
+      invalidates: ["/api/v1/banned-users"],
     });
   }
 
@@ -128,6 +132,7 @@ export class LocalClient {
       url: "/api/v1/banned-users/:user_id",
       params: { user_id },
       headers: await this.#headers,
+      invalidates: ["/api/v1/banned-users"],
     });
   }
 
@@ -147,6 +152,7 @@ export class LocalClient {
       params: { user_id },
       body: { RoleId: role_id },
       headers: await this.#headers,
+      invalidates: ["/api/v1/users"],
     });
   }
 
@@ -192,6 +198,10 @@ export class LocalClient {
       url: "/api/v1/roles",
       body: { Name: name },
       headers: await this.#headers,
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -206,6 +216,10 @@ export class LocalClient {
         RoleId: IsString,
         Name: IsString,
       }),
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -215,6 +229,10 @@ export class LocalClient {
       url: "/api/v1/admin-roles",
       body: { RoleId: role_id },
       headers: await this.#headers,
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -224,6 +242,10 @@ export class LocalClient {
       url: "/api/v1/admin-roles/:role_id",
       params: { role_id },
       headers: await this.#headers,
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -238,6 +260,10 @@ export class LocalClient {
       params: { role_id },
       body: { ChannelId: channel_id, AllowWrite: allow_write },
       headers: await this.#headers,
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -247,6 +273,10 @@ export class LocalClient {
       url: "/api/v1/roles/:role_id/channels/:channel_id",
       params: { role_id, channel_id },
       headers: await this.#headers,
+      invalidates: [
+        "/api/v1/roles",
+        ["/api/v1/roles", { with_permissions: "true" }],
+      ],
     });
   }
 
@@ -257,6 +287,7 @@ export class LocalClient {
       params: { role_id },
       headers: await this.#headers,
       expect: IsObject({ Url: IsString }),
+      no_cache: true,
     });
   }
 
@@ -273,6 +304,7 @@ export class LocalClient {
           Who: IsString,
         })
       ),
+      no_cache: true,
     });
 
     return result.map((r) => ({ ...r, When: new Date(r.When) }));
@@ -334,6 +366,7 @@ export class LocalClient {
       params: { channel_id },
       headers: await this.#headers,
       body: { Text: text },
+      invalidates: [],
     });
   }
 
@@ -375,6 +408,7 @@ export class LocalClient {
         Updated: IsString,
         Responses: IsArray(IsString),
       }),
+      invalidates: [["/api/v1/channels/:channel_id/topics", { channel_id }]],
     });
   }
 
@@ -418,6 +452,13 @@ export class LocalClient {
         Updated: IsString,
         Responses: IsArray(IsString),
       }),
+      invalidates: [
+        ["/api/v1/channels/:channel_id/topics", { channel_id }],
+        [
+          "/api/v1/channels/:channel_id/topics/:topic_id",
+          { channel_id, topic_id },
+        ],
+      ],
     });
   }
 
@@ -453,19 +494,25 @@ export class LocalClient {
         Who: IsString,
         When: IsString,
       }),
+      invalidates: [
+        [
+          "/api/v1/channels/:channel_id/topics/:topic_id",
+          { channel_id, topic_id },
+        ],
+      ],
     });
   }
 
   async PutTopicResponse(
     channel_id: string,
     topic_id: string,
-    repsonse_id: string,
+    response_id: string,
     text: string
   ) {
     return this.#client.Send({
       method: "POST",
-      url: "/api/v1/channels/:channel_id/topics/:topic_id/responses/:response_od",
-      params: { channel_id, topic_id, repsonse_id },
+      url: "/api/v1/channels/:channel_id/topics/:topic_id/responses/:response_id",
+      params: { channel_id, topic_id, response_id },
       headers: await this.#headers,
       body: { text },
       expect: IsObject({
@@ -474,6 +521,16 @@ export class LocalClient {
         Who: IsString,
         When: IsString,
       }),
+      invalidates: [
+        [
+          "/api/v1/channels/:channel_id/topics/:topic_id",
+          { channel_id, topic_id },
+        ],
+        [
+          "/api/v1/channels/:channel_id/topics/:topic_id/responses/:response_id",
+          { channel_id, topic_id, response_id },
+        ],
+      ],
     });
   }
 

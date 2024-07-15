@@ -32,7 +32,7 @@
   const server = await get_server(server_id);
 
   if (!client || old_url !== server.Url)
-    client = await self.sso_client.GetLocalClient(server.Url);
+    client = await self.sso_client.GetLocalClient(server_id, server.Url);
   old_url = server.Url;
 
   const metadata = await client.GetMetadata();

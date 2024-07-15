@@ -8,7 +8,7 @@
     return await Promise.all(
       profile.Servers.map(async (s) => ({
         ...s,
-        Client: await self.client.GetLocalClient(s.Url),
+        Client: await self.client.GetLocalClient(s.Id, s.Url),
       }))
     );
   };

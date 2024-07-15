@@ -29,6 +29,8 @@ export class SsoClient {
   readonly #grant_manager: GrantManager<UserGrant>;
   readonly #client: ApiClient;
 
+  static readonly #local_clients: Record<string, LocalClient> = {};
+
   private constructor(grant: UserGrant) {
     this.#grant_manager = new GrantManager(
       grant,
@@ -39,6 +41,7 @@ export class SsoClient {
           url: "/api/v1/auth/refresh-token",
           params: { token: grant.RefreshToken },
           expect: Grant,
+          no_cache: true,
         });
 
         localStorage.setItem("grant", JSON.stringify(data));
@@ -72,6 +75,7 @@ export class SsoClient {
           url: "/api/v1/auth/refresh-token",
           params: { token: data.RefreshToken },
           expect: Grant,
+          no_cache: true,
         });
 
         localStorage.setItem("grant", JSON.stringify(data));
@@ -99,6 +103,7 @@ export class SsoClient {
       url: "/api/v1/auth/token",
       params: { email, password },
       expect: Grant,
+      no_cache: true,
     });
 
     localStorage.setItem("grant", JSON.stringify(data));
@@ -128,6 +133,7 @@ export class SsoClient {
         Password: model.password,
       },
       expect: Grant,
+      invalidates: [],
     });
 
     localStorage.setItem("grant", JSON.stringify(data));
@@ -233,6 +239,7 @@ export class SsoClient {
         Keys: model.keys,
       },
       expect: IsObject({ Message: IsLiteral("Success") }),
+      invalidates: ["/api/v1/user/push-subscriptions"],
     });
   }
 
@@ -247,6 +254,7 @@ export class SsoClient {
         RoleToken: model.token,
       },
       expect: IsObject({ Success: IsLiteral(true) }),
+      invalidates: ["/api/v1/user/profile"],
     });
   }
 
@@ -256,6 +264,7 @@ export class SsoClient {
     picture: File;
   }): Promise<UserProfile> {
     const { base64, mime } = await TransformFile(model.picture);
+    const grant = await this.#grant_manager.GetGrant();
     const data = await this.#client.Send({
       method: "PUT",
       url: "/api/v1/user/profile",
@@ -283,6 +292,10 @@ export class SsoClient {
           })
         ),
       }),
+      invalidates: [
+        "/api/v1/user/profile",
+        ["/api/v1/users/:user_id/profile", { user_id: grant.UserId }],
+      ],
     });
 
     return {
@@ -297,41 +310,50 @@ export class SsoClient {
     };
   }
 
-  async GetLocalClient(server_url: string) {
-    const client = new ApiClient(server_url);
-    const create_grant = async (): Promise<ServerGrant> => {
-      const data = await client.Send({
-        method: "GET",
-        url: "/api/v1/auth/token",
-        params: { token: (await this.#grant_manager.GetGrant()).ServerToken },
-        expect: IsObject({
-          LocalToken: IsString,
-          IsAdmin: IsBoolean,
-          Expires: IsString,
-          UserId: IsString,
-        }),
-      });
+  async GetLocalClient(server_id: string, server_url: string) {
+    if (!SsoClient.#local_clients[server_id]) {
+      const client = new ApiClient(server_url);
+      const create_grant = async (): Promise<ServerGrant> => {
+        const data = await client.Send({
+          method: "GET",
+          url: "/api/v1/auth/token",
+          params: { token: (await this.#grant_manager.GetGrant()).ServerToken },
+          expect: IsObject({
+            LocalToken: IsString,
+            IsAdmin: IsBoolean,
+            Expires: IsString,
+            UserId: IsString,
+          }),
+          no_cache: true,
+        });
 
-      return {
-        LocalHeaders: {
-          Authorization: `Bearer ${data.LocalToken}`,
-        },
-        LocalToken: data.LocalToken,
-        IsAdmin: data.IsAdmin,
-        UserId: data.UserId,
-        Expires: new Date(data.Expires),
+        return {
+          LocalHeaders: {
+            Authorization: `Bearer ${data.LocalToken}`,
+          },
+          LocalToken: data.LocalToken,
+          IsAdmin: data.IsAdmin,
+          UserId: data.UserId,
+          Expires: new Date(data.Expires),
+        };
       };
-    };
 
-    const start_grant = await create_grant();
+      const start_grant = await create_grant();
 
-    return new LocalClient(
-      this,
-      server_url,
-      new GrantManager(start_grant, start_grant.Expires.getTime(), async () => {
-        const result = await create_grant();
-        return [result, result.Expires.getTime()];
-      })
-    );
+      SsoClient.#local_clients[server_id] = new LocalClient(
+        this,
+        server_url,
+        new GrantManager(
+          start_grant,
+          start_grant.Expires.getTime(),
+          async () => {
+            const result = await create_grant();
+            return [result, result.Expires.getTime()];
+          }
+        )
+      );
+    }
+
+    return SsoClient.#local_clients[server_id];
   }
 }
