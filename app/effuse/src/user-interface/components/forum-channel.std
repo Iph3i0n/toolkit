@@ -10,7 +10,12 @@
   );
 
   async function create_topic({ FormData }) {
-    console.log(FormData);
+    await self.client.PostTopic(
+      channel_id,
+      FormData.title,
+      FormData.content,
+      FormData.pinned === "on"
+    );
   }
 </script>
 
@@ -29,9 +34,19 @@
   }
 </style>
 
-<s:for subject=":topics" key="topic">
-  <t-link href=":topic.Id" spa block><s:text use=":topic.Title" /></t-link>
-</s:for>
+<u-route path="/" exact>
+  <l-container>
+    <l-row>
+      <l-col xs="12">
+        <d-listgroup>
+          <s:for subject=":topics" key="topic">
+            <t-link href=":topic.Url" spa><s:text use=":topic.Title" /></t-link>
+          </s:for>
+        </d-listgroup>
+      </l-col>
+    </l-row>
+  </l-container>
+</u-route>
 
 <u-route path="/topics/:topic_id">
   <div>Topic</div>
@@ -52,6 +67,13 @@
     <l-row>
       <l-col xs="12">
         <f-input name="title" required>Title</f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-toggle name="pinned">
+          Pinned
+          <span slot="off">No</span>
+          <span slot="on">Yes</span>
+        </f-toggle>
       </l-col>
       <l-col xs="12">
         <f-richtext name="content" required>Content</f-richtext>
