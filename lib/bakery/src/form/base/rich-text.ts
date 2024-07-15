@@ -43,6 +43,7 @@ export default abstract class RichText extends FormElement {
 
   #exec(command: string, value: any = undefined) {
     document.execCommand(command, false, value);
+    this.value = this.#editor.innerHTML;
   }
 
   #query_state(command: string) {
@@ -67,12 +68,17 @@ export default abstract class RichText extends FormElement {
   }
 
   [LoadedEvent.ListenerKey]() {
+    super[LoadedEvent.ListenerKey]();
     this.#editor.innerHTML = this.value?.toString() ?? "";
     this.#loaded = true;
   }
 
   $input(e: Event) {
-    const target = e.target;
+    const selection = this.#selection;
+    const range = selection.getRangeAt(0);
+    if (!range) return;
+
+    let target: Node | null = range.startContainer;
     if (!(target instanceof Node) || !(e as any).data) return;
     const child = target.firstChild;
 
@@ -112,7 +118,28 @@ export default abstract class RichText extends FormElement {
   }
 
   get Format() {
-    return document.queryCommandValue("formatBlock") || "p";
+    const options = this.FormatOptions.map((o) => o.value);
+    try {
+      const selection = this.#selection;
+      const range = selection.getRangeAt(0);
+      if (!range) return "p";
+
+      let node: Node | null | undefined = range.startContainer;
+      while (
+        node &&
+        (!(node instanceof HTMLElement) ||
+          !options.find(
+            (o) => o === (node as HTMLElement).tagName.toLowerCase()
+          ))
+      ) {
+        node = node?.parentNode;
+      }
+
+      if (!node) return "p";
+      return (node as HTMLElement).tagName.toLowerCase();
+    } catch {
+      return "p";
+    }
   }
 
   set Format(tag: string) {
@@ -122,6 +149,8 @@ export default abstract class RichText extends FormElement {
       input.innerHTML = "&nbsp;";
       this.#editor.appendChild(input);
     }
+
+    this.value = this.#editor.innerHTML;
   }
 
   #current_anchor: HTMLAnchorElement | undefined = undefined;
@@ -208,12 +237,14 @@ export default abstract class RichText extends FormElement {
     const anchor = this.CurrentAnchor;
     if (!anchor) return;
     anchor.href = this.#link_input.value;
+    this.value = this.#editor.innerHTML;
   }
 
   LanguageIfy() {
     const code = this.CurrentCode;
     if (!code) return;
     code.setAttribute("language", this.#language_input.value);
+    this.value = this.#editor.innerHTML;
   }
 
   Boldify() {

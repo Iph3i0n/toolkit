@@ -4,11 +4,11 @@ export class LoadedEvent extends Event {
   }
 
   static get Key() {
-    return "loaded";
+    return "loaded" as const;
   }
 
   static get ListenerKey() {
-    return `$${this.Key}`;
+    return `$${this.Key}` as const;
   }
 }
 
@@ -18,11 +18,11 @@ export class BeforeRenderEvent extends Event {
   }
 
   static get Key() {
-    return "before-render";
+    return "before-render" as const;
   }
 
   static get ListenerKey() {
-    return `$${this.Key}`;
+    return `$${this.Key}` as const;
   }
 }
 
@@ -32,11 +32,11 @@ export class RenderEvent extends Event {
   }
 
   static get Key() {
-    return "rerendered";
+    return "rerendered" as const;
   }
 
   static get ListenerKey() {
-    return `$${this.Key}`;
+    return `$${this.Key}` as const;
   }
 }
 
@@ -46,11 +46,11 @@ export class ShouldRender extends Event {
   }
 
   static get Key() {
-    return "should_render";
+    return "should_render" as const;
   }
 
   static get ListenerKey() {
-    return `$${this.Key}`;
+    return `$${this.Key}` as const;
   }
 }
 
@@ -67,11 +67,11 @@ export class PropsEvent extends Event {
   }
 
   static get Key() {
-    return "props_changed";
+    return "props_changed" as const;
   }
 
   static get ListenerKey() {
-    return `$${this.Key}`;
+    return `$${this.Key}` as const;
   }
 
   get Key() {

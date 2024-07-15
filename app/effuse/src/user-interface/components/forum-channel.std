@@ -9,7 +9,9 @@
     "/servers/:server_id/channels/:channel_id"
   );
 
-  const topic_route = CreateRef();
+  async function create_topic({ FormData }) {
+    console.log(FormData);
+  }
 </script>
 
 <script on="mut">
@@ -19,6 +21,14 @@
   }));
 </script>
 
+<style>
+  .create-button {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+  }
+</style>
+
 <s:for subject=":topics" key="topic">
   <t-link href=":topic.Id" spa block><s:text use=":topic.Title" /></t-link>
 </s:for>
@@ -26,3 +36,29 @@
 <u-route path="/topics/:topic_id">
   <div>Topic</div>
 </u-route>
+
+<div class="create-button">
+  <f-button
+    href=":`/servers/${server_id}/channels/${channel_id}/create-topic`"
+    spa
+  >
+    <t-icon name="add" size="body" colour="primary" text />
+  </f-button>
+</div>
+
+<o-modal path="/create-topic" size="large">
+  <span slot="title">Create a Topic</span>
+  <f-form submit="event-only" on:Submitted="create_topic">
+    <l-row>
+      <l-col xs="12">
+        <f-input name="title" required>Title</f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-richtext name="content" required>Content</f-richtext>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</o-modal>
