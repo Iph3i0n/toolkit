@@ -1,8 +1,11 @@
 <s:meta name="server-admin">
-  <attr name="client">The API client for the SSO Server</attr>
+  <attr name="server_id" />
 </s:meta>
 
 <script>
+  import { UseLocal } from "./client-manager";
+  let client = await UseLocal(self.server_id);
+
   let editing = undefined;
 
   function on_start_editing(event) {
@@ -10,33 +13,33 @@
   }
 
   async function update_metadata({ FormData }) {
-    await self.client.PutMetadata(FormData.name, FormData.picture);
+    await client.PutMetadata(FormData.name, FormData.picture);
   }
 
   async function create_channel({ FormData }) {
-    await self.client.PostChannel(FormData.name, FormData.type);
+    await client.PostChannel(FormData.name, FormData.type);
     document.dispatchEvent(new CustomEvent("ChannelsUpdated"));
   }
 
   async function create_role({ FormData }) {
-    await self.client.PostRole(FormData.name);
+    await client.PostRole(FormData.name);
   }
 
   async function rename_role(role, name) {
     if (role.Name === name) return;
-    await self.client.PutRole(role.RoleId, name);
+    await client.PutRole(role.RoleId, name);
   }
 
   async function rename_channel(channel, name) {
     if (channel.Name === name) return;
-    await self.client.PutChannel(channel.ChannelId, name);
+    await client.PutChannel(channel.ChannelId, name);
   }
 
   async function set_admin(role, admin) {
     const is_admin = admin === "on";
     if (role.Admin === is_admin) return;
-    if (is_admin) await self.client.PostAdminRole(role.RoleId);
-    else await self.client.DeleteAdminRole(role.RoleId);
+    if (is_admin) await client.PostAdminRole(role.RoleId);
+    else await client.DeleteAdminRole(role.RoleId);
   }
 
   async function give_read(role, channel, may_read) {
@@ -46,9 +49,9 @@
     )
       return;
 
-    await self.client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
+    await client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
     if (may_read)
-      await self.client.PostRoleChannel(role.RoleId, channel.ChannelId, false);
+      await client.PostRoleChannel(role.RoleId, channel.ChannelId, false);
   }
 
   async function give_write(role, channel, may_write) {
@@ -58,13 +61,13 @@
       is_write
     )
       return;
-    await self.client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
-    await self.client.PostRoleChannel(role.RoleId, channel.ChannelId, true);
+    await client.DeleteRoleChannel(role.RoleId, channel.ChannelId);
+    await client.PostRoleChannel(role.RoleId, channel.ChannelId, true);
   }
 
   let user_names = {};
   async function get_user_name(user_id) {
-    const profile = await self.client.Sso.GetPublicProfile(user_id);
+    const profile = await client.Sso.GetPublicProfile(user_id);
 
     const name = profile.UserName;
     user_names[user_id] = name;
@@ -72,19 +75,19 @@
   }
 
   async function set_user_role(user_id, role_id) {
-    await self.client.PutUserRole(user_id, role_id);
+    await client.PutUserRole(user_id, role_id);
   }
 
   async function ban_user(user_id) {
-    await self.client.PostBannedUser(user_id);
+    await client.PostBannedUser(user_id);
   }
 
   async function unban_user(user_id) {
-    await self.client.DeleteBannedUser(user_id);
+    await client.DeleteBannedUser(user_id);
   }
 
   async function invite(role_id) {
-    const { Url } = await self.client.GetInviteLink(role_id);
+    const { Url } = await client.GetInviteLink(role_id);
     try {
       await navigator.clipboard.writeText(Url);
     } catch (err) {
@@ -97,237 +100,240 @@
 </script>
 
 <script on="mut">
-  const metadata = await self.client.GetMetadata();
+  client = await UseLocal(self.server_id);
+  const metadata = await client.GetMetadata();
   const { Base64Data, MimeType } = metadata.Icon;
 
   const picture_url = `data:${MimeType};base64,${Base64Data}`;
 
-  const channels = await self.client.GetAllChannels();
-  const roles = await self.client.GetAllRolesAdmin();
-  const users = await self.client.GetAllUsers();
-  const banned = await self.client.GetAllBannedUsers();
-  const is_admin = await self.client.IsAdmin();
+  const channels = await client.GetAllChannels();
+  const roles = await client.GetAllRolesAdmin();
+  const users = await client.GetAllUsers();
+  const banned = await client.GetAllBannedUsers();
+  const is_admin = await client.IsAdmin();
 </script>
 
-<l-row no-padding>
-  <l-col xs="12">
-    <d-card>
-      <span slot="title">Server Metadata</span>
-      <f-form submit="event-only" on:Submitted="update_metadata">
-        <l-row>
-          <l-col xs="12">
-            <f-input name="name" prefill=":metadata.ServerName" required>
-              Server Name
-            </f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-image name="picture" prefill=":picture_url">
-              Profile Picture
-            </f-image>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Update</f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </d-card>
-  </l-col>
-  <l-col xs="12">
-    <d-card>
-      <span slot="title">Channels</span>
-      <s:for subject=":channels" key="channel">
-        <l-accordion>
-          <span slot="title">
-            <s:text use=":channel.Name" />
-          </span>
+<l-container>
+  <l-row no-padding>
+    <l-col xs="12">
+      <d-card>
+        <span slot="title">Server Metadata</span>
+        <f-form submit="event-only" on:Submitted="update_metadata">
           <l-row>
             <l-col xs="12">
-              <f-input
-                prefill=":channel.Name"
-                on:ValueChanged="e => rename_channel(channel, e.Value)"
-              >
-                Name
-              </f-input>
-            </l-col>
-          </l-row>
-        </l-accordion>
-      </s:for>
-      <f-form submit="event-only" on:Submitted="create_channel">
-        <l-row>
-          <l-col xs="12">
-            <t-heading level="h6">Create Channel</t-heading>
-          </l-col>
-          <l-col xs="12">
-            <f-input name="name" required>Channel Name</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-select name="type" required>
-              <option value="Messages">Text Chat</option>
-              <option value="Forum">Forum</option>
-              <option value="Call">Voice Chat</option>
-              <option value="Calendar">Calendar</option>
-              <span slot="label">Channel Type</span>
-            </f-select>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Create</f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </d-card>
-  </l-col>
-  <l-col xs="12">
-    <d-card>
-      <span slot="title">Roles</span>
-      <s:for subject=":roles" key="role">
-        <l-accordion>
-          <span slot="title">
-            <s:text use=":role.Name" />
-          </span>
-          <l-row>
-            <l-col xs="12">
-              <f-input
-                prefill=":role.Name"
-                on:ValueChanged="e => rename_role(role, e.Value)"
-              >
-                Name
+              <f-input name="name" prefill=":metadata.ServerName" required>
+                Server Name
               </f-input>
             </l-col>
             <l-col xs="12">
-              <f-toggle
-                prefill=":role.Admin ? 'on' : 'off'"
-                on:ValueChanged="e => set_admin(role, e.Value)"
-              >
-                Is Admin
-                <span slot="off">No</span>
-                <span slot="on">Yes</span>
-              </f-toggle>
+              <f-image name="picture" prefill=":picture_url">
+                Profile Picture
+              </f-image>
             </l-col>
-            <s:for subject=":channels" key="channel">
-              <l-col xs="12" lg="4">
-                <t-paragraph>
-                  <s:text use=":channel.Name" />
-                </t-paragraph>
-              </l-col>
-              <l-col xs="12" lg="4">
-                <f-toggle
-                  prefill=":!!role.Policies.find(p => p.ChannelId === channel.ChannelId) ? 'on' : 'off'"
-                  on:ValueChanged="e => give_read(role, channel, e.Value)"
-                >
-                  May Read
-                  <span slot="off">No</span>
-                  <span slot="on">Yes</span>
-                </f-toggle>
-              </l-col>
-              <l-col xs="12" lg="4">
-                <f-toggle
-                  prefill=":!!role.Policies.find(p => p.ChannelId === channel.ChannelId)?.Write ? 'on' : 'off'"
-                  on:ValueChanged="e => give_write(role, channel, e.Value)"
-                >
-                  May Write
-                  <span slot="off">No</span>
-                  <span slot="on">Yes</span>
-                </f-toggle>
-              </l-col>
-            </s:for>
             <l-col xs="12">
-              <f-button
-                type="button"
-                colour="rainbow_5"
-                on:click="() => invite(role.RoleId)"
-              >
-                Copy Invite Link to Clipboard
-              </f-button>
+              <f-button type="submit">Update</f-button>
             </l-col>
           </l-row>
-        </l-accordion>
-      </s:for>
-
-      <f-form submit="event-only" on:Submitted="create_role">
-        <l-row>
-          <l-col xs="12">
-            <t-heading level="h6">Create Role</t-heading>
-          </l-col>
-          <l-col xs="12">
-            <f-input name="name" required>Role Name</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Create</f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </d-card>
-  </l-col>
-  <l-col xs="12">
-    <d-card>
-      <span slot="title">Users</span>
-      <l-row>
-        <s:for subject=":users" key="user">
-          <l-col xs="12" md="6" lg="4" xl="3">
-            <s:use get=":roles.find(r => r.RoleId === user.Role)" as="role">
-              <d-panel colour="body" bordered>
-                <l-row>
-                  <l-col xs="6">
-                    <t-paragraph>
-                      <async-text data=":get_user_name(user.UserId)" />
-                    </t-paragraph>
-                  </l-col>
-                  <l-col xs="6" style="text-align: right">
-                    <f-button
-                      type="button"
-                      on:click="() => ban_user(user.UserId)"
-                    >
-                      Ban User
-                    </f-button>
-                  </l-col>
-                  <l-col xs="12">
-                    <f-singleselect
-                      name="type"
-                      prefill=":role.RoleId"
-                      on:ValueChanged="e => set_user_role(user.UserId, e.Value)"
-                    >
-                      <s:for subject=":roles" key="r">
-                        <option value=":r.RoleId">
-                          <s:text use=":r.Name" />
-                        </option>
-                      </s:for>
-                      <span slot="label">Role</span>
-                    </f-singleselect>
-                  </l-col>
-                </l-row>
-              </d-panel>
-            </s:use>
-          </l-col>
+        </f-form>
+      </d-card>
+    </l-col>
+    <l-col xs="12">
+      <d-card>
+        <span slot="title">Channels</span>
+        <s:for subject=":channels" key="channel">
+          <l-accordion>
+            <span slot="title">
+              <s:text use=":channel.Name" />
+            </span>
+            <l-row>
+              <l-col xs="12">
+                <f-input
+                  prefill=":channel.Name"
+                  on:ValueChanged="e => rename_channel(channel, e.Value)"
+                >
+                  Name
+                </f-input>
+              </l-col>
+            </l-row>
+          </l-accordion>
         </s:for>
-      </l-row>
-      <l-row>
-        <s:if check=":banned.length">
-          <l-col xs="12">
-            <t-heading level="h6">Banned Users</t-heading>
-          </l-col>
-          <s:for subject=":banned" key="user">
-            <l-col xs="12" md="6" lg="3">
-              <d-panel colour="body" bordered>
-                <l-row>
-                  <l-col xs="12">
-                    <t-paragraph>
-                      <async-text data=":get_user_name(user.UserId)" />
-                    </t-paragraph>
-                  </l-col>
-                  <l-col xs="12" style="text-align: right">
-                    <f-button
-                      type="button"
-                      on:click="() => unban_user(user.UserId)"
-                    >
-                      Unban User
-                    </f-button>
-                  </l-col>
-                </l-row>
-              </d-panel>
+        <f-form submit="event-only" on:Submitted="create_channel">
+          <l-row>
+            <l-col xs="12">
+              <t-heading level="h6">Create Channel</t-heading>
+            </l-col>
+            <l-col xs="12">
+              <f-input name="name" required>Channel Name</f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-select name="type" required>
+                <option value="Messages">Text Chat</option>
+                <option value="Forum">Forum</option>
+                <option value="Call">Voice Chat</option>
+                <option value="Calendar">Calendar</option>
+                <span slot="label">Channel Type</span>
+              </f-select>
+            </l-col>
+            <l-col xs="12">
+              <f-button type="submit">Create</f-button>
+            </l-col>
+          </l-row>
+        </f-form>
+      </d-card>
+    </l-col>
+    <l-col xs="12">
+      <d-card>
+        <span slot="title">Roles</span>
+        <s:for subject=":roles" key="role">
+          <l-accordion>
+            <span slot="title">
+              <s:text use=":role.Name" />
+            </span>
+            <l-row>
+              <l-col xs="12">
+                <f-input
+                  prefill=":role.Name"
+                  on:ValueChanged="e => rename_role(role, e.Value)"
+                >
+                  Name
+                </f-input>
+              </l-col>
+              <l-col xs="12">
+                <f-toggle
+                  prefill=":role.Admin ? 'on' : 'off'"
+                  on:ValueChanged="e => set_admin(role, e.Value)"
+                >
+                  Is Admin
+                  <span slot="off">No</span>
+                  <span slot="on">Yes</span>
+                </f-toggle>
+              </l-col>
+              <s:for subject=":channels" key="channel">
+                <l-col xs="12" lg="4">
+                  <t-paragraph>
+                    <s:text use=":channel.Name" />
+                  </t-paragraph>
+                </l-col>
+                <l-col xs="12" lg="4">
+                  <f-toggle
+                    prefill=":!!role.Policies.find(p => p.ChannelId === channel.ChannelId) ? 'on' : 'off'"
+                    on:ValueChanged="e => give_read(role, channel, e.Value)"
+                  >
+                    May Read
+                    <span slot="off">No</span>
+                    <span slot="on">Yes</span>
+                  </f-toggle>
+                </l-col>
+                <l-col xs="12" lg="4">
+                  <f-toggle
+                    prefill=":!!role.Policies.find(p => p.ChannelId === channel.ChannelId)?.Write ? 'on' : 'off'"
+                    on:ValueChanged="e => give_write(role, channel, e.Value)"
+                  >
+                    May Write
+                    <span slot="off">No</span>
+                    <span slot="on">Yes</span>
+                  </f-toggle>
+                </l-col>
+              </s:for>
+              <l-col xs="12">
+                <f-button
+                  type="button"
+                  colour="rainbow_5"
+                  on:click="() => invite(role.RoleId)"
+                >
+                  Copy Invite Link to Clipboard
+                </f-button>
+              </l-col>
+            </l-row>
+          </l-accordion>
+        </s:for>
+
+        <f-form submit="event-only" on:Submitted="create_role">
+          <l-row>
+            <l-col xs="12">
+              <t-heading level="h6">Create Role</t-heading>
+            </l-col>
+            <l-col xs="12">
+              <f-input name="name" required>Role Name</f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-button type="submit">Create</f-button>
+            </l-col>
+          </l-row>
+        </f-form>
+      </d-card>
+    </l-col>
+    <l-col xs="12">
+      <d-card>
+        <span slot="title">Users</span>
+        <l-row>
+          <s:for subject=":users" key="user">
+            <l-col xs="12" md="6" lg="4" xl="3">
+              <s:use get=":roles.find(r => r.RoleId === user.Role)" as="role">
+                <d-panel colour="body" bordered>
+                  <l-row>
+                    <l-col xs="6">
+                      <t-paragraph>
+                        <async-text data=":get_user_name(user.UserId)" />
+                      </t-paragraph>
+                    </l-col>
+                    <l-col xs="6" style="text-align: right">
+                      <f-button
+                        type="button"
+                        on:click="() => ban_user(user.UserId)"
+                      >
+                        Ban User
+                      </f-button>
+                    </l-col>
+                    <l-col xs="12">
+                      <f-singleselect
+                        name="type"
+                        prefill=":role.RoleId"
+                        on:ValueChanged="e => set_user_role(user.UserId, e.Value)"
+                      >
+                        <s:for subject=":roles" key="r">
+                          <option value=":r.RoleId">
+                            <s:text use=":r.Name" />
+                          </option>
+                        </s:for>
+                        <span slot="label">Role</span>
+                      </f-singleselect>
+                    </l-col>
+                  </l-row>
+                </d-panel>
+              </s:use>
             </l-col>
           </s:for>
-        </s:if>
-      </l-row>
-    </d-card>
-  </l-col>
-</l-row>
+        </l-row>
+        <l-row>
+          <s:if check=":banned.length">
+            <l-col xs="12">
+              <t-heading level="h6">Banned Users</t-heading>
+            </l-col>
+            <s:for subject=":banned" key="user">
+              <l-col xs="12" md="6" lg="3">
+                <d-panel colour="body" bordered>
+                  <l-row>
+                    <l-col xs="12">
+                      <t-paragraph>
+                        <async-text data=":get_user_name(user.UserId)" />
+                      </t-paragraph>
+                    </l-col>
+                    <l-col xs="12" style="text-align: right">
+                      <f-button
+                        type="button"
+                        on:click="() => unban_user(user.UserId)"
+                      >
+                        Unban User
+                      </f-button>
+                    </l-col>
+                  </l-row>
+                </d-panel>
+              </l-col>
+            </s:for>
+          </s:if>
+        </l-row>
+      </d-card>
+    </l-col>
+  </l-row>
+</l-container>

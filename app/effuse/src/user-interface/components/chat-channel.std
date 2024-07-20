@@ -1,10 +1,13 @@
 <s:meta name="chat-channel">
-  <attr name="client" />
+  <attr name="server_id" />
+  <attr name="channel_id" />
 </s:meta>
 
 <script>
   import { SSO_BASE } from "effuse-config";
-  import { UseUrlParameters } from "../integrations/url";
+  import { UseLocal } from "./client-manager";
+
+  const client = await UseLocal(self.server_id);
 
   let old_id = "";
   let messages = [];
@@ -13,7 +16,7 @@
 
   async function message({ FormData }) {
     const text = self.querySelector("#input-box");
-    await self.client.PostMessage(channel_id, FormData.text);
+    await client.PostMessage(channel_id, FormData.text);
     text.value = "";
   }
 
@@ -25,8 +28,8 @@
       target.scrollTop + target.scrollHeight - target.clientHeight;
 
     if (position < 20 && !waiting)
-      waiting = self.client
-        .GetMessages(channel_id, BigInt(messages.length))
+      waiting = client
+        .GetMessages(self.channel_id, BigInt(messages.length))
         .then((r) => {
           messages.push(...r.reverse());
         });
@@ -36,22 +39,17 @@
 </script>
 
 <script on="mut">
-  const { channel_id } = UseUrlParameters(
-    self,
-    "/servers/:server_id/channels/:channel_id"
-  );
-
-  if (channel_id !== old_id) {
-    old_id = channel_id;
+  if (self.channel_id !== old_id) {
+    old_id = self.channel_id;
     teardown();
-    messages = (await self.client.GetMessages(channel_id, 0n)).reverse();
+    messages = (await client.GetMessages(self.channel_id, 0n)).reverse();
     users = (
       await Promise.all(
         (
-          await self.client.GetChannelUsers(channel_id)
+          await client.GetChannelUsers(self.channel_id)
         ).map(async (u) => ({
           ...u,
-          ...(await self.client.Sso.GetPublicProfile(u.UserId)),
+          ...(await client.Sso.GetPublicProfile(u.UserId)),
         }))
       )
     ).reduce(
@@ -65,7 +63,7 @@
       {}
     );
 
-    teardown = await self.client.Subscribe(channel_id, self, (message) => {
+    teardown = await client.Subscribe(self.channel_id, self, (message) => {
       messages.unshift(message);
       self.should_render();
     });

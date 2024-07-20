@@ -1,14 +1,14 @@
-<s:meta name="effuse-profile">
-  <attr name="client">The API client for the SSO Server</attr>
-</s:meta>
+<s:meta name="effuse-profile"></s:meta>
 
 <script>
-  import { SSO_BASE } from "effuse-config";
+  import { UseSso } from "./client-manager";
 
-  let profile = await self.client.GetProfile();
+  const client = UseSso();
+
+  let profile = await client.GetProfile();
 
   async function update_profile({ FormData }) {
-    profile = await self.client.PutProfile({
+    profile = await client.PutProfile({
       user_name: FormData.username,
       biography: FormData.biography,
       picture: FormData.profile,
@@ -17,10 +17,7 @@
 </script>
 
 <script on="mut">
-  const picture_url = new URL(
-    `/profile/pictures/${encodeURIComponent(profile.UserId)}`,
-    SSO_BASE
-  );
+  const picture_url = client.PictureUrl(profile.UserId);
 </script>
 
 <style>

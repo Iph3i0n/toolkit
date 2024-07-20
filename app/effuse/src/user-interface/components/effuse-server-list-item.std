@@ -1,10 +1,14 @@
 <s:meta name="effuse-server-list-item">
-  <attr name="client" />
   <attr name="server_id" />
 </s:meta>
 
+<script>
+  import { UseLocal } from "./client-manager";
+  const client = await UseLocal(self.server_id);
+</script>
+
 <script on="mut">
-  const details = await self.client.GetMetadata();
+  const details = await client.GetMetadata();
 </script>
 
 <t-link href=":`/servers/${self.server_id}`" block spa>

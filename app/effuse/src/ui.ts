@@ -7,6 +7,7 @@ import "./user-interface/components/server-viewer.std";
 import "./user-interface/components/server-admin.std";
 import "./user-interface/components/async-text.std";
 import "./user-interface/components/chat-channel.std";
+import "./user-interface/components/channel-view.std";
 import "./user-interface/components/forum-channel.std";
 import "./user-interface/components/forum-topic.std";
 import "./user-interface/components/forum-response.std";

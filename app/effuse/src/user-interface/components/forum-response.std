@@ -2,11 +2,3 @@
   <attr name="client" />
   <attr name="response_id" />
 </s:meta>
-
-<script>
-  import { UseUrlParameters } from "../integrations/url";
-  const { server_id, channel_id } = UseUrlParameters(
-    self,
-    "/servers/:server_id/channels/:channel_id/topics/:topic_id"
-  );
-</script>

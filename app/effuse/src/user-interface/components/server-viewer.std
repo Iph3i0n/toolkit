@@ -1,46 +1,28 @@
 <s:meta name="server-viewer">
-  <attr name="sso_client">The API client for the SSO Server</attr>
+  <attr name="server_id" />
 </s:meta>
 
 <script>
-  import { UseUrlParameters } from "../integrations/url";
+  import { UseLocal } from "./client-manager";
 
   let old_url = "";
-  let client;
 
   const get_channel_id = () =>
     window.location.pathname.split("/").filter((e) => e)[3];
-
-  const get_server = async (server_id) => {
-    const profile = await self.sso_client.GetProfile();
-    return profile.Servers.find((s) => s.Id === server_id);
-  };
 
   document.addEventListener("ChannelsUpdated", () => self.should_render());
 </script>
 
 <script on="mut">
-  const { server_id } = UseUrlParameters(self, "/servers/:server_id");
-  const { channel_id } = UseUrlParameters(
-    self,
-    "/servers/:server_id/channels/:channel_id"
-  );
-
   const channel_url = (channel) =>
-    `/servers/${server_id}/channels/${channel.ChannelId}`;
+    `/servers/${self.server_id}/channels/${channel.ChannelId}`;
 
-  const server = await get_server(server_id);
-
-  if (!client || old_url !== server.Url)
-    client = await self.sso_client.GetLocalClient(server_id, server.Url);
-  old_url = server.Url;
-
+  const client = await UseLocal(self.server_id);
   const metadata = await client.GetMetadata();
   const channels = await client.GetAllChannels();
   const is_admin = await client.IsAdmin();
 
-  const admin_url = `/servers/${server_id}/admin`;
-  const channel = channels.find((c) => c.ChannelId === channel_id);
+  const admin_url = `/servers/${self.server_id}/admin`;
 </script>
 
 <style>
@@ -107,20 +89,12 @@
   </d-card>
   <div class="app-content">
     <s:if check=":is_admin">
-      <u-route path="/admin">
-        <l-container>
-          <server-admin client=":client" />
-        </l-container>
-      </u-route>
+      <u-route path="/servers/:server_id/admin" ele="server-admin" />
     </s:if>
 
-    <u-route path="/channels/:channel_id">
-      <s:if check=":channel?.Type === 'Messages'">
-        <chat-channel client=":client" />
-      </s:if>
-      <s:if check=":channel?.Type === 'Forum'">
-        <forum-channel client=":client" />
-      </s:if>
-    </u-route>
+    <u-route
+      path="/servers/:server_id/channels/:channel_id"
+      ele="channel-view"
+    />
   </div>
 </div>

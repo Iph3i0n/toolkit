@@ -1,11 +1,38 @@
 <s:meta name="forum-topic">
-  <attr name="client" />
+  <attr name="server_id" />
+  <attr name="channel_id" />
+  <attr name="topic_id" />
 </s:meta>
 
 <script>
-  import { UseUrlParameters } from "../integrations/url";
-  const { server_id, channel_id } = UseUrlParameters(
-    self,
-    "/servers/:server_id/channels/:channel_id/topics/:topic_id"
-  );
+  import { UseLocal } from "./client-manager";
 </script>
+
+<script on="mut">
+  const client = await UseLocal(self.server_id);
+  const data = await client.GetTopic(self.channel_id, self.topic_id);
+  const author = await client.Sso.GetPublicProfile(data.Who);
+</script>
+
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <t-heading level="h4">
+        <s:text use=":data.Title" />
+      </t-heading>
+    </l-col>
+    <l-col xs="12">
+      <t-paragraph>
+        <b>
+          <s:text use=":author.UserName + ' '" />
+        </b>
+        <small>
+          <s:text use=":new Date(data.Created).toLocaleString()" />
+        </small>
+      </t-paragraph>
+    </l-col>
+    <l-col xs="12">
+      <t-richtext use=":data.Text" />
+    </l-col>
+  </l-row>
+</l-container>

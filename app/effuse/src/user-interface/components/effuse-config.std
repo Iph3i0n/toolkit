@@ -1,14 +1,16 @@
-<s:meta name="effuse-config">
-  <attr name="client">The API client for the SSO Server</attr>
-</s:meta>
+<s:meta name="effuse-config"></s:meta>
 
 <script>
+  import { UseSso } from "./client-manager";
+
+  const client = UseSso();
+
   const get_servers = async () => {
-    const profile = await self.client.GetProfile();
+    const profile = await client.GetProfile();
     return await Promise.all(
       profile.Servers.map(async (s) => ({
         ...s,
-        Client: await self.client.GetLocalClient(s.Id, s.Url),
+        Client: await client.GetLocalClient(s.Id, s.Url),
       }))
     );
   };

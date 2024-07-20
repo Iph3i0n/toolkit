@@ -1,16 +1,17 @@
-<s:meta name="effuse-start">
-  <attr name="client">The API client for the SSO Server</attr>
-</s:meta>
+<s:meta name="effuse-start" />
 
 <script>
+  import { SetSso } from "./client-manager";
   import { SsoClient } from "../integrations/sso";
   import { UseUrlParameters } from "../integrations/url";
 
   let sso = await SsoClient.Attempt();
+  SetSso(sso);
   let mode = "login";
 
   async function on_login({ FormData }) {
     sso = await SsoClient.Login(FormData.Email, FormData.Password);
+    SetSso(sso);
   }
 
   async function on_register({ FormData }) {
@@ -19,11 +20,8 @@
       email: FormData.Email,
       password: FormData.Password,
     });
+    SetSso(sso);
   }
-</script>
-
-<script on="mut">
-  const { server_id } = UseUrlParameters(self, "/servers/:server_id");
 </script>
 
 <style>
@@ -112,21 +110,12 @@
 </s:if>
 
 <s:if check=":sso">
-  <effuse-config client=":sso" />
+  <effuse-config />
   <div class="app-body">
     <l-container flush class="app-content">
-      <u-route path="/join-server">
-        <effuse-join-server client=":sso" />
-      </u-route>
-      <u-route path="/profile">
-        <effuse-profile client=":sso" />
-      </u-route>
-
-      <u-route path="/servers/:server_id">
-        <s:if check=":!!server_id">
-          <server-viewer sso_client=":sso" />
-        </s:if>
-      </u-route>
+      <u-route path="/join-server" ele="effuse-join-server" />
+      <u-route path="/profile" ele="effuse-profile" />
+      <u-route path="/servers/:server_id" ele="server-viewer" />
     </l-container>
   </div>
 </s:if>

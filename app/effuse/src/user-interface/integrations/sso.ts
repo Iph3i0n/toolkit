@@ -356,4 +356,8 @@ export class SsoClient {
 
     return SsoClient.#local_clients[server_id];
   }
+
+  PictureUrl(user_id: string) {
+    return this.#client.Url("/profile/pictures/:user_id", { user_id });
+  }
 }

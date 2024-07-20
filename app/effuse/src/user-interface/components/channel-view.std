@@ -1,0 +1,22 @@
+<s:meta name="channel-view">
+  <attr name="server_id" />
+  <attr name="channel_id" />
+</s:meta>
+
+<script>
+  import { UseLocal } from "./client-manager";
+</script>
+
+<script on="mut">
+  const client = await UseLocal(self.server_id);
+
+  const channels = await client.GetAllChannels();
+  const channel = channels.find((c) => c.ChannelId === self.channel_id);
+</script>
+
+<s:if check=":channel?.Type === 'Messages'">
+  <chat-channel server_id=":self.server_id" channel_id=":self.channel_id" />
+</s:if>
+<s:if check=":channel?.Type === 'Forum'">
+  <forum-channel server_id=":self.server_id" channel_id=":self.channel_id" />
+</s:if>

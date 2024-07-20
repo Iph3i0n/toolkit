@@ -7,6 +7,10 @@
     the start of a segment to use it as a parameter. The parameters will be
     available to any `u-fetch` tag that is a child.
   </attr>
+  <attr name="ele" type="string">
+    The target HTML tag. Use this if you have a single component as a child. The
+    child will only be rendered on a match, allowing for greater optimisation.
+  </attr>
   <attr name="exact" type="boolean">
     If set then only exact matches will be allowed. Useful for home pages and
     landing pages.
@@ -43,6 +47,28 @@
   });
 </script>
 
-<s:if check=":self.Matches.match">
-  <slot></slot>
+<script on="after">
+  if (!self.ele) return;
+  const { match, params } = self.Matches;
+  if (match) {
+    if (!self.root.querySelector(self.ele)) {
+      /** @type {HTMLElement} */
+      const input = document.createElement(self.ele);
+      for (const key in params) {
+        input.setAttribute(key, params[key]);
+      }
+
+      self.root.appendChild(input);
+    }
+  } else {
+    /** @type {HTMLElement} */
+    const existing = self.root.querySelector(self.ele);
+    if (existing) {
+      existing.remove();
+    }
+  }
+</script>
+
+<s:if check=":!self.ele && self.Matches.match">
+  <slot />
 </s:if>
