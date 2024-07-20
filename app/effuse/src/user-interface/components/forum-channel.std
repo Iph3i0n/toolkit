@@ -32,17 +32,21 @@
   }
 </style>
 <u-route path="/servers/:server_id/channels/:channel_id" exact>
-  <l-container>
-    <l-row>
-      <l-col xs="12">
-        <d-listgroup>
-          <s:for subject=":topics" key="topic">
-            <t-link href=":topic.Url" spa><s:text use=":topic.Title" /></t-link>
-          </s:for>
-        </d-listgroup>
-      </l-col>
-    </l-row>
-  </l-container>
+  <div>
+    <l-container>
+      <l-row>
+        <l-col xs="12">
+          <d-listgroup>
+            <s:for subject=":topics" key="topic">
+              <t-link href=":topic.Url" spa>
+                <s:text use=":topic.Title" />
+              </t-link>
+            </s:for>
+          </d-listgroup>
+        </l-col>
+      </l-row>
+    </l-container>
+  </div>
 </u-route>
 
 <u-route
