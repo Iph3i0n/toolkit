@@ -39,11 +39,12 @@
     height: 100%;
   }
 
-  t-paragraph[slot="title"] {
+  .channels-card t-paragraph {
     position: relative;
+    margin: 0;
   }
 
-  t-paragraph[slot="title"] t-link {
+  .channels-card t-paragraph t-link {
     position: absolute;
     top: 0.1rem;
     right: 0.1rem;
@@ -78,25 +79,42 @@
     display: block;
     height: 100%;
   }
+
+  .channel-link {
+    position: relative;
+    margin: 0.5rem 0;
+  }
+
+  .channel-link t-icon {
+    position: relative;
+    top: 1px;
+    margin-right: 0.5rem;
+  }
 </style>
 
 <div class="content">
-  <d-card class="channels-card">
-    <t-paragraph slot="title">
-      <s:text use=":metadata.ServerName" />
-      <s:if check=":is_admin">
-        <t-link href=":admin_url" spa>
-          <t-icon name="settings-2" size="body" colour="body" text />
-        </t-link>
-      </s:if>
-    </t-paragraph>
+  <div class="channels-card">
+    <d-panel colour="surface" bordered>
+      <l-row>
+        <l-col xs="12">
+          <t-paragraph>
+            <s:text use=":metadata.ServerName" />
+            <s:if check=":is_admin">
+              <t-link href=":admin_url" spa>
+                <t-icon name="settings-2" size="body" colour="body" text />
+              </t-link>
+            </s:if>
+          </t-paragraph>
+        </l-col>
+      </l-row>
+    </d-panel>
     <s:for subject=":channels" key="channel">
-      <t-link href=":channel_url(channel)" block spa>
+      <t-link class="channel-link" href=":channel_url(channel)" block spa>
         <t-icon name=":icon(channel)" size="body" colour="body" text />
         <s:text use=":channel.Name" />
       </t-link>
     </s:for>
-  </d-card>
+  </div>
   <div class="app-content">
     <s:if check=":is_admin">
       <u-route path="/servers/:server_id/admin" ele="server-admin" />
