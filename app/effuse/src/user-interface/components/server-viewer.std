@@ -11,6 +11,14 @@
     window.location.pathname.split("/").filter((e) => e)[3];
 
   document.addEventListener("ChannelsUpdated", () => self.should_render());
+
+  const channel_icons = {
+    Messages: "chat-3",
+    Forum: "article",
+    Call: "phone",
+    Calendar: "calendar",
+  };
+  const icon = (channel) => channel_icons[channel.Type];
 </script>
 
 <script on="mut">
@@ -83,6 +91,7 @@
     </t-paragraph>
     <s:for subject=":channels" key="channel">
       <t-link href=":channel_url(channel)" block spa>
+        <t-icon name=":icon(channel)" size="body" colour="body" text />
         <s:text use=":channel.Name" />
       </t-link>
     </s:for>

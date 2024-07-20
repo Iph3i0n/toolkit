@@ -51,14 +51,14 @@
   if (!self.ele) return;
   const { match, params } = self.Matches;
   if (match) {
-    if (!self.root.querySelector(self.ele)) {
-      /** @type {HTMLElement} */
-      const input = document.createElement(self.ele);
-      for (const key in params) {
-        input.setAttribute(key, params[key]);
-      }
+    let ele = self.root.querySelector(self.ele);
+    if (!ele) {
+      ele = document.createElement(self.ele);
+      self.root.appendChild(ele);
+    }
 
-      self.root.appendChild(input);
+    for (const key in params) {
+      ele.setAttribute(key, params[key]);
     }
   } else {
     /** @type {HTMLElement} */

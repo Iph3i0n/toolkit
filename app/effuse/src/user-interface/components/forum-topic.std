@@ -12,27 +12,59 @@
   const client = await UseLocal(self.server_id);
   const data = await client.GetTopic(self.channel_id, self.topic_id);
   const author = await client.Sso.GetPublicProfile(data.Who);
+
+  async function respond({ FormData }) {
+    await client.PostTopicResponse(
+      self.channel_id,
+      self.topic_id,
+      FormData.content
+    );
+  }
 </script>
+
+<style>
+  small {
+    margin: 0 1rem;
+    font-size: 0.7em;
+    font-weight: 300;
+  }
+</style>
 
 <l-container>
   <l-row>
     <l-col xs="12">
-      <t-heading level="h4">
-        <s:text use=":data.Title" />
-      </t-heading>
+      <d-card>
+        <div slot="title">
+          <s:text use=":data.Title" />
+          <small>
+            <s:text use=":author.UserName + ' - '" />
+            <s:text use=":new Date(data.Created).toLocaleString()" />
+          </small>
+        </div>
+        <t-richtext use=":data.Text" />
+      </d-card>
     </l-col>
+    <s:for subject=":data.Responses" key="response_id">
+      <l-col xs="12">
+        <forum-response
+          server_id=":self.server_id"
+          channel_id=":self.channel_id"
+          topic_id=":self.topic_id"
+          response_id=":response_id"
+        />
+      </l-col>
+    </s:for>
     <l-col xs="12">
-      <t-paragraph>
-        <b>
-          <s:text use=":author.UserName + ' '" />
-        </b>
-        <small>
-          <s:text use=":new Date(data.Created).toLocaleString()" />
-        </small>
-      </t-paragraph>
-    </l-col>
-    <l-col xs="12">
-      <t-richtext use=":data.Text" />
+      <f-form submit="event-only" on:Submitted="respond">
+        <l-row no-padding>
+          <l-col xs="12">
+            <f-richtext name="content" required>Content</f-richtext>
+          </l-col>
+          <l-col xs="12">
+            <f-button type="submit">Respond</f-button>
+          </l-col>
+        </l-row>
+      </f-form>
     </l-col>
   </l-row>
 </l-container>

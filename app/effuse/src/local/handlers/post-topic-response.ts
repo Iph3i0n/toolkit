@@ -22,7 +22,7 @@ export default class PostTopicResponse extends Handler {
     this.#auth_service = auth_service ?? NewAuthService(this.State);
   }
 
-  readonly Method = HttpMethod.Put;
+  readonly Method = HttpMethod.Post;
   readonly Url = "/api/v1/channels/:channel_id/topics/:topic_id/responses";
 
   async Process(request: PureRequest) {
