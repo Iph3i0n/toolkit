@@ -8,6 +8,7 @@ import { StateReader } from "@ipheion/fs-db";
 import CreateServer from "@ipheion/puristee";
 import { ServerMetadata } from "./models/server-metadata";
 import { ForumResponse, ForumTopic, ForumTopicList } from "./models/forum";
+import { CalendarEvent, CalendarEventList } from "./models/calendar";
 
 export const Schema = {
   users: User,
@@ -20,6 +21,8 @@ export const Schema = {
   forum_topics: ForumTopic,
   forum_topic_lists: ForumTopicList,
   forum_responses: ForumResponse,
+  calendar_event_lists: CalendarEventList,
+  calendar_events: CalendarEvent,
 };
 
 export const DataDir = process.env.DATA_DIR ?? "./data";
