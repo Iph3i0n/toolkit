@@ -63,29 +63,47 @@
   </f-button>
 </div>
 
-<o-modal
-  path="/servers/:server_id/channels/:channel_id/create-topic"
-  size="large"
+<u-fetch
+  url="/ui-text/{{ locale }}/forum-channel.json"
+  name="text"
+  fallback="/ui-text/en-GB/forum-channel.json"
 >
-  <span slot="title">Create a Topic</span>
-  <f-form submit="event-only" on:Submitted="create_topic">
-    <l-row>
-      <l-col xs="12">
-        <f-input name="title" required>Title</f-input>
-      </l-col>
-      <l-col xs="12">
-        <f-toggle name="pinned">
-          Pinned
-          <span slot="off">No</span>
-          <span slot="on">Yes</span>
-        </f-toggle>
-      </l-col>
-      <l-col xs="12">
-        <f-richtext name="content" required>Content</f-richtext>
-      </l-col>
-      <l-col xs="12">
-        <f-button type="submit">Create</f-button>
-      </l-col>
-    </l-row>
-  </f-form>
-</o-modal>
+  <o-modal
+    path="/servers/:server_id/channels/:channel_id/create-topic"
+    size="large"
+  >
+    <span slot="title">
+      <u-text use="|this.state.text.create_topic" />
+    </span>
+    <f-form submit="event-only" on:Submitted="create_topic">
+      <l-row>
+        <l-col xs="12">
+          <f-input name="title" required>
+            <u-text use="|this.state.text.title" />
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-toggle name="pinned">
+            <u-text use="|this.state.text.pinned" />
+            <span slot="off">
+              <u-text use="|this.state.text.pinned_no" />
+            </span>
+            <span slot="on">
+              <u-text use="|this.state.text.pinned_yes" />
+            </span>
+          </f-toggle>
+        </l-col>
+        <l-col xs="12">
+          <f-richtext name="content" required>
+            <u-text use="|this.state.text.content" />
+          </f-richtext>
+        </l-col>
+        <l-col xs="12">
+          <f-button type="submit">
+            <u-text use="|this.state.text.create_button" />
+          </f-button>
+        </l-col>
+      </l-row>
+    </f-form>
+  </o-modal>
+</u-fetch>

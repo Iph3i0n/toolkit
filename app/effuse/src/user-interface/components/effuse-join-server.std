@@ -32,19 +32,29 @@
   }
 </style>
 
-<div class="join-form">
-  <l-row>
-    <l-col xs="12">
-      <t-heading level="h3">Server Invitation</t-heading>
-      <t-heading level="h4">
-        <s:text use=":name" />
-      </t-heading>
-      <t-paragraph>
-        You have been invited to join a server. Click the button below to join.
-      </t-paragraph>
-    </l-col>
-    <l-col xs="12">
-      <f-button type="button" on:click="join_server">Join</f-button>
-    </l-col>
-  </l-row>
-</div>
+<u-fetch
+  url="/ui-text/{{ locale }}/effuse-join-server.json"
+  name="text"
+  fallback="/ui-text/en-GB/effuse-join-server.json"
+>
+  <div class="join-form">
+    <l-row>
+      <l-col xs="12">
+        <t-heading level="h3">
+          <u-text use="|this.state.text.title" />
+        </t-heading>
+        <t-heading level="h4">
+          <s:text use=":name" />
+        </t-heading>
+        <t-paragraph>
+          <u-text use="|this.state.text.description" />
+        </t-paragraph>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="button" on:click="join_server">
+          <u-text use="|this.state.text.cta" />
+        </f-button>
+      </l-col>
+    </l-row>
+  </div>
+</u-fetch>

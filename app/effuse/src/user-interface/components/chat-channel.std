@@ -122,34 +122,42 @@
   }
 </style>
 
-<d-panel class="chat-box" colour="surface">
-  <div class="messages" on:scroll="on_scroll">
-    <s:for subject=":messages" key="message">
-      <s:use get=":users[message.Who]" as="user">
-        <l-row class="message">
-          <l-col xs="12" class="message-heading">
-            <img src=":user.Url" />
-            <t-paragraph>
-              <s:text use=":user.UserName + ' '" />
-              <small>
-                <s:text use=":message.When.toLocaleString()" />
-              </small>
-            </t-paragraph>
-          </l-col>
-          <l-col xs="12">
-            <t-paragraph>
-              <s:text use=":message.Text" />
-            </t-paragraph>
-          </l-col>
-        </l-row>
-      </s:use>
-    </s:for>
-    <div class="anchor" />
-  </div>
-  <f-form class="poster" submit="event-only" on:Submitted="message">
-    <f-input id="input-box" name="text" required>Message</f-input>
-    <f-button type="submit">
-      <t-icon name="send-plane-2" size="body" colour="primary" text />
-    </f-button>
-  </f-form>
-</d-panel>
+<u-fetch
+  url="/ui-text/{{ locale }}/chat-channel.json"
+  name="text"
+  fallback="/ui-text/en-GB/chat-channel.json"
+>
+  <d-panel class="chat-box" colour="surface">
+    <div class="messages" on:scroll="on_scroll">
+      <s:for subject=":messages" key="message">
+        <s:use get=":users[message.Who]" as="user">
+          <l-row class="message">
+            <l-col xs="12" class="message-heading">
+              <img src=":user.Url" />
+              <t-paragraph>
+                <s:text use=":user.UserName + ' '" />
+                <small>
+                  <s:text use=":message.When.toLocaleString()" />
+                </small>
+              </t-paragraph>
+            </l-col>
+            <l-col xs="12">
+              <t-paragraph>
+                <s:text use=":message.Text" />
+              </t-paragraph>
+            </l-col>
+          </l-row>
+        </s:use>
+      </s:for>
+      <div class="anchor" />
+    </div>
+    <f-form class="poster" submit="event-only" on:Submitted="message">
+      <f-input id="input-box" name="text" required>
+        <u-text use="|this.state.text.messages" />
+      </f-input>
+      <f-button type="submit">
+        <t-icon name="send-plane-2" size="body" colour="primary" text />
+      </f-button>
+    </f-form>
+  </d-panel>
+</u-fetch>

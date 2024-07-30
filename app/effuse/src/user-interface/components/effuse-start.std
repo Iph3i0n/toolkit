@@ -55,67 +55,85 @@
   }
 </style>
 
-<s:if check=":!sso">
-  <div class="login-form">
-    <s:if check=":mode === 'login'">
-      <f-form submit="event-only" on:Submitted="on_login">
-        <l-row>
-          <l-col xs="12">
-            <f-input name="Email" required>Email</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-input name="Password" required sensitive>Password</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Login</f-button>
-            <f-button
-              type="button"
-              colour="contrast"
-              on:click="() => (mode = 'register')"
-            >
-              New to Effuse?
-            </f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </s:if>
-    <s:if check=":mode === 'register'">
-      <f-form submit="event-only" on:Submitted="on_register">
-        <l-row>
-          <l-col xs="12">
-            <f-input name="UserName" validate="^[a-zA-Z0-9]+$" required>
-              Username
-            </f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-input name="Email" type="email" required>Email</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-input name="Password" required sensitive>Password</f-input>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Register</f-button>
-            <f-button
-              type="button"
-              colour="contrast"
-              on:click="() => (mode = 'login')"
-            >
-              Already got an account?
-            </f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </s:if>
-  </div>
-</s:if>
+<u-fetch
+  url="/ui-text/{{ locale }}/effuse-start.json"
+  name="text"
+  fallback="/ui-text/en-GB/effuse-start.json"
+>
+  <s:if check=":!sso">
+    <div class="login-form">
+      <s:if check=":mode === 'login'">
+        <f-form submit="event-only" on:Submitted="on_login">
+          <l-row>
+            <l-col xs="12">
+              <f-input name="Email" required>
+                <u-text use="|this.state.text.email" />
+              </f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-input name="Password" required sensitive>
+                <u-text use="|this.state.text.password" />
+              </f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-button type="submit">
+                <u-text use="|this.state.text.login" />
+              </f-button>
+              <f-button
+                type="button"
+                colour="contrast"
+                on:click="() => (mode = 'register')"
+              >
+                <u-text use="|this.state.text.register_nav" />
+              </f-button>
+            </l-col>
+          </l-row>
+        </f-form>
+      </s:if>
+      <s:if check=":mode === 'register'">
+        <f-form submit="event-only" on:Submitted="on_register">
+          <l-row>
+            <l-col xs="12">
+              <f-input name="UserName" validate="^[a-zA-Z0-9]+$" required>
+                <u-text use="|this.state.text.username" />
+              </f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-input name="Email" type="email" required>
+                <u-text use="|this.state.text.email" />
+              </f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-input name="Password" required sensitive>
+                <u-text use="|this.state.text.password" />
+              </f-input>
+            </l-col>
+            <l-col xs="12">
+              <f-button type="submit">
+                <u-text use="|this.state.text.register" />
+              </f-button>
+              <f-button
+                type="button"
+                colour="contrast"
+                on:click="() => (mode = 'login')"
+              >
+                <u-text use="|this.state.text.login_nav" />
+              </f-button>
+            </l-col>
+          </l-row>
+        </f-form>
+      </s:if>
+    </div>
+  </s:if>
 
-<s:if check=":sso">
-  <effuse-config />
-  <div class="app-body">
-    <l-container flush class="app-content">
-      <u-route path="/join-server" ele="effuse-join-server" />
-      <u-route path="/profile" ele="effuse-profile" />
-      <u-route path="/servers/:server_id" ele="server-viewer" />
-    </l-container>
-  </div>
-</s:if>
+  <s:if check=":sso">
+    <effuse-config />
+    <div class="app-body">
+      <l-container flush class="app-content">
+        <u-route path="/join-server" ele="effuse-join-server" />
+        <u-route path="/profile" ele="effuse-profile" />
+        <u-route path="/servers/:server_id" ele="server-viewer" />
+      </l-container>
+    </div>
+  </s:if>
+</u-fetch>

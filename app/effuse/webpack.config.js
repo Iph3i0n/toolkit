@@ -155,6 +155,10 @@ module.exports = async () => {
             from: path.resolve(__dirname, "../../lib/bakery/dist/native"),
             to: ".",
           },
+          {
+            from: path.resolve(__dirname, "src/user-interface/ui-text"),
+            to: "./ui-text",
+          },
         ],
       }),
     ],

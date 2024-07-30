@@ -29,42 +29,51 @@
     font-weight: 300;
   }
 </style>
-
-<l-container>
-  <l-row>
-    <l-col xs="12">
-      <d-card>
-        <div slot="title">
-          <s:text use=":data.Title" />
-          <small>
-            <s:text use=":author.UserName + ' - '" />
-            <s:text use=":new Date(data.Created).toLocaleString()" />
-          </small>
-        </div>
-        <t-richtext use=":data.Text" />
-      </d-card>
-    </l-col>
-    <s:for subject=":data.Responses" key="response_id">
+<u-fetch
+  url="/ui-text/{{ locale }}/forum-topic.json"
+  name="text"
+  fallback="/ui-text/en-GB/forum-topic.json"
+>
+  <l-container>
+    <l-row>
       <l-col xs="12">
-        <forum-response
-          server_id=":self.server_id"
-          channel_id=":self.channel_id"
-          topic_id=":self.topic_id"
-          response_id=":response_id"
-        />
+        <d-card>
+          <div slot="title">
+            <s:text use=":data.Title" />
+            <small>
+              <s:text use=":author.UserName + ' - '" />
+              <s:text use=":new Date(data.Created).toLocaleString()" />
+            </small>
+          </div>
+          <t-richtext use=":data.Text" />
+        </d-card>
       </l-col>
-    </s:for>
-    <l-col xs="12">
-      <f-form submit="event-only" on:Submitted="respond">
-        <l-row no-padding>
-          <l-col xs="12">
-            <f-richtext name="content" required>Content</f-richtext>
-          </l-col>
-          <l-col xs="12">
-            <f-button type="submit">Respond</f-button>
-          </l-col>
-        </l-row>
-      </f-form>
-    </l-col>
-  </l-row>
-</l-container>
+      <s:for subject=":data.Responses" key="response_id">
+        <l-col xs="12">
+          <forum-response
+            server_id=":self.server_id"
+            channel_id=":self.channel_id"
+            topic_id=":self.topic_id"
+            response_id=":response_id"
+          />
+        </l-col>
+      </s:for>
+      <l-col xs="12">
+        <f-form submit="event-only" on:Submitted="respond">
+          <l-row no-padding>
+            <l-col xs="12">
+              <f-richtext name="content" required>
+                <u-text use="|this.state.text.content" />
+              </f-richtext>
+            </l-col>
+            <l-col xs="12">
+              <f-button type="submit">
+                <u-text use="|this.state.text.respond" />
+              </f-button>
+            </l-col>
+          </l-row>
+        </f-form>
+      </l-col>
+    </l-row>
+  </l-container>
+</u-fetch>

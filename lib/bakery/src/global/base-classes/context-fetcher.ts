@@ -5,9 +5,9 @@ export default abstract class ContextFetcher extends BakeryBase {
     try {
       const checker = (this as any)[prop_name];
 
-      if (typeof checker !== "string" || !checker.startsWith(":"))
+      if (typeof checker !== "string" || !checker.startsWith("|"))
         return checker;
-      const fetcher = new Function("return " + checker.replace(":", ""));
+      const fetcher = new Function("return " + checker.replace("|", ""));
       return fetcher.call(this);
     } catch {
       return undefined;
