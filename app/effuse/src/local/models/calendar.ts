@@ -15,6 +15,7 @@ export const CalendarEvent = new Union(
     title: new UTF8(),
     description: new UTF8(),
     organiser: new Guid(),
+    when: new DateTime(),
     created: new DateTime(),
     attending: new Array(new Guid()),
   })

@@ -13,7 +13,7 @@ export default class GetEvents extends Handler {
   }
 
   readonly Method = HttpMethod.Get;
-  readonly Url = "/api/v1/channels/:channel_id/events/:month";
+  readonly Url = "/api/v1/channels/:channel_id/events-by-month/:month";
 
   async Process(request: PureRequest) {
     const { channel_id, month } = request.Parameters({
@@ -36,6 +36,7 @@ export default class GetEvents extends Handler {
           Organiser: e.organiser,
           Created: e.created.toISOString(),
           Attending: e.attending,
+          When: e.when.toISOString(),
         }))
     );
   }
