@@ -5,12 +5,14 @@ import {
   PureRequest,
 } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
+import { RequireChannel } from "local/authorise";
 import { NewChannelService } from "local/bootstrap/services/channel-service";
 import { Role } from "local/models/role";
 import { User } from "local/models/user";
 import { Handler } from "local/server";
 import { ChannelService } from "local/services/channel-service";
 
+@RequireChannel("read")
 export default class GetChannelUsers extends Handler {
   readonly #channel_service: ChannelService;
 
@@ -24,8 +26,6 @@ export default class GetChannelUsers extends Handler {
 
   async Process(request: PureRequest) {
     const { channel_id } = request.Parameters({ channel_id: IsString });
-    if (!(await this.#channel_service.MayRead(request, channel_id)))
-      return new EmptyResponse("Unauthorised");
 
     const result: Array<[string, User, Role | undefined]> = [];
     for (const [id, user] of this.State.users) {

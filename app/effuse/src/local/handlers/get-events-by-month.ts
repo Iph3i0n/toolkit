@@ -1,17 +1,10 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
-import { NewChannelService } from "local/bootstrap/services/channel-service";
+import { RequireChannel } from "local/authorise";
 import { Handler } from "local/server";
-import { ChannelService } from "local/services/channel-service";
 
+@RequireChannel("read")
 export default class GetEvents extends Handler {
-  readonly #channel_service: ChannelService;
-
-  constructor(channel_service?: ChannelService) {
-    super();
-    this.#channel_service = channel_service ?? NewChannelService(this.State);
-  }
-
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/channels/:channel_id/events-by-month/:month";
 
@@ -20,7 +13,6 @@ export default class GetEvents extends Handler {
       channel_id: IsString,
       month: IsString,
     });
-    await this.#channel_service.RequireRead(request, channel_id);
 
     const data = this.State.calendar_event_lists[`${channel_id}-${month}`];
 
