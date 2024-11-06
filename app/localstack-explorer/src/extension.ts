@@ -1,17 +1,10 @@
 import * as vscode from "vscode";
+import { CloudformationProvider } from "./tree/cloudformation-provider";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("I have activated!");
-  const disposable = vscode.commands.registerCommand(
-    "localstack-explorer.helloWorld",
-    () => {
-      vscode.window.showInformationMessage(
-        "Hello World from localstack-explorer!"
-      );
-    }
-  );
-
-  context.subscriptions.push(disposable);
+  vscode.window.createTreeView("CloudformationStacks", {
+    treeDataProvider: new CloudformationProvider(),
+  });
 }
 
 export function deactivate() {}
