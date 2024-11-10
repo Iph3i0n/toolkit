@@ -1,0 +1,20 @@
+{
+  "name": "@ipheion/visual-cloud",
+  "version": "0.0.1",
+  "description": "A tool to make cloud interfaces with a visual language",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {},
+  "prettier": {
+    "htmlWhitespaceSensitivity": "ignore"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

@@ -232,7 +232,7 @@ export class FileResponse implements IResponse {
   get body() {
     return new Promise<Buffer | undefined>(async (res) => {
       try {
-        return await Fs.readFile(this.#path);
+        res(await Fs.readFile(this.#path));
       } catch {
         res(undefined);
       }
