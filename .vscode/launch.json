@@ -27,16 +27,6 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "task",
       "runtimeArgs": ["effuse:run-ui"]
-    },
-    {
-      "name": "Run Extension",
-      "type": "extensionHost",
-      "request": "launch",
-      "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/app/localstack-explorer"
-      ],
-      "outFiles": ["${workspaceFolder}/app/localstack-explorer/dist/**/*.js"],
-      "preLaunchTask": "localstack-explorer:build"
     }
   ],
   "compounds": [
