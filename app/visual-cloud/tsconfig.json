@@ -13,7 +13,9 @@
     "downlevelIteration": true,
     "declaration": true,
     "baseUrl": "./src",
-    "sourceMap": true
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": ["src/**/*", "tests/**/*", "types"],
   "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]

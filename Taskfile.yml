@@ -126,13 +126,18 @@ tasks:
       - effuse:run-sso
       - effuse:run-local
 
+  visual-cloud:build-ui:
+    dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
+    cmds:
+      - npx esbuild ./src/ui.tsx --bundle --outfile=dist/ui.out.js
+
   visual-cloud:build:
     deps: [puristee:build, safe-type:build, moulding-tin:build]
     dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
     cmds:
       - rm -rf dist
       - npx tsc
-      - npx esbuild ./src/ui.ts --bundle --outfile=dist/ui.out.js
+      - task: visual-cloud:build-ui
 
   visual-cloud:run:
     dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
