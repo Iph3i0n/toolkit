@@ -151,3 +151,23 @@ tasks:
     cmds:
       - task: visual-cloud:build
       - task: visual-cloud:run
+
+  cms-example:build:
+    deps: [puristee:build, safe-type:build, moulding-tin:build]
+    dir: "{{.TASKFILE_DIR}}/app/cms-example"
+    cmds:
+      - rm -rf dist
+      - npx tsc
+
+  cms-example:run:
+    dir: "{{.TASKFILE_DIR}}/app/cms-example"
+    cmds:
+      - node ./dist/index.js
+    env:
+      NODE_PATH: ./dist
+      DATA_DIR: ./data
+
+  cms-example:dev:
+    cmds:
+      - task: cms-example:build
+      - task: cms-example:run

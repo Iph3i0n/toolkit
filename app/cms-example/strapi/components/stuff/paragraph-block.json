@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_stuff_paragraph_blocks",
+  "info": {
+    "name": "ParagraphBlock",
+    "icon": "address-book"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text"
+    }
+  }
+}
