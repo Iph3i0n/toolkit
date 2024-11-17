@@ -19,6 +19,10 @@
         <h3>This is a paragraph block from the Dynamic Section</h3>
         <p><%= item.text %></p>
       <% } %>
+      <% if (item.__component === "stuff.key-selling-points") { %>
+        <h3>These are some selling points</h3>
+        <p><%= item.title %></p>
+      <% } %>
     <% } %>
   </body>
 </html>

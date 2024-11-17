@@ -18,8 +18,14 @@
     "PageData": {
       "type": "dynamiczone",
       "components": [
-        "stuff.paragraph-block"
+        "stuff.paragraph-block",
+        "stuff.key-selling-points"
       ]
+    },
+    "Poo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "stuff.paragraph-block"
     }
   }
 }
