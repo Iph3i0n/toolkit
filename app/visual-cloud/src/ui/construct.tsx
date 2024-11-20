@@ -45,8 +45,11 @@ export default function (props: ConstructProps) {
   const { instance, spec } = UseInstance(props.instance_id);
   const { hovering, props: hover_props } = UseHover();
   const title_width = instance.type.length + 2;
+  const id_width = instance.id.length + 3;
   const text_width =
-    title_width + instance.args.reduce((c, n) => c + n.length + 1, 0);
+    title_width +
+    id_width +
+    instance.args.reduce((c, n) => c + n.length + 1, 0);
 
   return (
     <Layer x={instance.x} y={instance.y} {...hover_props}>
@@ -62,9 +65,17 @@ export default function (props: ConstructProps) {
       <Rect
         x={0}
         y={0}
-        width={(title_width - 1) * font_width}
+        width={(title_width + id_width - 1) * font_width}
         height={ConstructHeight}
         fill={Theme.BackgroundHighlight}
+      />
+
+      <Rect
+        x={0}
+        y={0}
+        width={(id_width - 1) * font_width}
+        height={ConstructHeight}
+        fill={Theme.Secondary}
       />
 
       <Rect
@@ -75,7 +86,20 @@ export default function (props: ConstructProps) {
         {...Border.Body}
       />
 
-      <Text x={6} y={4} text={instance.type} {...Font.Body} />
+      <Text
+        x={font_width}
+        y={4}
+        text={instance.id}
+        fill={Theme.SecondaryOffset}
+        {...Font.Body}
+      />
+
+      <Text
+        x={id_width * font_width}
+        y={4}
+        text={instance.type}
+        {...Font.Body}
+      />
 
       {
         instance.args.reduce<ArgsAggregate>(
@@ -92,7 +116,7 @@ export default function (props: ConstructProps) {
               />,
             ],
           }),
-          { cursor: title_width, items: [] }
+          { cursor: title_width + id_width, items: [] }
         ).items
       }
 

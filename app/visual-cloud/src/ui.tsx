@@ -32,12 +32,14 @@ const App = () => {
     },
     instances: {
       testinstancea: {
+        id: "sosso",
         x: 20,
         y: 95,
         type: "yello-world",
         args: ["test", "arg"],
       },
       testinstanceb: {
+        id: "poupou",
         x: 250,
         y: 180,
         type: "yello-world",

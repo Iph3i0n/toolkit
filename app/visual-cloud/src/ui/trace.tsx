@@ -1,12 +1,14 @@
 import { Layer, Line } from "react-konva";
 import { UseInstance, UseTrace } from "./state";
-import { Border } from "./theme";
+import { Border, Shadow } from "./theme";
 import { ConstructHeight, NodeSize } from "./construct";
+import { UseHover } from "./ui-hooks";
 
 export default function Trace(props: { instance_id: string }) {
   const trace = UseTrace(props.instance_id);
   const from = UseInstance(trace.from[0]);
   const to = UseInstance(trace.to[0]);
+  const { hovering, props: hover_props } = UseHover();
 
   return (
     <Layer>
@@ -21,6 +23,10 @@ export default function Trace(props: { instance_id: string }) {
         {...Border.Highlight}
         lineCap="round"
         lineJoin="round"
+        bezier
+        tension={0.25}
+        {...(hovering ? Shadow.Body : {})}
+        {...hover_props}
       />
     </Layer>
   );

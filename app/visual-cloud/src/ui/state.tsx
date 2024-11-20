@@ -12,6 +12,7 @@ export type Trace = {
 };
 
 export type ConstructInstance = {
+  id: string;
   x: number;
   y: number;
   type: string;

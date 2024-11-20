@@ -2,6 +2,7 @@ export const Theme = Object.freeze({
   Info: "#8ecae6",
   Primary: "#219ebc",
   Secondary: "#023047",
+  SecondaryOffset: "#fff",
   OffsetLight: "#ffb703",
   OffsetDark: "#fb8500",
   BackgroundBody: "#f5f8fa",
@@ -44,7 +45,7 @@ export const Shadow = Object.freeze({
   Body: Object.freeze({
     shadowBlur: 10,
     shadowColor: "black",
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.75,
     shadowOffset: { x: 0, y: 0 },
   }),
 });
