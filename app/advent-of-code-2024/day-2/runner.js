@@ -5,7 +5,6 @@ const { Set } = require("@ipheion/set");
 
 async function main() {
   const data = await fs.readFile(path.resolve(__dirname, "input.txt"), "utf8");
-  const tolerance = 1;
 
   console.log(
     new Set(data.split("\n"))
