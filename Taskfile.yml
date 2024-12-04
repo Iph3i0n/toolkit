@@ -40,6 +40,11 @@ tasks:
     cmds:
       - npm run build
 
+  set:build:
+    dir: "{{.TASKFILE_DIR}}/lib/set"
+    cmds:
+      - npm run build
+
   wholemeal:build:
     deps: [safe-type:build]
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"

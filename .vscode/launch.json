@@ -27,6 +27,12 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "task",
       "runtimeArgs": ["effuse:run-ui"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Node: Run current file",
+      "program": "${file}"
     }
   ],
   "compounds": [
