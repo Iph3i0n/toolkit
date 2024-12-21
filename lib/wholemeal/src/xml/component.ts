@@ -65,6 +65,10 @@ export default class Component {
     return this.#script_contents.handlers;
   }
 
+  get HasBehaviour() {
+    return !!this.#script_contents.main;
+  }
+
   get Css() {
     const target = this.#children.find(
       (c) => c instanceof Element && c.TagName === "style"
@@ -89,5 +93,35 @@ export default class Component {
       throw new Error("Components must have a meta tag with a name attribute");
 
     return new Metadata(tag);
+  }
+
+  async ToString(
+    parameters: Record<string, unknown>,
+    components: Record<string, Component>,
+    slots: Record<string, string>
+  ) {
+    if (this.HasBehaviour)
+      throw new Error("Static components may not have behaviour");
+    const css: Record<string, string> = {};
+    const include_web_components: Record<string, Component> = {};
+    return {
+      html: (
+        await Promise.all(
+          this.#children
+            .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
+            .map((c) =>
+              c.ToString({
+                parameters,
+                slots,
+                components,
+                css,
+                include_web_components,
+              })
+            )
+        )
+      ).join(""),
+      css,
+      include_web_components,
+    };
   }
 }

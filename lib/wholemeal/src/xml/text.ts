@@ -1,6 +1,7 @@
 import * as Js from "../writer/mod";
 import Code from "./code";
 import Node from "./node";
+import { RenderContext } from "./render-context";
 
 export default class Text extends Node {
   readonly #data: string;
@@ -28,5 +29,9 @@ export default class Text extends Node {
 
   get TextContent() {
     return this.#data;
+  }
+
+  async ToString(context: RenderContext): Promise<string> {
+    return this.TextContent;
   }
 }

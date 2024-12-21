@@ -1,7 +1,11 @@
 import * as Js from "../writer/mod";
 import Code from "./code";
+import Evaluate from "./evaluate";
+import Key from "./metadata/key";
 import Node from "./node";
+import type { RenderContext } from "./render-context";
 import Text from "./text";
+import { HtmlEncode, Wrap } from "./text-render";
 
 const AllText = ["script", "style"];
 
@@ -274,6 +278,107 @@ export default class Element extends Node {
               : {}),
           })
         );
+    }
+  }
+
+  async ToString(context: RenderContext) {
+    const attribute_entries = await Promise.all(
+      Object.keys(this.#attributes)
+        .map((k) => [k, this.#attributes[k]] as const)
+        .map(
+          async ([key, value]) => [key, await Evaluate(value, context)] as const
+        )
+    );
+
+    const attributes = attribute_entries.reduce(
+      (c, [k, v]) => ({ ...c, [k]: v }),
+      {} as Record<string, any>
+    );
+
+    switch (this.#tag) {
+      case "s:if": {
+        if (attributes.check)
+          return this.#children.map((c) => c.ToString(context)).join("");
+        return "";
+      }
+      case "s:for": {
+        const subject = attributes.subject;
+        const key = attributes.key;
+        if (!Array.isArray(subject))
+          throw new Error("s:for subject is not an array");
+        return subject
+          .map((s) =>
+            this.#children
+              .map((c) =>
+                c.ToString({ ...context, parameters: { ...context, [key]: s } })
+              )
+              .join("")
+          )
+          .join("");
+      }
+      case "s:use": {
+        const subject = attributes.get;
+        const key = attributes.as;
+        return this.#children
+          .map((c) =>
+            c.ToString({
+              ...context,
+              parameters: { ...context, [key]: subject },
+            })
+          )
+          .join("");
+      }
+      case "s:text": {
+        return attributes.use;
+      }
+      case "script": {
+        throw new Error("Script tags are not allowed in static rendering");
+      }
+      case "slot": {
+        const name = attributes.name ?? "$default";
+        return context.slots[name];
+      }
+      default: {
+        const component = context.components[this.#tag];
+        if (component)
+          return await component.ToString(
+            attributes,
+            context.components,
+            (
+              await Promise.all(
+                this.#children.map(
+                  async (c) =>
+                    [
+                      c instanceof Element
+                        ? c.#attributes.slot.toString() ?? "$default"
+                        : "$default",
+                      await c.ToString(context),
+                    ] as const
+                )
+              )
+            ).reduce(
+              (c, [s, e]) => ({ ...c, [s]: e }),
+              {} as Record<string, string>
+            )
+          );
+
+        return Wrap(
+          this.#children.map((c) => c.ToString(context)).join(""),
+          Wrap(
+            [
+              this.#tag,
+              ...Object.keys(this.#attributes)
+                .map((k) => [k, this.#attributes[k]] as const)
+                .map(([key, value]) =>
+                  [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join("=")
+                ),
+            ].join(" "),
+            "<",
+            ">"
+          ),
+          Wrap(this.#tag, "</", ">")
+        );
+      }
     }
   }
 }
