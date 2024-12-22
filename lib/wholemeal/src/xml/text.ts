@@ -1,5 +1,6 @@
 import * as Js from "../writer/mod";
 import Code from "./code";
+import Component from "./component";
 import Node from "./node";
 import { RenderContext } from "./render-context";
 
@@ -31,7 +32,15 @@ export default class Text extends Node {
     return this.#data;
   }
 
-  async ToString(context: RenderContext): Promise<string> {
-    return this.TextContent;
+  async ToString(context: RenderContext) {
+    return {
+      html: this.TextContent,
+      css: {},
+      web_components: {},
+    };
+  }
+
+  GetWebComponents(context: RenderContext): Record<string, Component> {
+    return {};
   }
 }

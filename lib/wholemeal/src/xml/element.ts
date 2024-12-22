@@ -1,9 +1,14 @@
 import * as Js from "../writer/mod";
 import Code from "./code";
+import type Component from "./component";
 import Evaluate from "./evaluate";
-import Key from "./metadata/key";
 import Node from "./node";
-import type { RenderContext } from "./render-context";
+import {
+  Join,
+  JoinComponents,
+  type RenderContext,
+  type RenderResult,
+} from "./render-context";
 import Text from "./text";
 import { HtmlEncode, Wrap } from "./text-render";
 
@@ -281,7 +286,7 @@ export default class Element extends Node {
     }
   }
 
-  async ToString(context: RenderContext) {
+  async ToString(context: RenderContext): Promise<RenderResult> {
     const attribute_entries = await Promise.all(
       Object.keys(this.#attributes)
         .map((k) => [k, this.#attributes[k]] as const)
@@ -298,87 +303,155 @@ export default class Element extends Node {
     switch (this.#tag) {
       case "s:if": {
         if (attributes.check)
-          return this.#children.map((c) => c.ToString(context)).join("");
-        return "";
+          return Join(this.#children.map((c) => c.ToString(context)));
+        return {
+          html: "",
+          css: {},
+          web_components: {},
+        };
       }
       case "s:for": {
         const subject = attributes.subject;
         const key = attributes.key;
         if (!Array.isArray(subject))
           throw new Error("s:for subject is not an array");
-        return subject
-          .map((s) =>
-            this.#children
-              .map((c) =>
+        return Join(
+          subject.map((s) =>
+            Join(
+              this.#children.map((c) =>
                 c.ToString({ ...context, parameters: { ...context, [key]: s } })
               )
-              .join("")
+            )
           )
-          .join("");
+        );
       }
       case "s:use": {
         const subject = attributes.get;
         const key = attributes.as;
-        return this.#children
-          .map((c) =>
+        return Join(
+          this.#children.map((c) =>
             c.ToString({
               ...context,
               parameters: { ...context, [key]: subject },
             })
           )
-          .join("");
+        );
       }
       case "s:text": {
-        return attributes.use;
+        return {
+          html: attributes.use,
+          css: {},
+          web_components: {},
+        };
       }
       case "script": {
         throw new Error("Script tags are not allowed in static rendering");
       }
       case "slot": {
         const name = attributes.name ?? "$default";
-        return context.slots[name];
+        return {
+          html: context.slots[name],
+          css: {},
+          web_components: {},
+        };
       }
       default: {
         const component = context.components[this.#tag];
-        if (component)
-          return await component.ToString(
-            attributes,
-            context.components,
-            (
-              await Promise.all(
-                this.#children.map(
-                  async (c) =>
-                    [
-                      c instanceof Element
-                        ? c.#attributes.slot.toString() ?? "$default"
-                        : "$default",
-                      await c.ToString(context),
-                    ] as const
-                )
-              )
-            ).reduce(
-              (c, [s, e]) => ({ ...c, [s]: e }),
-              {} as Record<string, string>
-            )
-          );
-
-        return Wrap(
-          this.#children.map((c) => c.ToString(context)).join(""),
-          Wrap(
-            [
-              this.#tag,
-              ...Object.keys(this.#attributes)
-                .map((k) => [k, this.#attributes[k]] as const)
-                .map(([key, value]) =>
-                  [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join("=")
+        if (component) {
+          if (component.HasBehaviour) {
+            const {
+              html: children,
+              css,
+              web_components,
+            } = await Join(this.#children.map((c) => c.ToString(context)));
+            return {
+              html: Wrap(
+                children,
+                Wrap(
+                  [
+                    this.#tag,
+                    ...Object.keys(this.#attributes)
+                      .map((k) => [k, this.#attributes[k]] as const)
+                      .map(([key, value]) =>
+                        [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join(
+                          "="
+                        )
+                      ),
+                  ].join(" "),
+                  "<",
+                  ">"
                 ),
-            ].join(" "),
-            "<",
-            ">"
+                Wrap(this.#tag, "</", ">")
+              ),
+              css,
+              web_components: {
+                ...web_components,
+                [this.#tag]: component,
+              },
+            };
+          } else {
+            let css: Record<string, string> = {};
+            let web_components: Record<string, Component> = {};
+            const slots: Record<string, string> = {};
+            for (const c of this.#children) {
+              const slot =
+                c instanceof Element
+                  ? c.#attributes.slot?.toString() ?? "$default"
+                  : "$default";
+
+              const result = await c.ToString(context);
+              slots[slot] = (slots[slot] ?? "") + result.html;
+              css = { ...css, ...result.css };
+              web_components = { ...web_components, ...result.web_components };
+            }
+
+            return await component.ToString({
+              parameters: attributes,
+              slots,
+              components: context.components,
+            });
+          }
+        }
+
+        const {
+          html: children,
+          css,
+          web_components,
+        } = await Join(this.#children.map((c) => c.ToString(context)));
+        return {
+          html: Wrap(
+            children,
+            Wrap(
+              [
+                this.#tag,
+                ...Object.keys(this.#attributes)
+                  .map((k) => [k, this.#attributes[k]] as const)
+                  .map(([key, value]) =>
+                    [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join("=")
+                  ),
+              ].join(" "),
+              "<",
+              ">"
+            ),
+            Wrap(this.#tag, "</", ">")
           ),
-          Wrap(this.#tag, "</", ">")
-        );
+          css,
+          web_components,
+        };
       }
     }
+  }
+
+  GetWebComponents(context: RenderContext): Record<string, Component> {
+    const children = JoinComponents(
+      this.#children.map((c) => c.GetWebComponents(context))
+    );
+    const component = context.components[this.#tag];
+    if (component)
+      return {
+        ...children,
+        [this.#tag]: component,
+      };
+    return children;
   }
 }

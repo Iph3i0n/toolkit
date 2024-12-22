@@ -6,6 +6,7 @@ import Sheet from "../pss/sheet";
 import * as Js from "../writer/mod";
 import Metadata from "./metadata/mod";
 import { Assert, IsInstanceOf } from "@ipheion/safe-type";
+import { JoinComponents, RenderContext, RenderResult } from "./render-context";
 
 const IsImport = /import (?:(?:[^;'"]|\n)+ from )?['"].+['"]/gm;
 
@@ -95,33 +96,29 @@ export default class Component {
     return new Metadata(tag);
   }
 
-  async ToString(
-    parameters: Record<string, unknown>,
-    components: Record<string, Component>,
-    slots: Record<string, string>
-  ) {
+  async ToString(context: RenderContext) {
     if (this.HasBehaviour)
       throw new Error("Static components may not have behaviour");
-    const css: Record<string, string> = {};
-    const include_web_components: Record<string, Component> = {};
-    return {
-      html: (
-        await Promise.all(
-          this.#children
-            .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
-            .map((c) =>
-              c.ToString({
-                parameters,
-                slots,
-                components,
-                css,
-                include_web_components,
-              })
-            )
-        )
-      ).join(""),
-      css,
-      include_web_components,
-    };
+
+    return (
+      await Promise.all(
+        this.#children
+          .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
+          .map((c) => c.ToString(context))
+      )
+    ).reduce(
+      (c, n) => ({
+        html: c.html + n.html,
+        css: { ...c.css, ...n.css },
+        web_components: { ...c.web_components, ...n.web_components },
+      }),
+      { html: "", css: {}, web_components: {} } as RenderResult
+    );
+  }
+
+  GetWebComponents(context: RenderContext): Record<string, Component> {
+    return JoinComponents(
+      this.#children.map((c) => c.GetWebComponents(context))
+    );
   }
 }
