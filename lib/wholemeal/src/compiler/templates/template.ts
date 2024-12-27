@@ -3,73 +3,13 @@ import * as Js from "../../writer/mod";
 
 export default class Template {
   readonly #data: Component;
-  readonly #location: string;
 
-  constructor(data: Component, location: string) {
+  constructor(data: Component) {
     this.#data = data;
-    this.#location = location;
   }
 
   get Component() {
     return this.#data;
-  }
-
-  get Wrapper() {
-    return [
-      new Js.Import(
-        "ComponentWrapper",
-        "@ipheion/wholemeal/dist/runner/component-wrapper",
-        true
-      ),
-      new Js.Export(
-        new Js.Class(
-          this.#data.Metadata.ClassName,
-          "ComponentWrapper",
-          new Js.Function(
-            [new Js.Reference("self")],
-            "method",
-            "Initialiser",
-            new Js.Block(
-              new Js.Return(
-                new Js.Call(
-                  new Js.Access(
-                    "then",
-                    new Js.Call(
-                      new Js.Reference("import"),
-                      new Js.String(`${this.#location}?actual=true`)
-                    )
-                  ),
-                  new Js.Function(
-                    [new Js.Reference("r")],
-                    "arrow",
-                    undefined,
-                    new Js.Block(
-                      new Js.Return(
-                        new Js.New(
-                          new Js.Call(
-                            new Js.Access(
-                              this.#data.Metadata.ClassName,
-                              new Js.Reference("r")
-                            ),
-                            new Js.Reference("self")
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        ),
-        false
-      ),
-      new Js.Call(
-        new Js.Access("define", new Js.Reference("customElements")),
-        new Js.String(this.#data.Metadata.Name),
-        new Js.Reference(this.#data.Metadata.ClassName)
-      ),
-    ];
   }
 
   readonly #blocks = [

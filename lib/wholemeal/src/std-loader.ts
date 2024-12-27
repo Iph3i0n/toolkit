@@ -1,23 +1,17 @@
 import * as Webpack from "webpack";
 import Component from "./xml/component";
 import Template from "./compiler/templates/template";
-import ReactTypingsTemplate from "./compiler/typings/react-template";
-import PreactTypingsTemplate from "./compiler/typings/preact-template";
 import {
   Assert,
   IsBoolean,
-  IsLiteral,
   IsObject,
   IsOneOf,
   Optional,
-  PatternMatch,
 } from "@ipheion/safe-type";
 import TypingsTemplate from "./compiler/typings/template";
 import Fs from "node:fs";
 import Path from "node:path";
 import Json from "comment-json";
-import PreactTemplate from "./compiler/templates/preact-template";
-import ReactTemplate from "./compiler/templates/react-template";
 
 const IsProps = IsObject({
   framework: Optional(IsOneOf("native", "react", "preact")),
@@ -41,28 +35,12 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
 
   const component = new Component(source);
 
-  const [js_constructor, typings_constructor] = PatternMatch(
-    IsLiteral("native"),
-    IsLiteral("react"),
-    IsLiteral("preact")
-  )(
-    () => [Template, TypingsTemplate] as const,
-    () => [ReactTemplate, ReactTypingsTemplate] as const,
-    () => [PreactTemplate, PreactTypingsTemplate] as const
-  )(options.framework ?? "native");
-
   const tsconfig = read_json("./tsconfig.json");
   const root_dir = tsconfig?.compilerOptions?.rootDir ?? "./";
   const local_path = Path.relative(root_dir, this.resource);
 
-  const template = new js_constructor(component, this.resourcePath);
-  const typings_template = new typings_constructor(
-    component,
-    this.resourcePath
-  );
-  if (!this.resourceQuery) {
-    return template.Wrapper.join(";");
-  }
+  const template = new Template(component);
+  const typings_template = new TypingsTemplate(component);
 
   let result = template.Module;
 
@@ -70,11 +48,6 @@ export default function (this: Webpack.LoaderContext<unknown>, source: string) {
     this.emitFile(
       local_path.replace(".std", ".std.instance.d"),
       typings_template.Typings.join(";")
-    );
-
-    this.emitFile(
-      local_path.replace(".std", ".std.d"),
-      typings_template.WrapperTypings.join(";")
     );
   }
 

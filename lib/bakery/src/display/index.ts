@@ -1,7 +1,36 @@
-export * from "./alert.std";
-export * from "./card.std";
-export * from "./carousel.std";
-export * from "./listgroup.std";
-export * from "./loading.std";
-export * from "./panel.std";
-export * from "./progress.std";
+import { CreateComponent } from "@ipheion/wholemeal";
+
+customElements.define(
+  "d-alert",
+  CreateComponent(() => import("./alert.std"))
+);
+
+customElements.define(
+  "d-card",
+  CreateComponent(() => import("./card.std"))
+);
+
+customElements.define(
+  "d-carousel",
+  CreateComponent(() => import("./carousel.std"))
+);
+
+customElements.define(
+  "d-listgroup",
+  CreateComponent(() => import("./listgroup.std"))
+);
+
+customElements.define(
+  "d-loading",
+  CreateComponent(() => import("./loading.std"))
+);
+
+customElements.define(
+  "d-panel",
+  CreateComponent(() => import("./panel.std"))
+);
+
+customElements.define(
+  "d-progress",
+  CreateComponent(() => import("./progress.std"))
+);

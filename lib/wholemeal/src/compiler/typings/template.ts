@@ -1,56 +1,15 @@
 import Component from "../../xml/component";
 import * as Ts from "../../ts-writer";
-import Path from "node:path";
 
 export default class TypingsTemplate {
   readonly #component: Component;
-  readonly #location: string;
 
-  constructor(component: Component, location: string) {
+  constructor(component: Component) {
     this.#component = component;
-    this.#location = location;
   }
 
   get Metadata() {
     return this.#component.Metadata;
-  }
-
-  get WrapperTypings(): Array<Ts.Any> {
-    return [
-      new Ts.Import(
-        "ComponentWrapper",
-        "@ipheion/wholemeal/dist/runner/component-wrapper",
-        true
-      ),
-      new Ts.Import(
-        [
-          "LoadedEvent",
-          "RenderEvent",
-          "ShouldRender",
-          "PropsEvent",
-          "CreateRef",
-          "BeforeRenderEvent",
-        ],
-        "@ipheion/wholemeal",
-        false
-      ),
-      new Ts.Reference(this.Metadata.ScriptImports),
-      new Ts.Reference(this.#component.ScriptImports),
-      new Ts.Import(
-        this.#component.Metadata.ClassName + " as Instance",
-        `./${Path.basename(this.#location)}.instance`,
-        false
-      ),
-      new Ts.Export(
-        new Ts.Class(
-          this.#component.Metadata.ClassName,
-          "extends",
-          new Ts.Reference("ComponentWrapper"),
-          new Ts.Method("Initialiser", new Ts.Reference("Instance"), "get")
-        ),
-        false
-      ),
-    ];
   }
 
   get Typings(): Array<Ts.Any> {

@@ -1,4 +1,3 @@
-import { urlToRequest } from "loader-utils";
 import { validate } from "schema-utils";
 import * as Webpack from "webpack";
 import Sheet from "./pss/sheet";
