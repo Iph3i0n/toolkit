@@ -68,6 +68,7 @@ export async function StartServer(options: StartOptions) {
     const request_id = Guid();
     try {
       const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
+      console.log("Recieved request " + url.href);
 
       const data: InternalRequest = {
         request_id,

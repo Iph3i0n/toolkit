@@ -12,6 +12,27 @@ tasks:
     env:
       PRODUCTION: "true"
 
+  wisdom:build:
+    deps: [puristee:build, safe-type:build, moulding-tin:build, bakery:build]
+    dir: "{{.TASKFILE_DIR}}/app/wisdom"
+    cmds:
+      - node ./build.js
+      - npx tsc
+
+  wisdom:run:
+    dir: "{{.TASKFILE_DIR}}/app/wisdom"
+    cmds:
+      - node ./dist/src/app.js
+    env:
+      NODE_PATH: ./dist/src
+
+  wisdom:dev:
+    dir: "{{.TASKFILE_DIR}}/app/wisdom"
+    cmds:
+      - node ./build.js
+      - npx tsc
+      - task: wisdom:run
+
   bakery:dev:
     deps: [safe-type:build, wholemeal:build]
     dir: "{{.TASKFILE_DIR}}/lib/bakery"

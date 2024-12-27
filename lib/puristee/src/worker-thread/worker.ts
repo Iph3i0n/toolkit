@@ -31,7 +31,10 @@ parentPort?.on("message", async (data) => {
     });
 
   const handler = handler_store.Get(new URL(data.url), data.method);
-  if (!handler) return not_found();
+  if (!handler) {
+    console.log(`No handler found for ${data.url}`);
+    return not_found();
+  }
 
   switch (data.event) {
     case "REST": {

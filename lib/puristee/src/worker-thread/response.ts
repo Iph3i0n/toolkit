@@ -230,7 +230,7 @@ export class FileResponse implements IResponse {
   }
 
   get body() {
-    return new Promise<Buffer | undefined>(async (res) => {
+    return new Promise<ArrayBuffer | undefined>(async (res) => {
       try {
         res(await Fs.readFile(this.#path));
       } catch {
