@@ -1,5 +1,4 @@
 import { Worker, SHARE_ENV } from "node:worker_threads";
-import Path from "node:path";
 import {
   InternalRequest,
   InternalResponse,
@@ -7,6 +6,7 @@ import {
   WebSocketPost,
 } from "../contracts";
 import { HandlerDirectory } from "./handler-directory";
+import WorkerLocation from "worker://../worker-thread/worker";
 
 export class ThreadPool {
   readonly #threads: Array<Worker> = [];
@@ -42,9 +42,10 @@ export class ThreadPool {
   }
 
   #start_worker(data: Startup) {
-    return new Worker(Path.resolve(__dirname, "../worker-thread/worker.js"), {
+    return new Worker(WorkerLocation, {
       workerData: data,
       env: SHARE_ENV,
+      eval: true,
     });
   }
 

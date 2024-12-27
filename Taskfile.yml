@@ -12,26 +12,26 @@ tasks:
     env:
       PRODUCTION: "true"
 
+  esbuild-workers:build:
+    dir: "{{.TASKFILE_DIR}}/lib/esbuild-workers"
+    cmds:
+      - npx tsc
+
   wisdom:build:
-    deps: [puristee:build, safe-type:build, moulding-tin:build, bakery:build]
+    deps: [puristee:build, safe-type:build, moulding-tin:build, bakery:build, esbuild-workers:build]
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
       - node ./build.js
-      - npx tsc
 
-  wisdom:run:
-    dir: "{{.TASKFILE_DIR}}/app/wisdom"
+  pauphie-blog:serve:
+    dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
     cmds:
-      - node ./dist/src/app.js
-    env:
-      NODE_PATH: ./dist/src
+      - npm run serve
 
   wisdom:dev:
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
       - node ./build.js
-      - npx tsc
-      - task: wisdom:run
 
   bakery:dev:
     deps: [safe-type:build, wholemeal:build]
@@ -77,124 +77,3 @@ tasks:
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"
     cmds:
       - node --test --import tsx ./src/**/*.test.ts
-
-  effuse:setup:
-    cmds:
-      - openssl req -new -newkey rsa:4096 -nodes -keyout signing_key.key -out public_key.csr -subj "/C=UK/CN=local"
-      - openssl x509 -req -sha512 -days 365 -in public_key.csr -signkey signing_key.key -out private_key.pem
-    dir: "{{.TASKFILE_DIR}}/app/effuse/data"
-
-  effuse:build:
-    deps: [puristee:build, safe-type:build, moulding-tin:build]
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - rm -rf dist
-      - npx tsc
-    env:
-      SSO_BASE: http://localhost:3000
-      UI_URL: http://localhost:3001
-
-  effuse:build-ui:
-    deps: [safe-type:build, wholemeal:build, bakery:build]
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - npx webpack
-    env:
-      PROD: "true"
-      SSO_BASE: http://localhost:3000
-      UI_URL: http://localhost:3001
-
-  effuse:run-ui:
-    deps: [safe-type:build, wholemeal:build]
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - npx webpack serve
-    env:
-      SSO_BASE: http://localhost:3000
-
-  effuse:api-test:
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - rm -rf ./data/db
-      - node --test --import tsx ./tests/**/*.test.ts
-    env:
-      SSO_BASE: http://localhost:3000
-      LOCAL_BASE: http://localhost:3002
-      UI_URL: http://localhost:3001
-
-  effuse:run-sso:
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - node ./dist/src/sso.js
-    env:
-      NODE_PATH: ./dist/src
-      DATA_DIR: ./data
-      UI_URL: http://localhost:3001
-
-  effuse:run-local:
-    dir: "{{.TASKFILE_DIR}}/app/effuse"
-    cmds:
-      - node ./dist/src/local.js
-    env:
-      NODE_PATH: ./dist/src
-      DATA_DIR: ./data
-      SSO_URL: http://localhost:3000
-      UI_URL: http://localhost:3001
-      SERVER_URL: http://localhost:3002
-
-  effuse:run-backend:
-    deps:
-      - effuse:run-sso
-      - effuse:run-local
-
-  effuse:run-all:
-    deps:
-      - effuse:run-ui
-      - effuse:run-sso
-      - effuse:run-local
-
-  visual-cloud:build-ui:
-    dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
-    cmds:
-      - npx esbuild ./src/ui.tsx --bundle --outfile=dist/ui.out.js
-
-  visual-cloud:build:
-    deps: [puristee:build, safe-type:build, moulding-tin:build]
-    dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
-    cmds:
-      - rm -rf dist
-      - npx tsc
-      - task: visual-cloud:build-ui
-
-  visual-cloud:run:
-    dir: "{{.TASKFILE_DIR}}/app/visual-cloud"
-    cmds:
-      - node ./dist/index.js
-    env:
-      NODE_PATH: ./dist
-      DATA_DIR: ./data
-
-  visual-cloud:dev:
-    cmds:
-      - task: visual-cloud:build
-      - task: visual-cloud:run
-
-  cms-example:build:
-    deps: [puristee:build, safe-type:build, moulding-tin:build]
-    dir: "{{.TASKFILE_DIR}}/app/cms-example"
-    cmds:
-      - rm -rf dist
-      - npx tsc
-
-  cms-example:run:
-    dir: "{{.TASKFILE_DIR}}/app/cms-example"
-    cmds:
-      - node ./dist/index.js
-    env:
-      NODE_PATH: ./dist
-      DATA_DIR: ./data
-
-  cms-example:dev:
-    cmds:
-      - task: cms-example:build
-      - task: cms-example:run

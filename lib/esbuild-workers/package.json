@@ -1,0 +1,16 @@
+{
+  "name": "@ipheion/esbuild-workers",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "esbuild": "^0.24.2",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
+  }
+}

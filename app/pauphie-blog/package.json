@@ -1,10 +1,9 @@
 {
-  "name": "@ipheion/wisdom",
+  "name": "@ipheion/pauphie-blog",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "serve": "wisdom serve"
   },
   "publishConfig": {
     "access": "public"
@@ -14,11 +13,5 @@
   },
   "prettier": {
     "htmlWhitespaceSensitivity": "ignore"
-  },
-  "dependencies": {
-    "yargs": "^17.7.2"
-  },
-  "bin": {
-    "wisdom": "./bin/index.js"
   }
 }
