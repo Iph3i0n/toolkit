@@ -291,7 +291,7 @@ export default class Template {
             ["async"]
           )
         ),
-        false
+        true
       ),
     ];
   }

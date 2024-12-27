@@ -8,7 +8,7 @@ export abstract class ComponentWrapper extends HTMLElement {
   constructor() {
     super();
 
-    setImmediate(() =>
+    setTimeout(() =>
       this.instance.then((b) => {
         this.#awaited = b;
       })
@@ -55,11 +55,11 @@ export abstract class ComponentWrapper extends HTMLElement {
 }
 
 export default function CreateComponent(
-  init: () => Promise<ComponentFactory>
+  init: () => Promise<{ default: ComponentFactory } | ComponentFactory>
 ): CustomElementConstructor {
   return class Element extends ComponentWrapper {
-    protected instance: Promise<ComponentBase> = init().then(
-      (factory) => new factory(this)
+    protected instance: Promise<ComponentBase> = init().then((factory) =>
+      "default" in factory ? new factory.default(this) : new factory(this)
     );
   };
 }

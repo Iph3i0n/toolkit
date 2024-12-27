@@ -1,6 +1,7 @@
 const esbuild = require("esbuild");
 const path = require("path");
 const fs = require("fs/promises");
+const { default: WholemealLoader } = require("@ipheion/wholemeal/dist/esbuild");
 
 async function main() {
   const app_dir = path.resolve(__dirname, "dist");
@@ -16,6 +17,7 @@ async function main() {
     splitting: true,
     outdir: path.resolve(app_dir, "ui"),
     format: "esm",
+    plugins: [WholemealLoader()],
   });
 
   await fs.cp(
