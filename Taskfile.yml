@@ -7,6 +7,7 @@ tasks:
     deps: [safe-type:build, wholemeal:build]
     dir: "{{.TASKFILE_DIR}}/lib/bakery"
     cmds:
+      - rm -rf dist
       - npx webpack
     env:
       PRODUCTION: "true"
