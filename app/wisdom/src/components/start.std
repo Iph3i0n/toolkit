@@ -1,3 +1,25 @@
 <s:meta name="wisdom-start"></s:meta>
 
-<t-paragraph>Hello World</t-paragraph>
+<script>
+  import { GetJson } from "../utils/fetch";
+
+  let layouts = undefined;
+
+  $before: {
+    layouts = await GetJson("/api/v1/schema/layouts");
+  }
+</script>
+
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <d-listgroup>
+        <s:for subject=":layouts" key="layout">
+          <span>
+            <s:text use=":layout" />
+          </span>
+        </s:for>
+      </d-listgroup>
+    </l-col>
+  </l-row>
+</l-container>
