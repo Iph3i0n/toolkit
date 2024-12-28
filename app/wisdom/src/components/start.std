@@ -3,23 +3,61 @@
 <script>
   import { GetJson } from "../utils/fetch";
 
-  let layouts = undefined;
-
-  $before: {
-    layouts = await GetJson("/api/v1/schema/layouts");
-  }
+  let creating = false;
+</script>
+<script on="mut">
+  const pages = await GetJson("/api/v1/pages");
+  const layouts = await GetJson("/api/v1/schema/layouts");
 </script>
 
 <l-container>
   <l-row>
     <l-col xs="12">
       <d-listgroup>
-        <s:for subject=":layouts" key="layout">
+        <s:for subject=":pages" key="page">
           <span>
-            <s:text use=":layout" />
+            <s:text use=":page.slug" />
           </span>
         </s:for>
       </d-listgroup>
     </l-col>
+    <l-col xs="12">
+      <f-button type="button" on:click="() => { creating = true }">
+        Create a Page
+      </f-button>
+    </l-col>
   </l-row>
 </l-container>
+
+<o-modal open=":creating">
+  <span slot="title">Create a Page</span>
+  <f-form
+    url="/api/v1/pages"
+    method="post"
+    on:AfterSubmit="() => { creating = false }"
+  >
+    <l-row>
+      <l-col xs="12">
+        <f-input name="slug" required validate="^[0-9a-z\-]+$" type="text">
+          Page Slug
+          <span slot="empty">Please enter a slug</span>
+          <span slot="invalid">
+            Slugs may only have lower case characters, numbers, and dashes
+          </span>
+        </f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-singleselect name="layout" required>
+          <span slot="label">Page Layout</span>
+          <span slot="empty">Please select a layout</span>
+          <s:for subject=":layouts" key="layout">
+            <option value=":layout"><s:text use=":layout" /></option>
+          </s:for>
+        </f-singleselect>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create Page</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</o-modal>
