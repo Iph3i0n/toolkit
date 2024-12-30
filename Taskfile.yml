@@ -17,8 +17,19 @@ tasks:
     cmds:
       - npx tsc
 
+  url:build:
+    dir: "{{.TASKFILE_DIR}}/lib/url"
+    cmds:
+      - npx tsc
+
   wisdom:build:
-    deps: [puristee:build, safe-type:build, moulding-tin:build, bakery:build, esbuild-workers:build]
+    deps:
+      - puristee:build
+      - safe-type:build
+      - moulding-tin:build
+      - bakery:build
+      - esbuild-workers:build
+      - url:build
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
       - node ./build.js
@@ -32,6 +43,7 @@ tasks:
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
       - node ./build.js
+      - task: pauphie-blog:serve
 
   bakery:dev:
     deps: [safe-type:build, wholemeal:build]

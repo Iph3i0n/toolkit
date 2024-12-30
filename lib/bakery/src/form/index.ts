@@ -40,6 +40,10 @@ customElements.define(
 );
 
 customElements.define(
+  "f-hidden",
+  CreateComponent(() => import("./hidden.std"))
+);
+customElements.define(
   "f-multiselect",
   CreateComponent(() => import("./multiselect.std"))
 );

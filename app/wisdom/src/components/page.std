@@ -1,0 +1,94 @@
+<s:meta name="wisdom-page">
+  <attr name="page_id" type="string">The ID of the current page</attr>
+</s:meta>
+
+<script>
+  import { GetJson } from "../utils/fetch";
+  import Url from "@ipheion/url";
+
+  let creating = false;
+  let data = await GetJson(new Url("/api/v1/pages/:id", { id: self.page_id }));
+  const layout = await GetJson(
+    new Url("/api/v1/schema/layouts/:id", { id: data.layout })
+  );
+
+  const layouts = await GetJson("/api/v1/schema/layouts");
+</script>
+
+<script on="mut">
+  data = await GetJson(new Url("/api/v1/pages/:id", { id: self.page_id }));
+  const pages = await GetJson(
+    new Url("/api/v1/pages/:id/children", { id: self.page_id })
+  );
+</script>
+
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <t-crumbs>
+        <s:for subject=":data.breadcrumbs" key="crumb">
+          <t-link
+            href=":new Url('/pages/:page_id', { page_id: crumb.id }).Href"
+            spa
+          >
+            <s:text use=":crumb.slug" />
+          </t-link>
+        </s:for>
+        <span>
+          <s:text use=":data.slug" />
+        </span>
+      </t-crumbs>
+    </l-col>
+    <l-col xs="12">
+      <d-listgroup>
+        <s:for subject=":pages" key="page">
+          <t-link
+            href=":new Url('/pages/:page_id', { page_id: page.id }).Href"
+            spa
+          >
+            <s:text use=":page.slug" />
+          </t-link>
+        </s:for>
+      </d-listgroup>
+    </l-col>
+    <l-col xs="12">
+      <f-button type="button" on:click="() => { creating = true }">
+        Create a Page
+      </f-button>
+    </l-col>
+  </l-row>
+</l-container>
+
+<o-modal open=":creating">
+  <span slot="title">Create a Page</span>
+  <f-form
+    url="/api/v1/pages"
+    method="post"
+    on:AfterSubmit="() => { creating = false; self.should_render() }"
+  >
+    <f-hidden name="parent" prefill=":self.page_id" />
+    <l-row>
+      <l-col xs="12">
+        <f-input name="slug" required validate="^[0-9a-z\-]+$" type="text">
+          Page Slug
+          <span slot="empty">Please enter a slug</span>
+          <span slot="invalid">
+            Slugs may only have lower case characters, numbers, and dashes
+          </span>
+        </f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-singleselect name="layout" required>
+          <span slot="label">Page Layout</span>
+          <span slot="empty">Please select a layout</span>
+          <s:for subject=":layouts" key="layout">
+            <option value=":layout"><s:text use=":layout" /></option>
+          </s:for>
+        </f-singleselect>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create Page</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</o-modal>

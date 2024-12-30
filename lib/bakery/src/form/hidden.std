@@ -1,0 +1,29 @@
+<s:meta name="f-hidden">
+  A hidden input for generated values.
+  <attr name="prefill">The value for the input.</attr>
+  <attr name="name">
+    The name of the value field in the form data. Should be unique.
+  </attr>
+  <attr name="required" type="boolean">
+    If set then the form will not be submittable until the element field has a
+    value.
+  </attr>
+  <attr name="validate" optional>
+    A RegExp string used to evaluate the input. If there are no matches then the
+    field will be considered invalid and the form will not be submittable.
+  </attr>
+  <member name="value" type="import('./types').FormElementValue">
+    The value of the element. What is submitted.
+  </member>
+  <event name="ValueChanged" type="import('./events').ValueChangedEvent">
+    Fired when the input value is changed. Does not fire if the value changes
+    because the `prefill` value changes.
+    <key name="Value" type="import('./types').FormElementValue">
+      The current value of the form element.
+    </key>
+    <key name="Name" type="string">The name of the input.</key>
+  </event>
+  <base use="FormElement" from="./base" default />
+  <aria role="input" />
+  <form />
+</s:meta>

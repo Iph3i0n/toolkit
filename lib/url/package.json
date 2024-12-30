@@ -1,0 +1,23 @@
+{
+  "name": "@ipheion/url",
+  "version": "0.0.1",
+  "description": "Easy type serialisation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.2",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.5.10"
+  },
+  "dependencies": {
+    "parse-multipart-data": "^1.5.0",
+    "uuid": "^10.0.0",
+    "ws": "^8.17.1"
+  }
+}
