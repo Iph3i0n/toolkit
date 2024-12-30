@@ -12,8 +12,8 @@ const IsPostPage = IsObject({
   slug: IsString,
   layout: IsString,
   parent: Optional(IsString),
-  properties: IsDictionary(IsString),
-  slots: IsDictionary(IsArray(IsString)),
+  properties: Optional(IsDictionary(IsString)),
+  slots: Optional(IsDictionary(IsArray(IsString))),
 });
 
 export default class PostPage extends Handler {
@@ -30,8 +30,8 @@ export default class PostPage extends Handler {
           slug: body.slug,
           layout: body.layout,
           parent: body.parent ?? null,
-          properties: body.properties,
-          slots: body.slots,
+          properties: body.properties ?? {},
+          slots: body.slots ?? {},
         },
       },
     });

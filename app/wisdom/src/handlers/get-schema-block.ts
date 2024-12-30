@@ -1,26 +1,28 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
+import { i_schema_repository } from "bootstrap/integrations/i-schema-repository";
+import { n_schema_service } from "bootstrap/services/schema-service";
+import ISchemaRepository from "integrations/i-schema-repository";
 import { Handler } from "server";
+import SchemaService from "services/schema-service";
 
 export default class GetBlock extends Handler {
+  readonly #schema_service: SchemaService;
+
+  constructor(schema_service: SchemaService = n_schema_service()) {
+    super();
+    this.#schema_service = schema_service;
+  }
+
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/schema/blocks/:id";
-
-  async #get_data(id: string) {
-    const data = await this.get_block(id);
-    return {
-      properties: data.Metadata.Attr.map((a) => ({
-        name: a.Name,
-        type: a.Type,
-      })),
-      slots: data.Metadata.Slots.map((s) => ({ name: s.Name })),
-    };
-  }
 
   async Process(request: PureRequest) {
     return new JsonResponse(
       "Ok",
-      await this.#get_data(request.Parameters({ id: IsString }).id)
+      await this.#schema_service.get_block(
+        request.Parameters({ id: IsString }).id
+      )
     );
   }
 }

@@ -22,42 +22,155 @@
   );
 </script>
 
-<l-container>
-  <l-row>
-    <l-col xs="12">
-      <t-crumbs>
-        <s:for subject=":data.breadcrumbs" key="crumb">
-          <t-link
-            href=":new Url('/pages/:page_id', { page_id: crumb.id }).Href"
-            spa
-          >
-            <s:text use=":crumb.slug" />
-          </t-link>
-        </s:for>
-        <span>
-          <s:text use=":data.slug" />
-        </span>
-      </t-crumbs>
-    </l-col>
-    <l-col xs="12">
-      <d-listgroup>
-        <s:for subject=":pages" key="page">
-          <t-link
-            href=":new Url('/pages/:page_id', { page_id: page.id }).Href"
-            spa
-          >
-            <s:text use=":page.slug" />
-          </t-link>
-        </s:for>
-      </d-listgroup>
-    </l-col>
-    <l-col xs="12">
-      <f-button type="button" on:click="() => { creating = true }">
-        Create a Page
-      </f-button>
-    </l-col>
-  </l-row>
-</l-container>
+<f-form
+  url=":new Url('/api/v1/pages/:id', { id: self.page_id }).Href"
+  method="put"
+  on:AfterSubmit="() => { self.should_render() }"
+>
+  <l-container>
+    <l-row>
+      <l-col xs="12">
+        <t-crumbs>
+          <s:for subject=":data.breadcrumbs" key="crumb">
+            <t-link
+              href=":new Url('/pages/:page_id', { page_id: crumb.id }).Href"
+              spa
+            >
+              <s:text use=":crumb.slug" />
+            </t-link>
+          </s:for>
+          <span>
+            <s:text use=":data.slug" />
+          </span>
+        </t-crumbs>
+      </l-col>
+      <s:if check=":pages.length">
+        <l-col xs="12">
+          <d-listgroup>
+            <s:for subject=":pages" key="page">
+              <t-link
+                href=":new Url('/pages/:page_id', { page_id: page.id }).Href"
+                spa
+              >
+                <s:text use=":page.slug" />
+              </t-link>
+            </s:for>
+          </d-listgroup>
+        </l-col>
+      </s:if>
+      <l-col xs="12">
+        <f-button type="button" on:click="() => { creating = true }">
+          Create a Page
+        </f-button>
+      </l-col>
+    </l-row>
+    <f-hidden name="parent" prefill=":data.parent" />
+    <l-row>
+      <l-col xs="12">
+        <f-input
+          name="slug"
+          prefill=":data.slug"
+          required
+          validate="^[0-9a-z\-]+$"
+          type="text"
+        >
+          Page Slug
+          <span slot="empty">Please enter a slug</span>
+          <span slot="invalid">
+            Slugs may only have lower case characters, numbers, and dashes
+          </span>
+        </f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-singleselect name="layout" prefill=":data.layout" required>
+          <span slot="label">Page Layout</span>
+          <span slot="empty">Please select a layout</span>
+          <s:for subject=":layouts" key="layout">
+            <option value=":layout"><s:text use=":layout" /></option>
+          </s:for>
+        </f-singleselect>
+      </l-col>
+      <s:for subject=":layout.properties" key="property">
+        <l-col xs="12">
+          <s:if check=":property.type === 'string'">
+            <f-input
+              type="text"
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <s:text use=":property.label" />
+            </f-input>
+          </s:if>
+          <s:if check=":property.type === 'code'">
+            <f-code
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <s:text use=":property.label" />
+            </f-code>
+          </s:if>
+          <s:if check=":property.type === 'file'">
+            <f-file
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <s:text use=":property.label" />
+            </f-file>
+          </s:if>
+          <s:if check=":property.type === 'richtext'">
+            <f-richtext
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <s:text use=":property.label" />
+            </f-richtext>
+          </s:if>
+          <s:if check=":property.type === 'number'">
+            <f-numeric
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <s:text use=":property.label" />
+            </f-numeric>
+          </s:if>
+          <s:if check=":property.type === 'select'">
+            <f-select
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <span slot="label">
+                <s:text use=":property.label" />
+              </span>
+              <s:for subject=":property.options" key="option">
+                <option value=":option">
+                  <s:text use=":option" />
+                </option>
+              </s:for>
+            </f-select>
+          </s:if>
+          <s:if check=":property.type === 'multiselect'">
+            <f-multiselect
+              name=":`properties.${property.name}`"
+              prefill=":data.properties[property.name]"
+            >
+              <span slot="label">
+                <s:text use=":property.label" />
+              </span>
+              <s:for subject=":property.options" key="option">
+                <option value=":option">
+                  <s:text use=":option" />
+                </option>
+              </s:for>
+            </f-multiselect>
+          </s:if>
+        </l-col>
+      </s:for>
+      <l-col xs="12">
+        <f-button type="submit">Update Page</f-button>
+      </l-col>
+    </l-row>
+  </l-container>
+</f-form>
 
 <o-modal open=":creating">
   <span slot="title">Create a Page</span>

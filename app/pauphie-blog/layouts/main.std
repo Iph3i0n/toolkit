@@ -1,6 +1,5 @@
 <s:meta name="main-page">
   <attr name="title" type="string">The page title</attr>
-
 </s:meta>
 
 <div>

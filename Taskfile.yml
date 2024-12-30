@@ -39,6 +39,11 @@ tasks:
     cmds:
       - npm run serve
 
+  pauphie-blog:setup:
+    dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
+    cmds:
+      - npm run setup
+
   wisdom:dev:
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:

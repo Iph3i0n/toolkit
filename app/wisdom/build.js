@@ -28,6 +28,13 @@ async function main() {
     outfile: path.resolve(app_dir, "server/app.js"),
     plugins: [WorkerLoader()],
   });
+  await esbuild.build({
+    entryPoints: [path.resolve(__dirname, "src/setup.ts")],
+    bundle: true,
+    platform: "node",
+    outfile: path.resolve(app_dir, "server/setup.js"),
+    plugins: [WorkerLoader()],
+  });
 
   for (const handler of await fs.readdir(
     path.resolve(__dirname, "src/handlers")

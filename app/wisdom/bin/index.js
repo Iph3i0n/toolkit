@@ -2,6 +2,7 @@
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const { StartWisdom } = require("../dist/server/app");
+const { SetupData } = require("../dist/server/setup");
 
 yargs(hideBin(process.argv))
   .command(
@@ -16,6 +17,14 @@ yargs(hideBin(process.argv))
     (argv) => {
       if (argv.verbose) console.info(`start server on :${argv.port}`);
       StartWisdom(argv.port);
+    }
+  )
+  .command(
+    "setup",
+    "prepare a project",
+    (args) => args,
+    (argv) => {
+      SetupData();
     }
   )
   .option("verbose", {

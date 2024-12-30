@@ -3,9 +3,7 @@
 <script>
   import { GetJson } from "../utils/fetch";
   import Url from "@ipheion/url";
-</script>
-<script on="mut">
-  const pages = await GetJson("/api/v1/pages");
+  const homepage = await GetJson("/api/v1/layout/homepage");
 </script>
 
 <l-header logo="/_/test-image.jpg">
@@ -13,22 +11,7 @@
 </l-header>
 
 <u-route path="/" exact>
-  <l-container>
-    <l-row>
-      <l-col xs="12">
-        <d-listgroup>
-          <s:for subject=":pages" key="page">
-            <t-link
-              href=":new Url('/pages/:page_id', { page_id: page.id }).Href"
-              spa
-            >
-              <s:text use=":page.slug" />
-            </t-link>
-          </s:for>
-        </d-listgroup>
-      </l-col>
-    </l-row>
-  </l-container>
+  <wisdom-page page_id=":homepage.id" />
 </u-route>
 
 <u-route path="/pages/:page_id" ele="wisdom-page" />

@@ -25,6 +25,10 @@ export default class Prop extends MetadataItem {
     return "property" in this.Data.RawAttribute;
   }
 
+  get Options() {
+    return this.Data.RawAttribute.options?.toString();
+  }
+
   get Default() {
     return this.Data.RawAttribute.default?.toString();
   }

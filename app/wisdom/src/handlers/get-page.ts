@@ -7,6 +7,7 @@ export default class GetPage extends Handler {
   readonly Url = "/api/v1/pages/:id";
 
   async Process(request: PureRequest) {
+    debugger;
     const { id } = request.Parameters({ id: IsString });
     const match = this.State.pages[id];
 

@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "serve": "wisdom serve"
+    "serve": "wisdom serve",
+    "setup": "wisdom setup"
   },
   "publishConfig": {
     "access": "public"

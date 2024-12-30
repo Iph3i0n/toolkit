@@ -19,7 +19,6 @@ export default class MainPage extends Handler {
     });
     if (typeof slug === "string") slug = [slug];
     const target = Path.resolve(__dirname, "../..", ...slug);
-    console.log(target);
     if (!Fs.existsSync(target)) return new EmptyResponse("NotFound");
     return new FileResponse(target);
   }

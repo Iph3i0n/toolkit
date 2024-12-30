@@ -5,6 +5,7 @@ import ContextFetcher from "../../global/base-classes/context-fetcher";
 import { is_visible } from "../../utils/html/is-visible";
 import { FormElementValue, FormValue } from "../types";
 import { AfterSubmitEvent, SubmittedEvent, ValueChangedEvent } from "../events";
+import { With } from "./object-creation";
 
 const REGISTER_KEY = "__BAKERY_INTERNAL__register-form-element";
 const VALIDATION_KEY = "__BAKERY_INTERNAL__request-validation";
@@ -107,11 +108,11 @@ export abstract class FormManagerElement extends UrlBuilder {
     Router.Push(this.Render(go_to));
   }
 
-  get #values() {
-    const values: FormValue = {};
+  get #values(): FormValue {
+    let values: FormValue = {};
     for (const ele of this.#elements) {
       if (!ele || !is_visible(ele)) continue;
-      else values[ele.submission_name] = ele.value;
+      else values = With(values, ele.submission_name, ele.value);
     }
 
     return values;
