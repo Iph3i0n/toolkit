@@ -9,3 +9,9 @@ customElements.define(
   "wisdom-page",
   CreateComponent(() => import("./components/page.std"))
 );
+
+
+customElements.define(
+  "content-form",
+  CreateComponent(() => import("./components/content-form.std"))
+);

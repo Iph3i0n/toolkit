@@ -1,4 +1,9 @@
-import { LoadedEvent, RenderEvent, ComponentWrapper } from "@ipheion/wholemeal";
+import {
+  LoadedEvent,
+  RenderEvent,
+  ComponentWrapper,
+  ComponentBase,
+} from "@ipheion/wholemeal";
 import c from "../../utils/html/classes";
 import Router, { UrlBuilder } from "../../global/base-classes/router";
 import ContextFetcher from "../../global/base-classes/context-fetcher";
@@ -12,9 +17,11 @@ const VALIDATION_KEY = "__BAKERY_INTERNAL__request-validation";
 
 class RegisterFormElementEvent extends Event {
   #form_manager: FormManagerElement | undefined;
+  readonly #self: FormElement;
 
-  constructor() {
+  constructor(self: FormElement) {
     super(REGISTER_KEY, { bubbles: true, composed: true, cancelable: true });
+    this.#self = self;
   }
 
   get Manager() {
@@ -23,6 +30,10 @@ class RegisterFormElementEvent extends Event {
 
   set Manager(ele: FormManagerElement | undefined) {
     this.#form_manager = ele;
+  }
+
+  get Self() {
+    return this.#self;
   }
 }
 
@@ -40,14 +51,8 @@ export abstract class FormManagerElement extends UrlBuilder {
       throw new Error(
         "Only the register form element event class may be used to register an element."
       );
-    const wrapper = event.composedPath()[0];
-    if (!(wrapper instanceof ComponentWrapper))
-      throw new Error("Only FormElement components may register themselves.");
-    const target = wrapper.Wholemeal;
-    if (!(target instanceof FormElement))
-      throw new Error("Only FormElement components may register themselves.");
-
     if (event.Manager) return;
+    const target = event.Self;
     this.#elements.push(target);
     event.Manager = this;
   }
@@ -239,7 +244,7 @@ export default abstract class FormElement extends ContextFetcher {
     this.#default_value = this.use_string_context("prefill");
     this.value = this.#default_value;
 
-    const event = new RegisterFormElementEvent();
+    const event = new RegisterFormElementEvent(this);
     this.dispatchEvent(event);
 
     const form = event.Manager;
