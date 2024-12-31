@@ -1,9 +1,10 @@
 <s:meta name="main-page">
   <attr name="title" type="string">The page title</attr>
+  <slot name="title-extra">Extra title content</slot>
 </s:meta>
 
 <div>
-  <s:text use=":title" />
+  <s:text use=":self.title" />
 
   <slot name="title-extra" />
 </div>

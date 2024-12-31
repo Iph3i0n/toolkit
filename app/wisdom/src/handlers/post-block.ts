@@ -19,7 +19,7 @@ export default class PostBlock extends Handler {
     return new Result(new JsonResponse("Created", { id }), {
       blocks: {
         [id]: {
-          slug: body.slug ?? null,
+          slug: body.slug || null,
           type: body.type,
           properties: {},
           slots: {},

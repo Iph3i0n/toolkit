@@ -29,14 +29,20 @@ export class SubmittedEvent extends Event {
 
 export class AfterSubmitEvent extends Event {
   readonly #data: FormValue;
+  readonly #response_json: unknown;
 
-  constructor(data: FormValue) {
+  constructor(data: FormValue, response_json?: unknown) {
     super("AfterSubmit", { bubbles: true, composed: true });
     this.#data = data;
+    this.#response_json = response_json ?? {};
   }
 
   get FormData() {
     return this.#data;
+  }
+
+  get ResponseJson() {
+    return this.#response_json;
   }
 }
 

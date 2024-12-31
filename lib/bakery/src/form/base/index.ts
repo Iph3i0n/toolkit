@@ -103,14 +103,15 @@ export abstract class FormManagerElement extends UrlBuilder {
     } catch {}
 
     this.provide_context("form_state", { response, json });
-    if (!response.ok) return;
+    if (!response.ok) return json;
 
     document.dispatchEvent(new CustomEvent("data-invalidated"));
 
     const go_to = this["success-url"];
-    if (!go_to) return;
+    if (!go_to) return json;
 
     Router.Push(this.Render(go_to));
+    return json;
   }
 
   get #values(): FormValue {
@@ -169,7 +170,7 @@ export abstract class FormManagerElement extends UrlBuilder {
     form.remove();
   }
 
-  Submit() {
+  async Submit() {
     const validate_event = new CustomEvent(VALIDATION_KEY, {
       bubbles: false,
       cancelable: true,
@@ -183,23 +184,25 @@ export abstract class FormManagerElement extends UrlBuilder {
 
     switch (this.submit ?? "ajax-json") {
       case "ajax-json": {
-        this.#ajax_submit(this.#values);
+        const json = await this.#ajax_submit(this.#values);
+        this.dispatchEvent(new AfterSubmitEvent(this.#values, json));
         break;
       }
       case "ajax-form-data": {
-        this.#ajax_submit(this.#form_data);
+        const json = this.#ajax_submit(this.#form_data);
+        this.dispatchEvent(new AfterSubmitEvent(this.#values, json));
         break;
       }
       case "page-form-data": {
         this.#page_submit();
+        this.dispatchEvent(new AfterSubmitEvent(this.#values));
         break;
       }
       case "event-only": {
+        this.dispatchEvent(new AfterSubmitEvent(this.#values));
         break;
       }
     }
-
-    this.dispatchEvent(new AfterSubmitEvent(this.#values));
   }
 }
 

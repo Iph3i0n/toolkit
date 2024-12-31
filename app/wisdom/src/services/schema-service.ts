@@ -16,7 +16,10 @@ export default class SchemaService {
         type: a.Type,
         options: a.Options?.split(",") ?? [],
       })),
-      slots: data.Metadata.Slots.map((s) => ({ name: s.Name })),
+      slots: data.Metadata.Slots.map((s) => ({
+        name: s.Name,
+        label: s.Description.Text,
+      })),
     };
   }
 

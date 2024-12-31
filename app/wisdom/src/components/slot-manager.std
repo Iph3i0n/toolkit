@@ -1,0 +1,94 @@
+<s:meta name="slot-manager">
+  <attr name="data" type="any" />
+  <attr name="schema" type="any" />
+</s:meta>
+
+<script>
+  import { GetJson, PutJson } from "../utils/fetch";
+  import Url from "@ipheion/url";
+
+  let adding_block = false;
+  const blocks = await GetJson("/api/v1/schema/blocks");
+
+  function add_block(data) {
+    self.dispatchEvent(
+      new CustomEvent("block-added", {
+        detail: {
+          id: data.ResponseJson.id,
+          slot: adding_block,
+        },
+      })
+    );
+    adding_block = false;
+    self.should_render();
+  }
+</script>
+
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <s:for subject=":self.schema.slots" key="slot">
+        <l-accordion>
+          <span slot="title">
+            <s:text use=":slot.label" />
+          </span>
+
+          <l-row no-padding>
+            <s:if check=":self.data.slots[slot.name]">
+              <l-col xs="12">
+                <d-listgroup>
+                  <s:for subject=":self.data.slots[slot.name]" key="entry">
+                    <t-link
+                      href=":new Url('/blocks/:block_id', { block_id: entry }).Href"
+                      spa
+                    >
+                      <s:text use=":entry" />
+                    </t-link>
+                  </s:for>
+                </d-listgroup>
+              </l-col>
+            </s:if>
+
+            <l-col xs="12">
+              <f-button
+                type="button"
+                on:click="() => { adding_block = slot.name }"
+              >
+                Add Block
+              </f-button>
+            </l-col>
+          </l-row>
+        </l-accordion>
+      </s:for>
+    </l-col>
+  </l-row>
+</l-container>
+
+<o-modal open=":!!adding_block">
+  <span slot="title">Add a Block</span>
+  <f-form url="/api/v1/blocks" method="post" on:AfterSubmit="add_block">
+    <l-row>
+      <l-col xs="12">
+        <f-input name="slug">
+          Slug (optional)
+          <span slot="help">
+            Use this to allow reuse of the block in other places. Otherwise it
+            will only be available here.
+          </span>
+        </f-input>
+      </l-col>
+      <l-col xs="12">
+        <f-select name="type" required>
+          <span slot="label">Block Type</span>
+          <span slot="empty">Please select a block type</span>
+          <s:for subject=":blocks" key="block">
+            <option value=":block"><s:text use=":block" /></option>
+          </s:for>
+        </f-select>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create Block</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+</o-modal>
