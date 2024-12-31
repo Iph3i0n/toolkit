@@ -1,4 +1,6 @@
+import { IsArray, IsString } from "@ipheion/safe-type";
 import { ComponentBase } from "./component";
+import { ElementCreatedEvent } from "./events";
 
 type ComponentFactory = new (ele: HTMLElement) => ComponentBase;
 
@@ -8,13 +10,26 @@ export abstract class ComponentWrapper extends HTMLElement {
   constructor() {
     super();
 
-    setTimeout(() =>
+    setTimeout(() => {
       this.instance.then((b) => {
         this.#awaited = b;
-      })
-    );
+      });
+
+      this.props.then((b) => {
+        for (const property of b) {
+          this.instance.then((b: any) => {
+            if (property in this) b[property] = (this as any)[property];
+            Object.defineProperty(this, property, {
+              get: () => b[property],
+              set: (val) => (b[property] = val),
+            });
+          });
+        }
+      });
+    });
   }
 
+  protected abstract readonly props: Promise<Array<string>>;
   protected abstract readonly instance: Promise<ComponentBase>;
 
   get Wholemeal() {
@@ -57,9 +72,35 @@ export abstract class ComponentWrapper extends HTMLElement {
 export default function CreateComponent(
   init: () => Promise<{ default: ComponentFactory } | ComponentFactory>
 ): CustomElementConstructor {
+  let initialised:
+    | Promise<{ default: ComponentFactory } | ComponentFactory>
+    | undefined;
+
+  const create = () => {
+    initialised =
+      initialised ??
+      init().then((r) => {
+        setTimeout(() => {
+          document.dispatchEvent(new ElementCreatedEvent());
+        });
+        return r;
+      });
+
+    return initialised;
+  };
+
   return class Element extends ComponentWrapper {
-    protected instance: Promise<ComponentBase> = init().then((factory) =>
-      "default" in factory ? new factory.default(this) : new factory(this)
-    );
+    protected props: Promise<string[]> = create()
+      .then((factory) => ("default" in factory ? factory.default : factory))
+      .then((factory) =>
+        "observedAttributes" in factory &&
+        IsArray(IsString)(factory.observedAttributes)
+          ? factory.observedAttributes
+          : []
+      );
+
+    protected instance: Promise<ComponentBase> = create()
+      .then((factory) => ("default" in factory ? factory.default : factory))
+      .then((factory) => new factory(this));
   };
 }

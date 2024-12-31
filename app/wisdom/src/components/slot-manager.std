@@ -64,7 +64,7 @@
   </l-row>
 </l-container>
 
-<o-modal open=":!!adding_block">
+<o-modal open=":!!adding_block" on:CloseRequested="() => (adding_block = false)">
   <span slot="title">Add a Block</span>
   <f-form url="/api/v1/blocks" method="post" on:AfterSubmit="add_block">
     <l-row>

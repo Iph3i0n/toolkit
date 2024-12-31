@@ -25,11 +25,7 @@
   /** @param {CustomEvent} event */
   async function add_block(event) {
     const slots = data.slots ?? {};
-    await PutJson(new Url("/api/v1/pages/:id", { id: self.page_id }), {
-      slug: data.slug,
-      layout: data.layout,
-      parent: data.parent,
-      properties: data.properties,
+    await PutJson(new Url("/api/v1/pages/:id/slots", { id: self.page_id }), {
       slots: {
         ...slots,
         [event.detail.slot]: [
@@ -38,7 +34,6 @@
         ],
       },
     });
-    adding_block = false;
     self.should_render();
   }
 </script>
@@ -82,20 +77,59 @@
   </l-row>
 </l-container>
 
-<content-form
+<f-form
   url=":new Url('/api/v1/pages/:id', { id: self.page_id }).Href"
+  method="put"
+  on:AfterSubmit="() => { self.should_render() }"
+>
+  <f-hidden name="parent" prefill=":data.parent" />
+  <div>
+    <l-container>
+      <l-row>
+        <l-col xs="12">
+          <f-input
+            name="slug"
+            prefill=":data.slug"
+            required
+            validate="^[0-9a-z\-]+$"
+            type="text"
+          >
+            Page Slug
+            <span slot="empty">Please enter a slug</span>
+            <span slot="invalid">
+              Slugs may only have lower case characters, numbers, and dashes
+            </span>
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-singleselect name="layout" prefill=":data.layout" required>
+            <span slot="label">Page Layout</span>
+            <span slot="empty">Please select a layout</span>
+            <s:for subject=":layouts" key="layout">
+              <option value=":layout"><s:text use=":layout" /></option>
+            </s:for>
+          </f-singleselect>
+        </l-col>
+        <l-col xs="12">
+          <f-button type="submit">Update Metadata</f-button>
+        </l-col>
+      </l-row>
+    </l-container>
+  </div>
+</f-form>
+
+<content-form
+  url=":new Url('/api/v1/pages/:id/properties', { id: self.page_id }).Href"
   data=":data"
   schema=":layout"
-  type="page"
   on:submit-complete="() => self.should_render()"
 >
-  <span slot="slug-label">Page Slug</span>
-  Update Page
+  Update Content
 </content-form>
 
 <slot-manager data=":data" schema=":layout" on:block-added="add_block" />
 
-<o-modal open=":creating">
+<o-modal open=":creating" on:CloseRequested="() => (creating = false)">
   <span slot="title">Create a Page</span>
   <f-form
     url="/api/v1/pages"

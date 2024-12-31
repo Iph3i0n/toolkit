@@ -12,6 +12,20 @@ export class LoadedEvent extends Event {
   }
 }
 
+export class ElementCreatedEvent extends Event {
+  constructor() {
+    super(ElementCreatedEvent.Key, { bubbles: false });
+  }
+
+  static get Key() {
+    return "element-created" as const;
+  }
+
+  static get ListenerKey() {
+    return `$${this.Key}` as const;
+  }
+}
+
 export class BeforeRenderEvent extends Event {
   constructor() {
     super(BeforeRenderEvent.Key, { bubbles: false });
@@ -85,4 +99,10 @@ export class PropsEvent extends Event {
   get Old() {
     return this.#old;
   }
+}
+
+export function OnElementLoaded(handler: () => void) {
+  document.addEventListener(ElementCreatedEvent.Key, handler);
+
+  return () => document.removeEventListener(ElementCreatedEvent.Key, handler);
 }

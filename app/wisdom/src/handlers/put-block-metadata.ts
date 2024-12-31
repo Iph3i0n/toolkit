@@ -8,30 +8,26 @@ import {
 } from "@ipheion/safe-type";
 import { Handler, Result } from "server";
 
-const IsPostPage = IsObject({
-  slug: IsString,
-  layout: IsString,
-  parent: Optional(IsString),
-  properties: Optional(IsDictionary(IsString)),
-  slots: Optional(IsDictionary(IsArray(IsString))),
+const IsPostBlock = IsObject({
+  slug: Optional(IsString),
+  type: IsString,
 });
 
 export default class PostPage extends Handler {
   readonly Method = HttpMethod.Put;
-  readonly Url = "/api/v1/pages/:id";
+  readonly Url = "/api/v1/blocks/:id";
 
   async Process(request: PureRequest) {
-    const body = request.Body(IsPostPage);
+    const body = request.Body(IsPostBlock);
     const { id } = request.Parameters({ id: IsString });
+    const existing = this.State.blocks[id];
 
     return new Result(new JsonResponse("Ok", { id }), {
-      pages: {
+      blocks: {
         [id]: {
-          slug: body.slug,
-          layout: body.layout,
-          parent: body.parent ?? null,
-          properties: body.properties ?? {},
-          slots: body.slots ?? {},
+          ...existing,
+          slug: body.slug ?? null,
+          type: body.type,
         },
       },
     });

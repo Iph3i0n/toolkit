@@ -3,6 +3,7 @@ import {
   RenderEvent,
   ComponentWrapper,
   ComponentBase,
+  OnElementLoaded,
 } from "@ipheion/wholemeal";
 import c from "../../utils/html/classes";
 import Router, { UrlBuilder } from "../../global/base-classes/router";
@@ -247,26 +248,36 @@ export default abstract class FormElement extends ContextFetcher {
     this.#default_value = this.use_string_context("prefill");
     this.value = this.#default_value;
 
-    const event = new RegisterFormElementEvent(this);
-    this.dispatchEvent(event);
+    const attempt = () => {
+      const event = new RegisterFormElementEvent(this);
+      this.dispatchEvent(event);
 
-    const form = event.Manager;
-    if (!form) return;
+      const form = event.Manager;
+      if (!form) return false;
 
-    this.#form = form;
+      this.#form = form;
 
-    form.addEventListener(VALIDATION_KEY, (event) => {
-      if (!is_visible(this)) return;
+      form.addEventListener(VALIDATION_KEY, (event) => {
+        if (!is_visible(this)) return;
 
-      this.#touched = true;
-      if (!this.validity.valid) event.preventDefault();
-      this.should_render();
-    });
+        this.#touched = true;
+        if (!this.validity.valid) event.preventDefault();
+        this.should_render();
+      });
 
-    form.addEventListener("AfterSubmit", () => {
-      this.value = this.use_string_context("prefill");
-      this.#touched = false;
-    });
+      form.addEventListener("AfterSubmit", () => {
+        this.value = this.use_string_context("prefill");
+        this.#touched = false;
+      });
+
+      return true;
+    };
+
+    if (!attempt()) {
+      const unregister = OnElementLoaded(() => {
+        if (attempt()) unregister();
+      });
+    }
   }
 
   get value() {

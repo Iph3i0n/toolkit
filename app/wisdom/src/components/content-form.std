@@ -2,14 +2,7 @@
   <attr name="url" type="string" />
   <attr name="data" type="any" />
   <attr name="schema" type="any" />
-  <attr name="type" type="string" />
 </s:meta>
-
-<script>
-  import { GetJson } from "../utils/fetch";
-
-  const layouts = await GetJson("/api/v1/schema/layouts");
-</script>
 
 <f-form
   url=":self.url"
@@ -19,33 +12,6 @@
   <div>
     <l-container>
       <l-row>
-        <l-col xs="12">
-          <f-input
-            name="slug"
-            prefill=":self.data.slug"
-            required
-            validate="^[0-9a-z\-]+$"
-            type="text"
-          >
-            <slot name="slug-label" />
-            <span slot="empty">Please enter a slug</span>
-            <span slot="invalid">
-              Slugs may only have lower case characters, numbers, and dashes
-            </span>
-          </f-input>
-        </l-col>
-        <s:if check=":self.type === 'page'">
-          <f-hidden name="parent" prefill=":self.data.parent" />
-          <l-col xs="12">
-            <f-singleselect name="layout" prefill=":self.data.layout" required>
-              <span slot="label">Page Layout</span>
-              <span slot="empty">Please select a layout</span>
-              <s:for subject=":layouts" key="layout">
-                <option value=":layout"><s:text use=":layout" /></option>
-              </s:for>
-            </f-singleselect>
-          </l-col>
-        </s:if>
         <s:for subject=":self.schema.properties" key="property">
           <l-col xs="12">
             <s:if check=":property.type === 'string'">

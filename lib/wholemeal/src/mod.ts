@@ -4,6 +4,7 @@ export {
   ShouldRender,
   PropsEvent,
   BeforeRenderEvent,
+  OnElementLoaded,
 } from "./runner/events";
 
 export { ComponentBase } from "./runner/component";
