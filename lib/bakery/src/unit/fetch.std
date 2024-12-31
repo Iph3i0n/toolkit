@@ -49,7 +49,6 @@
     existing_route = "";
     handler();
   });
-  window.addEventListener("popstate", handler);
 
   self.addEventListener(SetContextEventKey, (event) => {
     if (event.Key !== self.name) return;

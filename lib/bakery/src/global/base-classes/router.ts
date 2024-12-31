@@ -1,4 +1,4 @@
-import { RenderEvent } from "@ipheion/wholemeal";
+import { LoadedEvent, RenderEvent } from "@ipheion/wholemeal";
 import PaginationEvent from "../events/pagination";
 import BakeryBase from "./main";
 import { MatchEvent } from "../events/routing";
@@ -49,6 +49,10 @@ export default abstract class Router extends BakeryBase {
 
   #previous = false;
 
+  [LoadedEvent.ListenerKey]() {
+    Router.#start();
+  }
+
   [RenderEvent.ListenerKey]() {
     const current = this.Matches;
     if (current.match)
@@ -68,6 +72,16 @@ export default abstract class Router extends BakeryBase {
 
   get CurrentlyMatching() {
     return this.Matches.match;
+  }
+
+  static #started = false;
+
+  static #start() {
+    if (this.#started) return;
+    window.addEventListener("popstate", () => {
+      document.dispatchEvent(new NavigateEvent());
+    });
+    this.#started = true;
   }
 
   static Push(url: string) {

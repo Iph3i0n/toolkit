@@ -9,12 +9,26 @@
 
   let adding_block = false;
   const blocks = await GetJson("/api/v1/schema/blocks");
+  const option_blocks = await GetJson("/api/v1/blocks");
 
   function add_block(data) {
     self.dispatchEvent(
       new CustomEvent("block-added", {
         detail: {
           id: data.ResponseJson.id,
+          slot: adding_block,
+        },
+      })
+    );
+    adding_block = false;
+    self.should_render();
+  }
+
+  function add_existing_block(data) {
+    self.dispatchEvent(
+      new CustomEvent("block-added", {
+        detail: {
+          id: data.FormData.id,
           slot: adding_block,
         },
       })
@@ -64,16 +78,25 @@
   </l-row>
 </l-container>
 
-<o-modal open=":!!adding_block" on:CloseRequested="() => (adding_block = false)">
+<o-modal
+  open=":!!adding_block"
+  on:CloseRequested="() => (adding_block = false)"
+>
   <span slot="title">Add a Block</span>
   <f-form url="/api/v1/blocks" method="post" on:AfterSubmit="add_block">
     <l-row>
       <l-col xs="12">
-        <f-input name="slug">
+        <t-heading level="h5">Create a new Block</t-heading>
+      </l-col>
+      <l-col xs="12">
+        <f-input name="slug" validate="^[0-9a-z\-]+$">
           Slug (optional)
           <span slot="help">
             Use this to allow reuse of the block in other places. Otherwise it
             will only be available here.
+          </span>
+          <span slot="invalid">
+            Slugs may only have lower case characters, numbers, and dashes
           </span>
         </f-input>
       </l-col>
@@ -83,6 +106,25 @@
           <span slot="empty">Please select a block type</span>
           <s:for subject=":blocks" key="block">
             <option value=":block"><s:text use=":block" /></option>
+          </s:for>
+        </f-select>
+      </l-col>
+      <l-col xs="12">
+        <f-button type="submit">Create Block</f-button>
+      </l-col>
+    </l-row>
+  </f-form>
+  <f-form url="/api/v1/blocks" method="post" on:AfterSubmit="add_block">
+    <l-row>
+      <l-col xs="12">
+        <t-heading level="h5">Add an existing Block</t-heading>
+      </l-col>
+      <l-col xs="12">
+        <f-select name="type" required>
+          <span slot="label">Block</span>
+          <span slot="empty">Please select a block</span>
+          <s:for subject=":option_blocks" key="block">
+            <option value=":block.id"><s:text use=":block.slug" /></option>
           </s:for>
         </f-select>
       </l-col>

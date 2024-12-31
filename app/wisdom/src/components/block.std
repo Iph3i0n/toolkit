@@ -1,4 +1,4 @@
-<s:meta name="wisdom-page">
+<s:meta name="wisdom-block">
   <attr name="block_id" type="string">The ID of the current page</attr>
 </s:meta>
 
@@ -13,8 +13,7 @@
   const layout = await GetJson(
     new Url("/api/v1/schema/blocks/:id", { id: data.type })
   );
-
-  const layouts = await GetJson("/api/v1/schema/layouts");
+  const blocks = await GetJson("/api/v1/schema/blocks");
 </script>
 
 <script on="mut">
@@ -23,10 +22,7 @@
   /** @param {CustomEvent} event */
   async function add_block(event) {
     const slots = data.slots ?? {};
-    await PutJson(new Url("/api/v1/blocks/:id", { id: self.page_id }), {
-      slug: data.slug,
-      type: data.type,
-      properties: data.properties,
+    await PutJson(new Url("/api/v1/blocks/:id/slots", { id: self.block_id }), {
       slots: {
         ...slots,
         [event.detail.slot]: [
@@ -39,49 +35,55 @@
   }
 </script>
 
+<f-form
+  url=":new Url('/api/v1/blocks/:id', { id: self.block_id }).Href"
+  method="put"
+  on:AfterSubmit="() => { self.should_render() }"
+>
+  <div>
+    <l-container>
+      <l-row>
+        <l-col xs="12">
+          <f-input
+            name="slug"
+            prefill=":data.slug"
+            validate="^[0-9a-z\-]+$"
+            type="text"
+          >
+            Slug (optional)
+            <span slot="help">
+              Use this to allow reuse of the block in other places. Otherwise it
+              will only be available here.
+            </span>
+            <span slot="invalid">
+              Slugs may only have lower case characters, numbers, and dashes
+            </span>
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-select name="type" prefill=":data.type" required>
+            <span slot="label">Block Type</span>
+            <span slot="empty">Please select a block type</span>
+            <s:for subject=":blocks" key="block">
+              <option value=":block"><s:text use=":block" /></option>
+            </s:for>
+          </f-select>
+        </l-col>
+        <l-col xs="12">
+          <f-button type="submit">Update Metadata</f-button>
+        </l-col>
+      </l-row>
+    </l-container>
+  </div>
+</f-form>
+
 <content-form
-  url=":new Url('/api/v1/blocks/:id', { id: self.page_id }).Href"
+  url=":new Url('/api/v1/blocks/:id/properties', { id: self.block_id }).Href"
   data=":data"
   schema=":layout"
-  type="block"
   on:submit-complete="() => self.should_render()"
 >
-  <span slot="slug-label">Block Slug</span>
-  Update Block
+  Update Content
 </content-form>
 
 <slot-manager data=":data" schema=":layout" on:block-added="add_block" />
-
-<o-modal open=":creating">
-  <span slot="title">Create a Page</span>
-  <f-form
-    url="/api/v1/pages"
-    method="post"
-    on:AfterSubmit="() => { creating = false; self.should_render() }"
-  >
-    <f-hidden name="parent" prefill=":self.page_id" />
-    <l-row>
-      <l-col xs="12">
-        <f-input name="slug" required validate="^[0-9a-z\-]+$" type="text">
-          Page Slug
-          <span slot="empty">Please enter a slug</span>
-          <span slot="invalid">
-            Slugs may only have lower case characters, numbers, and dashes
-          </span>
-        </f-input>
-      </l-col>
-      <l-col xs="12">
-        <f-singleselect name="layout" required>
-          <span slot="label">Page Layout</span>
-          <span slot="empty">Please select a layout</span>
-          <s:for subject=":layouts" key="layout">
-            <option value=":layout"><s:text use=":layout" /></option>
-          </s:for>
-        </f-singleselect>
-      </l-col>
-      <l-col xs="12">
-        <f-button type="submit">Create Page</f-button>
-      </l-col>
-    </l-row>
-  </f-form>
-</o-modal>

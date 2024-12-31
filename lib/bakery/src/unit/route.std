@@ -41,10 +41,6 @@
   document.addEventListener("NavigationEvent", () => {
     self.should_render();
   });
-
-  document.addEventListener("popstate", () => {
-    self.should_render();
-  });
 </script>
 
 <script on="after">

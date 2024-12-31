@@ -11,6 +11,11 @@ customElements.define(
 );
 
 customElements.define(
+  "wisdom-block",
+  CreateComponent(() => import("./components/block.std"))
+);
+
+customElements.define(
   "content-form",
   CreateComponent(() => import("./components/content-form.std"))
 );
