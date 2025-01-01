@@ -1,5 +1,5 @@
 import Component from "../../xml/component";
-import * as Js from "../../writer/mod";
+import * as Js from "@ipheion/js-model";
 
 export default class Template {
   readonly #data: Component;

@@ -3,7 +3,7 @@ import Node from "./node";
 import Text from "./text";
 import Element from "./element";
 import Sheet from "../pss/sheet";
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import Metadata from "./metadata/mod";
 import { Assert, IsInstanceOf } from "@ipheion/safe-type";
 import { JoinComponents, RenderContext, RenderResult } from "./render-context";

@@ -114,13 +114,13 @@
       </l-col>
     </l-row>
   </f-form>
-  <f-form url="/api/v1/blocks" method="post" on:AfterSubmit="add_block">
+  <f-form submit="event-only" on:Submitted="add_existing_block">
     <l-row>
       <l-col xs="12">
         <t-heading level="h5">Add an existing Block</t-heading>
       </l-col>
       <l-col xs="12">
-        <f-select name="type" required>
+        <f-select name="id" required>
           <span slot="label">Block</span>
           <span slot="empty">Please select a block</span>
           <s:for subject=":option_blocks" key="block">

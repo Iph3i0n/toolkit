@@ -1,4 +1,4 @@
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import type Component from "./component";
 import type { RenderContext, RenderResult } from "./render-context";
 

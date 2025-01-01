@@ -1,15 +1,18 @@
-import { IsArray, IsObject, IsString } from "@ipheion/safe-type";
+import { IsArray, IsObject, IsString, IsType } from "@ipheion/safe-type";
 
-export const IsPublics = IsArray(
+export const Publics = IsArray(
   IsObject({
     at: IsString,
     prefix: IsString,
   })
 );
 
-export const IsConfig = IsObject({
+export const Config = IsObject({
   layouts: IsString,
   blocks: IsString,
   components: IsString,
-  publics: IsPublics,
+  publics: Publics,
+  dist_dir: IsString,
 });
+
+export type Config = IsType<typeof Config>;

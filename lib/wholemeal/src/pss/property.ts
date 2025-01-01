@@ -1,4 +1,4 @@
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import StringIterator from "../compiler-utils/string-iterator";
 
 export class PssProperty {

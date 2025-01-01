@@ -10,13 +10,13 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/uuid": "^10.0.0",
-    "esbuild": "^0.24.2"
+    "@types/uuid": "^10.0.0"
   },
   "prettier": {
     "htmlWhitespaceSensitivity": "ignore"
   },
   "dependencies": {
+    "esbuild": "^0.24.2",
     "uuid": "^11.0.3",
     "yargs": "^17.7.2"
   },

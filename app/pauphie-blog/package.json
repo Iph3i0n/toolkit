@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "serve": "wisdom serve",
-    "setup": "wisdom setup"
+    "setup": "wisdom setup",
+    "build": "wisdom build"
   },
   "publishConfig": {
     "access": "public"

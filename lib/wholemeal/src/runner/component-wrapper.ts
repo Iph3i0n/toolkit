@@ -38,10 +38,12 @@ export abstract class ComponentWrapper extends HTMLElement {
 
   connectedCallback() {
     this.style.display = "none";
+    this.style.opacity = "0";
 
     this.instance.then((i) => {
       try {
         this.style.removeProperty("display");
+        this.style.removeProperty("opacity");
         i.connectedCallback();
       } catch (err) {
         console.error(err);

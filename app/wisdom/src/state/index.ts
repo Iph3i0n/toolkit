@@ -1,4 +1,4 @@
-import { Directory } from "@ipheion/fs-db";
+import { Directory, StateReader } from "@ipheion/fs-db";
 import { Block } from "./block";
 import { Page } from "./page";
 import Path from "node:path";
@@ -11,3 +11,5 @@ export const Schema = {
 };
 
 export const Database = new Directory(Schema, DataDir);
+
+export type State = StateReader<typeof Schema>;

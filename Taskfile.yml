@@ -22,6 +22,11 @@ tasks:
     cmds:
       - npx tsc
 
+  html:build:
+    dir: "{{.TASKFILE_DIR}}/lib/html"
+    cmds:
+      - npx tsc
+
   wisdom:build:
     deps:
       - puristee:build
@@ -30,6 +35,8 @@ tasks:
       - bakery:build
       - esbuild-workers:build
       - url:build
+      - html:build
+      - js-model:build
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
       - node ./build.js
@@ -41,13 +48,27 @@ tasks:
 
   pauphie-blog:setup:
     dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
+    deps:
+      - wisdom:dev-build
     cmds:
       - npm run setup
+
+  pauphie-blog:build:
+    dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
+    deps:
+      - wisdom:dev-build
+    cmds:
+      - npm run build
+
+  wisdom:dev-build:
+    dir: "{{.TASKFILE_DIR}}/app/wisdom"
+    cmds:
+      - node ./build.js
 
   wisdom:dev:
     dir: "{{.TASKFILE_DIR}}/app/wisdom"
     cmds:
-      - node ./build.js
+      - task: wisdom:dev-build
       - task: pauphie-blog:serve
 
   bakery:dev:
@@ -84,8 +105,16 @@ tasks:
     cmds:
       - npm run build
 
-  wholemeal:build:
+  js-model:build:
     deps: [safe-type:build]
+    dir: "{{.TASKFILE_DIR}}/lib/js-model"
+    cmds:
+      - npx tsc
+
+  wholemeal:build:
+    deps:
+      - safe-type:build
+      - js-model:build
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"
     cmds:
       - npx tsc

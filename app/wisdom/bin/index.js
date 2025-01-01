@@ -3,6 +3,7 @@ const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const { StartWisdom } = require("../dist/server/app");
 const { SetupData } = require("../dist/server/setup");
+const { BuildApp } = require("../dist/server/build");
 
 yargs(hideBin(process.argv))
   .command(
@@ -25,6 +26,14 @@ yargs(hideBin(process.argv))
     (args) => args,
     (argv) => {
       SetupData();
+    }
+  )
+  .command(
+    "build",
+    "build a project",
+    (args) => args,
+    (argv) => {
+      BuildApp();
     }
   )
   .option("verbose", {

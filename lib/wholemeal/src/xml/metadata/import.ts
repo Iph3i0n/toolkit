@@ -1,5 +1,5 @@
 import MetadataItem from "./base";
-import * as Js from "../../writer/mod";
+import * as Js from "@ipheion/js-model";
 
 export default class Import extends MetadataItem {
   get #use() {

@@ -1,7 +1,7 @@
 import StringIterator from "../compiler-utils/string-iterator";
 import Sheet from "./sheet";
 import { PssBlock } from "./block";
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 
 export class PssAtBlock extends PssBlock {
   static IsValid(data: string) {

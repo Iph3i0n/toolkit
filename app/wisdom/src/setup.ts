@@ -1,9 +1,12 @@
 import { i_schema_repository } from "bootstrap/integrations/i-schema-repository";
+import { n_page_service } from "bootstrap/services/page-service";
 import { Database } from "state";
 import { v4 as Guid } from "uuid";
 
 export async function SetupData() {
-  const existing = Database.Model.pages.home;
+  const page_service = n_page_service();
+  const existing = page_service.HomePage;
+
   if (existing) {
     console.log("Looks like the app has already been set up. Stopping here.");
     return;

@@ -11,6 +11,6 @@ export default async function Evaluate(
 
   return new Function(
     ...Object.keys(context.parameters),
-    expression.replace(":", "")
+    "return " + expression.replace(":", "")
   )(...Object.keys(context.parameters).map((k) => context.parameters[k]));
 }

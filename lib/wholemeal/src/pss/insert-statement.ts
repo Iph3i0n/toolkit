@@ -1,5 +1,5 @@
 import { PssBlock } from "./block";
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 
 export class PssInsertStatement extends PssBlock {
   static IsValid(data: string) {

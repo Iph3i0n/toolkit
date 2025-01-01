@@ -3,8 +3,12 @@
   <slot name="title-extra">Extra title content</slot>
 </s:meta>
 
-<div>
-  <s:text use=":self.title" />
-
-  <slot name="title-extra" />
-</div>
+<html>
+  <head>
+    <title><s:text use=":self.title" /></title>
+    <slot name="scripts" />
+  </head>
+  <body>
+    <slot name="title-extra" />
+  </body>
+</html>

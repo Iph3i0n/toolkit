@@ -5,7 +5,7 @@ import Event from "./event";
 import Import from "./import";
 import Prop from "./prop";
 import Slot from "./slot";
-import * as Js from "../../writer/mod";
+import * as Js from "@ipheion/js-model";
 import ToPascal from "./to-pascal";
 import * as CustomManifest from "custom-elements-manifest";
 export default class Metadata extends MetadataItem {

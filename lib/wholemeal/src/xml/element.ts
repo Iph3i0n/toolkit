@@ -1,4 +1,4 @@
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import Code from "./code";
 import type Component from "./component";
 import Evaluate from "./evaluate";

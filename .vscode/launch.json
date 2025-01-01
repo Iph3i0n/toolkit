@@ -15,6 +15,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch Wisdom Build",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "task",
+      "runtimeArgs": ["pauphie-blog:build"],
+      "preLaunchTask": "build-wisdom-dev"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Node: Run current file",
       "program": "${file}"
     }

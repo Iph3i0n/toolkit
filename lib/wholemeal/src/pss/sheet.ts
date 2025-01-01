@@ -1,5 +1,5 @@
 import Code from "../compiler-utils/code-transform";
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import { PssAtBlock } from "./at-block";
 import { PssAtStatement } from "./at-statement";
 import { PssForBlock } from "./for-block";

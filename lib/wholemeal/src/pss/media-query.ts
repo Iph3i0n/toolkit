@@ -1,6 +1,6 @@
 import StringIterator from "../compiler-utils/string-iterator";
 import Sheet from "./sheet";
-import * as Js from "../writer/mod";
+import * as Js from "@ipheion/js-model";
 import { PssBlock } from "./block";
 
 export class PssMediaQuery extends PssBlock {
