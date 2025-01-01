@@ -20,6 +20,7 @@ export const Config = IsObject({
   publics: Publics,
   dist_dir: IsString,
   preview_url: IsString,
+  hooks_dir: IsString,
 });
 
 export type Config = IsType<typeof Config>;

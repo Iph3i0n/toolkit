@@ -31,6 +31,15 @@ async function main() {
     plugins: [WorkerLoader()],
     external,
   });
+
+  await esbuild.build({
+    entryPoints: [path.resolve(__dirname, "../../lib/wholemeal/src/mod.ts")],
+    bundle: true,
+    platform: "node",
+    outfile: path.resolve(app_dir, "server/wholemeal.js"),
+    external,
+  });
+
   await esbuild.build({
     entryPoints: [path.resolve(__dirname, "src/setup.ts")],
     bundle: true,

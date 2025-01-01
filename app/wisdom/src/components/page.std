@@ -55,6 +55,9 @@
         </span>
       </t-crumbs>
     </l-col>
+    <l-col xs="12">
+      <t-heading level="h3">Child Pages</t-heading>
+    </l-col>
     <s:if check=":pages.length">
       <l-col xs="12">
         <d-listgroup>
@@ -71,16 +74,14 @@
     </s:if>
     <l-col xs="12">
       <f-button type="button" on:click="() => { creating = true }">
-        Create a Page
+        Create a Child Page
       </f-button>
-    </l-col>
-  </l-row>
-</l-container>
-
-<l-container>
-  <l-row>
-    <l-col xs="12">
-      <f-button type="link" href=":data.preview_url" target="_blank">
+      <f-button
+        type="link"
+        href=":data.preview_url"
+        target="_blank"
+        colour="contrast"
+      >
         Preview Page
       </f-button>
     </l-col>
@@ -96,6 +97,9 @@
   <div>
     <l-container>
       <l-row>
+        <l-col xs="12">
+          <t-heading level="h3">Page Metadata</t-heading>
+        </l-col>
         <l-col xs="12">
           <f-input
             name="slug"
@@ -122,6 +126,9 @@
         </l-col>
         <l-col xs="12">
           <f-button type="submit">Update Metadata</f-button>
+        </l-col>
+        <l-col xs="12">
+          <t-heading level="h3">Page Content</t-heading>
         </l-col>
       </l-row>
     </l-container>

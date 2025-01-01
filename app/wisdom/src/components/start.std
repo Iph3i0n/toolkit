@@ -1,14 +1,66 @@
 <s:meta name="wisdom-start"></s:meta>
 
 <script>
-  import { GetJson } from "../utils/fetch";
+  import { GetJson, PostJson } from "../utils/fetch";
   import Url from "@ipheion/url";
+  let published = false;
+  let failed = false;
+
   const homepage = await GetJson("/api/v1/layout/homepage");
+
+  async function publish() {
+    try {
+      await PostJson("/api/v1/publications", {});
+
+      published = true;
+      self.should_render();
+
+      setTimeout(() => {
+        published = false;
+        self.should_render();
+      }, 10000);
+    } catch (err) {
+      console.error(err);
+
+      failed = true;
+      self.should_render();
+
+      setTimeout(() => {
+        failed = false;
+        self.should_render();
+      }, 10000);
+    }
+  }
 </script>
 
 <l-header logo="/_/test-image.jpg">
   <t-link href="/" spa>Home</t-link>
+
+  <f-button slot="right" type="button" on:click="publish">
+    Publish Site
+  </f-button>
 </l-header>
+
+<s:if check=":published">
+  <l-container>
+    <l-row>
+      <l-col xs="12">
+        <d-alert colour="primary">Successfully published the website</d-alert>
+      </l-col>
+    </l-row>
+  </l-container>
+</s:if>
+<s:if check=":failed">
+  <l-container>
+    <l-row>
+      <l-col xs="12">
+        <d-alert colour="warning">
+          There was an error. Please check the logs for more information.
+        </d-alert>
+      </l-col>
+    </l-row>
+  </l-container>
+</s:if>
 
 <u-route path="/" exact>
   <wisdom-page page_id=":homepage.id" />

@@ -102,8 +102,15 @@ export default class BuilderService {
     const blocks = await this.#schema_repository.get_blocks();
     const components = await this.#schema_repository.get_components();
 
+    const dir = __dirname.endsWith("handlers")
+      ? Path.resolve(__dirname, "..")
+      : __dirname;
     const template = [
-      new Js.Import("CreateComponent", "@ipheion/wholemeal", false),
+      new Js.Import(
+        "CreateComponent",
+        Path.resolve(dir, "wholemeal.js"),
+        false
+      ),
       ...(await Promise.all(
         blocks.map(async (c) => {
           const schema = await this.#schema_repository.get_block(c);
@@ -190,6 +197,13 @@ export default class BuilderService {
       }
 
       const script_file = await this.#build_scripts(config);
+
+      for (const pub of config.publics)
+        await Fs.cp(
+          Path.resolve(pub.at),
+          Path.resolve(config.dist_dir, pub.prefix),
+          { recursive: true }
+        );
 
       await this.#build_page(
         home.id,

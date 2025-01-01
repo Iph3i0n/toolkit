@@ -1,0 +1,28 @@
+FROM node:lts-alpine AS builder
+
+RUN npm install -g @go-task/cli
+
+COPY . .
+
+WORKDIR /app
+
+RUN npm install
+
+RUN task wisdom:build
+
+FROM node:lts-alpine as runner
+
+WORKDIR /wisdom
+
+COPY --from=builder /app/app/wisdom/dist /wisdom/dist
+COPY --from=builder /app/app/wisdom/bin /wisdom/bin
+COPY --from=builder /app/app/wisdom/package.json /wisdom
+
+RUN npm install
+RUN npm link
+
+WORKDIR /app
+
+RUN wisdom setup
+
+ENTRYPOINT [ "wisdom", "serve" ]

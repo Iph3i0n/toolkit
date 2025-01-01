@@ -17,8 +17,6 @@ export default class PostPage extends Handler {
     const body = request.Body(IsPostPage);
     const id = Guid();
 
-    console.log(body);
-
     return new Result(new JsonResponse("Created", { id }), {
       pages: {
         [id]: {

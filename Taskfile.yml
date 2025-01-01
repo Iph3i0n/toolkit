@@ -27,6 +27,10 @@ tasks:
     cmds:
       - npx tsc
 
+  wisdom:prepare-docker:
+    cmds:
+      - docker build -f Dockerfile.wisdom . --tag=wisdom:latest
+
   wisdom:build:
     deps:
       - puristee:build

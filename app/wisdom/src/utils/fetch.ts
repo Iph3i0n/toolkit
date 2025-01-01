@@ -23,3 +23,18 @@ export function PutJson(url: Url | string, data: unknown) {
     })
     .then((r) => r.json());
 }
+
+export function PostJson(url: Url | string, data: unknown) {
+  return fetch(url instanceof Url ? url.Href : url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((r) => {
+      if (!r.ok) throw r;
+      return r;
+    })
+    .then((r) => r.json());
+}

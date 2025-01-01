@@ -1,5 +1,4 @@
 import * as EsBuild from "esbuild";
-import { v4 as Guid } from "uuid";
 import Path from "path";
 
 export function WorkerLoader(): EsBuild.Plugin {

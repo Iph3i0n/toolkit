@@ -12,5 +12,18 @@
   },
   "prettier": {
     "htmlWhitespaceSensitivity": "ignore"
+  },
+  "wisdom": {
+    "layouts": "./layouts",
+    "blocks": "./blocks",
+    "publics": [
+      {
+        "at": "./public",
+        "prefix": "_"
+      }
+    ],
+    "dist_dir": "./dist",
+    "preview_url": "http://localhost:3001",
+    "hooks_dir": "./hooks"
   }
 }

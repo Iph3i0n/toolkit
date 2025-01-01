@@ -29,10 +29,13 @@ export default class SchemaRepository implements ISchemaRepository {
 
   async get_components() {
     const { components } = await this.#config_repository.GetConfig();
-
-    return (await Fs.readdir(Path.resolve(components))).map((l) =>
-      l.replace(".std", "")
-    );
+    try {
+      return (await Fs.readdir(Path.resolve(components))).map((l) =>
+        l.replace(".std", "")
+      );
+    } catch {
+      return [];
+    }
   }
 
   async get_layout(name: string) {
