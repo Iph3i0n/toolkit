@@ -1,4 +1,10 @@
-import { IsArray, IsObject, IsString, IsType } from "@ipheion/safe-type";
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsString,
+  IsType,
+} from "@ipheion/safe-type";
 
 export const Publics = IsArray(
   IsObject({
@@ -13,6 +19,7 @@ export const Config = IsObject({
   components: IsString,
   publics: Publics,
   dist_dir: IsString,
+  preview_url: IsString,
 });
 
 export type Config = IsType<typeof Config>;

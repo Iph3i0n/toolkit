@@ -6,4 +6,5 @@ export default interface ISchemaRepository {
   get_components(): Promise<Array<string>>;
   get_layout(name: string): Promise<Component>;
   get_block(name: string): Promise<Component>;
+  get_component(name: string): Promise<Component>;
 }

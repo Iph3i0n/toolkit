@@ -49,4 +49,13 @@ export default class SchemaRepository implements ISchemaRepository {
     const data = await Fs.readFile(Path.resolve(blocks, name + ".std"), "utf8");
     return new Component(data);
   }
+
+  async get_component(name: string) {
+    const { components } = await this.#config_repository.GetConfig();
+    const data = await Fs.readFile(
+      Path.resolve(components, name + ".std"),
+      "utf8"
+    );
+    return new Component(data);
+  }
 }

@@ -17,6 +17,7 @@ export default class ConfigRepository implements IConfigRepository {
       components = "./components",
       publics = [],
       dist_dir = "./dist",
+      preview_url = "http://localhost:3001",
     } = package_json.wisdom ?? {};
 
     Assert(Publics, publics);
@@ -27,6 +28,7 @@ export default class ConfigRepository implements IConfigRepository {
       components,
       publics,
       dist_dir,
+      preview_url,
     };
 
     Assert(Config, result);

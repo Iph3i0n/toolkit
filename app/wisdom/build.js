@@ -4,6 +4,8 @@ const fs = require("fs/promises");
 const { default: WholemealLoader } = require("@ipheion/wholemeal/dist/esbuild");
 const { WorkerLoader } = require("@ipheion/esbuild-workers");
 
+const external = ["esbuild", "http-server"];
+
 async function main() {
   const app_dir = path.resolve(__dirname, "dist");
 
@@ -27,7 +29,7 @@ async function main() {
     platform: "node",
     outfile: path.resolve(app_dir, "server/app.js"),
     plugins: [WorkerLoader()],
-    external: ["esbuild"],
+    external,
   });
   await esbuild.build({
     entryPoints: [path.resolve(__dirname, "src/setup.ts")],
@@ -35,7 +37,7 @@ async function main() {
     platform: "node",
     outfile: path.resolve(app_dir, "server/setup.js"),
     plugins: [WorkerLoader()],
-    external: ["esbuild"],
+    external,
   });
   await esbuild.build({
     entryPoints: [path.resolve(__dirname, "src/build.ts")],
@@ -43,7 +45,7 @@ async function main() {
     platform: "node",
     outfile: path.resolve(app_dir, "server/build.js"),
     plugins: [WorkerLoader()],
-    external: ["esbuild"],
+    external,
   });
 
   for (const handler of await fs.readdir(
@@ -59,7 +61,7 @@ async function main() {
         handler.replace(".ts", ".js")
       ),
       plugins: [WorkerLoader()],
-      external: ["esbuild"],
+      external,
     });
 
   await fs.cp(

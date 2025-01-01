@@ -43,6 +43,8 @@ tasks:
 
   pauphie-blog:serve:
     dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
+    deps:
+      - wisdom:dev-build
     cmds:
       - npm run serve
 

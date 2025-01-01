@@ -104,10 +104,12 @@ export default class BuilderService {
 
     const template = [
       new Js.Import("CreateComponent", "@ipheion/wholemeal", false),
-      ...blocks.map(
-        (b) =>
-          new Js.Call(
+      ...(await Promise.all(
+        blocks.map(async (c) => {
+          const schema = await this.#schema_repository.get_block(c);
+          return new Js.Call(
             new Js.Access("define", new Js.Reference("customElements")),
+            new Js.String(schema.Metadata.Name),
             new Js.Call(
               new Js.Reference("CreateComponent"),
               new Js.Function(
@@ -116,16 +118,19 @@ export default class BuilderService {
                 undefined,
                 new Js.Call(
                   new Js.Reference("import"),
-                  new Js.String(Path.resolve(config.blocks, b + ".std"))
+                  new Js.String(Path.resolve(config.blocks, c + ".std"))
                 )
               )
             )
-          )
-      ),
-      ...components.map(
-        (c) =>
-          new Js.Call(
+          );
+        })
+      )),
+      ...(await Promise.all(
+        components.map(async (c) => {
+          const schema = await this.#schema_repository.get_component(c);
+          return new Js.Call(
             new Js.Access("define", new Js.Reference("customElements")),
+            new Js.String(schema.Metadata.Name),
             new Js.Call(
               new Js.Reference("CreateComponent"),
               new Js.Function(
@@ -138,8 +143,9 @@ export default class BuilderService {
                 )
               )
             )
-          )
-      ),
+          );
+        })
+      )),
     ]
       .map((i) => i.toString())
       .join(";\n");
