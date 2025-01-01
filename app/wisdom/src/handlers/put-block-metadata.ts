@@ -1,11 +1,5 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
-import {
-  IsArray,
-  IsDictionary,
-  IsObject,
-  IsString,
-  Optional,
-} from "@ipheion/safe-type";
+import { IsObject, IsString, Optional } from "@ipheion/safe-type";
 import { Handler, Result } from "server";
 
 const IsPostBlock = IsObject({

@@ -77,6 +77,16 @@
   </l-row>
 </l-container>
 
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <f-button type="link" href=":data.preview_url" target="_blank">
+        Preview Page
+      </f-button>
+    </l-col>
+  </l-row>
+</l-container>
+
 <f-form
   url=":new Url('/api/v1/pages/:id', { id: self.page_id }).Href"
   method="put"
