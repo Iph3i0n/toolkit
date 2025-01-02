@@ -1,0 +1,171 @@
+<s:meta name="image-manager">
+  <attr name="name" />
+  <attr name="value" />
+</s:meta>
+
+<script>
+  import { GetJson, PostJson } from "../utils/fetch";
+  import Url from "@ipheion/url";
+
+  let open = false;
+
+  let { id: directory } = await GetJson("/api/v1/layout/media-root");
+
+  const to_data_url = (file) => {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        res(reader.result);
+      });
+
+      reader.readAsDataURL(file);
+    });
+  };
+
+  async function upload(event) {
+    const instance = event.currentTarget?.Wholemeal;
+    const file = instance?.value;
+    if (!file || !(file instanceof File)) return;
+    const dataurl = await to_data_url(file);
+    const [, ...data] = dataurl.split(",");
+    await PostJson(new Url("/api/v1/media/:id/files", { id: directory }), {
+      name: file.name,
+      mime: file.type,
+      data: data.join(","),
+    });
+    self.should_render();
+  }
+
+  async function mkdir(event) {
+    await PostJson("/api/v1/media", {
+      slug: event.FormData.name,
+      parent: directory,
+    });
+  }
+
+  function select_image(id) {
+    return () => {
+      self.dispatchEvent(
+        new CustomEvent("image-selected", {
+          detail: {
+            value: "/_images/" + [directory, id].join("_"),
+          },
+        })
+      );
+      open = false;
+    };
+  }
+</script>
+
+<script on="mut">
+  const data = await GetJson(new Url("/api/v1/media/:id", { id: directory }));
+</script>
+
+<d-panel colour="surface" bordered>
+  <l-row>
+    <l-col xs="12" md="6" lg="8" xl="9">
+      <t-paragraph>
+        <slot />
+      </t-paragraph>
+    </l-col>
+    <l-col xs="12" md="6" lg="4" xl="3" style="text-align: right">
+      <f-button type="button" on:click="() => (open = true)">+</f-button>
+    </l-col>
+    <s:if check=":self.value">
+      <s:use
+        get=":self.value.replace('/_images/', '').split('_')"
+        as="[dir, ...name]"
+      >
+        <img
+          src=":new Url('/api/v1/media/:id/files/:file_name', { id: dir, file_name: name.join('_') }).Href"
+          alt=":name"
+        />
+      </s:use>
+    </s:if>
+  </l-row>
+</d-panel>
+
+<o-modal open=":open" on:CloseRequested="() => (open = false)" size="large">
+  <span slot="title"><slot name="heading" /></span>
+  <s:if check="data.breadcrumbs.length">
+    <l-row>
+      <l-col xs="12">
+        <t-link
+          on:click="() => (directory = data.breadcrumbs[data.breadcrumbs.length - 1].id)"
+          block
+        >
+          <t-icon name="arrow-go-back" colour="contrast" text />
+        </t-link>
+      </l-col>
+    </l-row>
+  </s:if>
+  <l-row>
+    <s:for subject=":data.children" key="child">
+      <l-col xs="12" md="6" lg="4" xl="3">
+        <t-link on:click="() => (directory = child.id)" block>
+          <s:text use=":child.slug" />
+        </t-link>
+      </l-col>
+    </s:for>
+  </l-row>
+  <l-row>
+    <s:for subject=":data.files" key="file">
+      <l-col xs="12" md="6" lg="4" xl="3">
+        <d-panel class="image-panel" bordered on:click="select_image(file)">
+          <img
+            src=":new Url('/api/v1/media/:id/files/:file_name', { id: directory, file_name: file }).Href"
+            alt=":file"
+          />
+        </d-panel>
+      </l-col>
+    </s:for>
+  </l-row>
+  <l-row>
+    <l-col xs="12">
+      <f-form submit="event-only" on:AfterSubmit="mkdir">
+        <div class="create-dir">
+          <f-input type="text" name="name" required validate="^[0-9a-z\-]+$">
+            Directory Name
+            <span slot="empty">Please enter a slug</span>
+            <span slot="invalid">
+              Slugs may only have lower case characters, numbers, and dashes
+            </span>
+          </f-input>
+          <f-button type="submit">Create</f-button>
+        </div>
+      </f-form>
+    </l-col>
+  </l-row>
+  <l-row>
+    <l-col xs="12">
+      <f-file on:ValueChanged="upload">Upload a file</f-file>
+    </l-col>
+  </l-row>
+</o-modal>
+
+<style>
+  .create-dir {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .create-dir f-input {
+    flex: 1;
+    margin-right: 0.5rem;
+  }
+
+  .create-dir f-button {
+    height: 100%;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 20rem;
+  }
+
+  .image-panel {
+    font-size: 0;
+    cursor: pointer;
+  }
+</style>

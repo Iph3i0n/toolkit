@@ -32,12 +32,21 @@
               </f-code>
             </s:if>
             <s:if check=":property.type === 'file'">
-              <f-file
+              <f-hidden
                 name=":`properties.${property.name}`"
                 prefill=":self.data.properties[property.name]"
+              />
+
+              <image-manager
+                name=":`properties.${property.name}`"
+                value=":self.data.properties[property.name]"
+                on:image-selected="e => (self.data.properties[property.name] = e.detail.value)"
               >
                 <s:text use=":property.label" />
-              </f-file>
+                <span slot="heading">
+                  <s:text use=":property.label" />
+                </span>
+              </image-manager>
             </s:if>
             <s:if check=":property.type === 'richtext'">
               <f-richtext

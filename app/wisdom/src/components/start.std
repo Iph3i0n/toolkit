@@ -33,7 +33,7 @@
   }
 </script>
 
-<l-header logo="/_/test-image.jpg">
+<l-header logo="/_/favicon.svg">
   <t-link href="/" spa>Home</t-link>
 
   <f-button slot="right" type="button" on:click="publish">

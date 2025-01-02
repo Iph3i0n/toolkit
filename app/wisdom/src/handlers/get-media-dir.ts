@@ -28,6 +28,9 @@ export default class extends Handler {
       slug: match.slug,
       files: match.files.map((f) => f.name),
       breadcrumbs,
+      children: this.State.media
+        .Filter((_, item) => item.parent === id)
+        .map(([id, value]) => ({ id, ...value })),
     });
   }
 }

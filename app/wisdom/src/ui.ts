@@ -24,3 +24,8 @@ customElements.define(
   "slot-manager",
   CreateComponent(() => import("./components/slot-manager.std"))
 );
+
+customElements.define(
+  "image-manager",
+  CreateComponent(() => import("./components/image-manager.std"))
+);

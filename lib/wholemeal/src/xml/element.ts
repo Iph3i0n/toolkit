@@ -350,7 +350,7 @@ export default class Element extends Node {
       case "slot": {
         const name = attributes.name ?? "$default";
         return {
-          html: context.slots[name],
+          html: context.slots[name] ?? "",
           css: {},
           web_components: {},
         };

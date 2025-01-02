@@ -8,21 +8,24 @@ import { Config } from "types/config";
 import * as Js from "@ipheion/js-model";
 import EsBuild from "esbuild";
 import WholemealLoader from "@ipheion/wholemeal/dist/esbuild";
-import { v4 as Guid } from "uuid";
+import { State } from "state";
 
 export default class BuilderService {
   readonly #page_service: PageService;
   readonly #schema_repository: ISchemaRepository;
   readonly #config_repository: IConfigRepository;
+  readonly #state: State;
 
   constructor(
     page_service: PageService,
     schema_repository: ISchemaRepository,
-    config_repository: IConfigRepository
+    config_repository: IConfigRepository,
+    state: State
   ) {
     this.#page_service = page_service;
     this.#schema_repository = schema_repository;
     this.#config_repository = config_repository;
+    this.#state = state;
   }
 
   async #render_block(id: string, slot?: string): Promise<string> {
@@ -56,6 +59,24 @@ export default class BuilderService {
       ? Path.resolve(location, "index.html")
       : Path.resolve(location, entry.slug + ".html");
 
+    const cms_slots = (
+      await Promise.all(
+        Object.keys(entry.slots)
+          .map((s) => [s, entry.slots[s]] as const)
+          .map(
+            async ([k, v]) =>
+              [
+                k,
+                await Promise.all(v.map((v) => this.#render_block(v))),
+              ] as const
+          )
+      )
+    ).reduce(
+      (c, [k, v]) => ({ ...c, [k]: v.join("") }),
+      {} as Record<string, string>
+    );
+
+    debugger;
     const html = await schema.ToString({
       components: {},
       parameters: {
@@ -63,22 +84,7 @@ export default class BuilderService {
       },
       slots: {
         ...slots,
-        ...(
-          await Promise.all(
-            Object.keys(entry.slots)
-              .map((s) => [s, entry.slots[s]] as const)
-              .map(
-                async ([k, v]) =>
-                  [
-                    k,
-                    await Promise.all(v.map((v) => this.#render_block(v))),
-                  ] as const
-              )
-          )
-        ).reduce(
-          (c, [k, v]) => ({ ...c, [k]: v.join("") }),
-          {} as Record<string, string>
-        ),
+        ...cms_slots,
       },
     });
 
@@ -181,6 +187,26 @@ export default class BuilderService {
     return result;
   }
 
+  async #build_images(config: Config) {
+    const dir = Path.resolve(config.dist_dir, "_images");
+    try {
+      await Fs.mkdir(dir, { recursive: true });
+    } catch {
+      // We do not care if it does exist
+    }
+
+    for (const [id, data] of this.#state.media) {
+      for (const file of data.files) {
+        const instance = this.#state.files[file.local_name];
+
+        await Fs.writeFile(
+          Path.resolve(dir, [id, file.name].join("_")),
+          Buffer.from(instance.data)
+        );
+      }
+    }
+  }
+
   async BuildApp() {
     try {
       const home = this.#page_service.HomePage;
@@ -222,6 +248,8 @@ export default class BuilderService {
         },
         true
       );
+
+      await this.#build_images(config);
     } catch (err) {
       debugger;
       console.error(err);

@@ -5,6 +5,8 @@ import {
   Optional,
   Array,
   Serialised,
+  Buffer,
+  UTF8,
 } from "@ipheion/moulding-tin";
 
 export const MediaDir = new Struct({
@@ -19,3 +21,10 @@ export const MediaDir = new Struct({
 });
 
 export type MediaDir = Serialised<typeof MediaDir>;
+
+export const File = new Struct({
+  data: new Buffer(),
+  mime: new UTF8(),
+});
+
+export type File = Serialised<typeof File>;
