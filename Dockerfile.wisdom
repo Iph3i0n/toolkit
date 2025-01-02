@@ -25,4 +25,7 @@ ENV DATA_DIR=/data
 
 WORKDIR /app
 
+EXPOSE 3000
+EXPOSE 3001
+
 ENTRYPOINT [ "wisdom", "serve" ]
