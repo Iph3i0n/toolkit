@@ -3,7 +3,7 @@ import { i_schema_repository } from "bootstrap/integrations/i-schema-repository"
 import ISchemaRepository from "integrations/i-schema-repository";
 import { Handler } from "server";
 
-export default class GetBlocks extends Handler {
+export default class extends Handler {
   readonly #schema_repository: ISchemaRepository;
 
   constructor(schema_repository: ISchemaRepository = i_schema_repository()) {

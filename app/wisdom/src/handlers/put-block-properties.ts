@@ -6,7 +6,7 @@ const IsPostBlock = IsObject({
   properties: IsDictionary(IsString),
 });
 
-export default class PostPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Put;
   readonly Url = "/api/v1/blocks/:id/properties";
 

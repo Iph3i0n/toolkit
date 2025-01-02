@@ -2,7 +2,7 @@ import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
 import { Handler, Result } from "server";
 
-export default class PostPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Delete;
   readonly Url = "/api/v1/blocks/:id";
 

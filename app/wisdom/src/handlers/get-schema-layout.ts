@@ -4,7 +4,7 @@ import { n_schema_service } from "bootstrap/services/schema-service";
 import { Handler } from "server";
 import SchemaService from "services/schema-service";
 
-export default class GetLayouts extends Handler {
+export default class extends Handler {
   readonly #schema_service: SchemaService;
 
   constructor(schema_service: SchemaService = n_schema_service()) {

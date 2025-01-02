@@ -1,12 +1,10 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
-import { i_schema_repository } from "bootstrap/integrations/i-schema-repository";
 import { n_schema_service } from "bootstrap/services/schema-service";
-import ISchemaRepository from "integrations/i-schema-repository";
 import { Handler } from "server";
 import SchemaService from "services/schema-service";
 
-export default class GetBlock extends Handler {
+export default class extends Handler {
   readonly #schema_service: SchemaService;
 
   constructor(schema_service: SchemaService = n_schema_service()) {

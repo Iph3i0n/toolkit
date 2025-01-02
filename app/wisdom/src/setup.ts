@@ -8,7 +8,7 @@ export async function SetupData() {
   const existing = page_service.HomePage;
 
   if (existing) {
-    console.log("Looks like the app has already been set up. Stopping here.");
+    console.log("Looks like the app has already been set up.");
     return;
   }
 
@@ -26,6 +26,13 @@ export async function SetupData() {
         parent: null,
         properties: {},
         slots: {},
+      },
+    },
+    media: {
+      [Guid()]: {
+        slug: "root",
+        parent: null,
+        files: [],
       },
     },
   });

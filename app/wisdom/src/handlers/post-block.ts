@@ -8,7 +8,7 @@ const IsPostBlock = IsObject({
   type: IsString,
 });
 
-export default class PostBlock extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Post;
   readonly Url = "/api/v1/blocks";
 

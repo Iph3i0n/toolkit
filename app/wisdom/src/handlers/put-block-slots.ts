@@ -6,7 +6,7 @@ const IsPostBlock = IsObject({
   slots: IsDictionary(IsArray(IsString)),
 });
 
-export default class PostPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Put;
   readonly Url = "/api/v1/blocks/:id/slots";
 

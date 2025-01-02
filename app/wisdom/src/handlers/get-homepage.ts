@@ -8,7 +8,7 @@ import { n_page_service } from "bootstrap/services/page-service";
 import { Handler } from "server";
 import PageService from "services/page-service";
 
-export default class GetHomepage extends Handler {
+export default class extends Handler {
   readonly #page_service: PageService;
 
   constructor(page_service: PageService = n_page_service()) {

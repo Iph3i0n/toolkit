@@ -4,7 +4,7 @@ import { i_config_repository } from "bootstrap/integrations/i-config-repository"
 import IConfigRepository from "integrations/i-config-repository";
 import { Handler } from "server";
 
-export default class GetPage extends Handler {
+export default class extends Handler {
   readonly #config_repository: IConfigRepository;
 
   constructor(config_repository: IConfigRepository = i_config_repository()) {

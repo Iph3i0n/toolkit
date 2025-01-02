@@ -12,7 +12,7 @@ import BuilderService from "services/builder-service";
 import Fs from "fs";
 import Path from "path";
 
-export default class PostPublication extends Handler {
+export default class extends Handler {
   readonly #config_repository: IConfigRepository;
   readonly #builder_service: BuilderService;
 

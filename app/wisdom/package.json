@@ -20,6 +20,7 @@
     "chokidar": "^4.0.3",
     "esbuild": "^0.24.2",
     "http-server": "^14.1.1",
+    "mime-types": "^2.1.35",
     "uuid": "^11.0.3",
     "yargs": "^17.7.2"
   },

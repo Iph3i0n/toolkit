@@ -1,7 +1,7 @@
 import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { Handler } from "server";
 
-export default class GetBlocks extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/blocks";
 

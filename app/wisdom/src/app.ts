@@ -4,6 +4,7 @@ import HttpServer from "http-server";
 import { i_config_repository } from "bootstrap/integrations/i-config-repository";
 import { n_builder_service } from "bootstrap/services/builder-service";
 import Chokidar from "chokidar";
+import { SetupData } from "setup";
 
 function Build() {
   let timeout: any = 0;
@@ -21,6 +22,7 @@ function Build() {
 }
 
 export async function StartWisdom(port: number) {
+  await SetupData();
   const config = await i_config_repository().GetConfig();
   HttpServer.createServer({
     root: config.dist_dir,

@@ -8,7 +8,7 @@ const IsPostPage = IsObject({
   parent: Optional(IsString),
 });
 
-export default class PostPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Put;
   readonly Url = "/api/v1/pages/:id";
 

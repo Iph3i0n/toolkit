@@ -9,7 +9,7 @@ import Path from "path";
 import Fs from "fs";
 import { IsArray, IsString, IsUnion } from "@ipheion/safe-type";
 
-export default class MainPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/_/**";
 

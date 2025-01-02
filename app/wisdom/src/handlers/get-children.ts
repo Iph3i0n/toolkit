@@ -2,7 +2,7 @@ import { HttpMethod, JsonResponse, PureRequest } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
 import { Handler } from "server";
 
-export default class GetChildren extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/pages/:id/children";
 

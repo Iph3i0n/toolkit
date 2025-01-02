@@ -2,7 +2,7 @@ import { FileResponse, HttpMethod, PureRequest } from "@ipheion/puristee";
 import { Handler } from "server";
 import Path from "path";
 
-export default class MainPage extends Handler {
+export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/";
 
