@@ -3,7 +3,6 @@ import { Block } from "./block";
 import { Page } from "./page";
 import Path from "node:path";
 import { File, MediaDir } from "./media";
-import { Buffer } from "@ipheion/moulding-tin";
 
 export const DataDir = Path.resolve(process.env.DATA_DIR ?? "./data");
 

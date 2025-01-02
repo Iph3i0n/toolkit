@@ -21,6 +21,8 @@ COPY --from=builder /app/app/wisdom/package.json /wisdom
 RUN npm install
 RUN npm link
 
+ENV DATA_DIR=/data
+
 WORKDIR /app
 
 ENTRYPOINT [ "wisdom", "serve" ]
