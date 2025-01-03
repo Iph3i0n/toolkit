@@ -1,12 +1,10 @@
 <s:meta name="wisdom-start"></s:meta>
 
 <script>
-  import { GetJson, PostJson } from "../utils/fetch";
+  import { PostJson } from "../utils/fetch";
   import Url from "@ipheion/url";
   let published = false;
   let failed = false;
-
-  const homepage = await GetJson("/api/v1/layout/homepage");
 
   async function publish() {
     try {
@@ -62,9 +60,7 @@
   </l-container>
 </s:if>
 
-<u-route path="/" exact>
-  <wisdom-page page_id=":homepage.id" />
-</u-route>
-
+<u-route path="/" exact ele="wisdom-home" />
 <u-route path="/pages/:page_id" ele="wisdom-page" />
 <u-route path="/blocks/:block_id" ele="wisdom-block" />
+<u-route path="/login" ele="wisdom-login" />

@@ -1,0 +1,11 @@
+<s:meta name="wisdom-home"></s:meta>
+
+<script>
+  import { GetJson, PostJson } from "../utils/fetch";
+</script>
+
+<script on="mut">
+  const homepage = await GetJson("/api/v1/layout/homepage");
+</script>
+
+<wisdom-page page_id=":homepage.id" />

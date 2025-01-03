@@ -7,6 +7,7 @@ import {
 import { n_page_service } from "bootstrap/services/page-service";
 import { Handler } from "server";
 import PageService from "services/page-service";
+import { Authenticated } from "utils/authenticate";
 
 export default class extends Handler {
   readonly #page_service: PageService;
@@ -19,6 +20,7 @@ export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/layout/homepage";
 
+  @Authenticated
   async Process(request: PureRequest) {
     const page = this.#page_service.HomePage;
     if (!page) return new EmptyResponse("NotFound");

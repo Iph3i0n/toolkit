@@ -1,0 +1,43 @@
+<s:meta name="wisdom-login"></s:meta>
+
+<script>
+  import { Login } from "../utils/fetch";
+
+  function login(event) {
+    Login(event.FormData.username, event.FormData.password).then((r) =>
+      Router.Push("/")
+    );
+  }
+</script>
+
+<l-container>
+  <l-row>
+    <l-col xs="12">
+      <t-heading level="h3">Login</t-heading>
+    </l-col>
+  </l-row>
+</l-container>
+
+<f-form submit="event-only" on:AfterSubmit="login">
+  <div>
+    <l-container>
+      <l-row>
+        <l-col xs="12">
+          <f-input type="text" name="username" required>
+            Username
+            <span slot="empty">Please enter a username</span>
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-input type="text" name="password" required sensitive>
+            Password
+            <span slot="empty">Please enter a password</span>
+          </f-input>
+        </l-col>
+        <l-col xs="12">
+          <f-button type="submit">Login</f-button>
+        </l-col>
+      </l-row>
+    </l-container>
+  </div>
+</f-form>

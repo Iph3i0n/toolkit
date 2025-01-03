@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  wisdom:
+    image: wisdom:latest
+    build:
+      context: ../../
+      dockerfile: ../../Dockerfile.wisdom
+    restart: unless-stopped
+    networks:
+      - public_facing
+    environment:
+      VIRTUAL_HOST: wisdom.paulandsophie.uk
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: wisdom.paulandsophie.uk
+    volumes:
+      - .:/app:rw
+      - data:/data:rw
+
+networks:
+  public_facing:
+    name: public_facing
+    external: true
+
+  
+volumes:
+  data:

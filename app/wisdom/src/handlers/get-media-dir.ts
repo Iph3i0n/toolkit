@@ -6,11 +6,13 @@ import {
 } from "@ipheion/puristee";
 import { IsString } from "@ipheion/safe-type";
 import { Handler } from "server";
+import { Authenticated } from "utils/authenticate";
 
 export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/media/:id";
 
+  @Authenticated
   async Process(request: PureRequest) {
     const { id } = request.Parameters({ id: IsString });
     const match = this.State.media[id];

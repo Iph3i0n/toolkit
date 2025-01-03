@@ -11,6 +11,7 @@ import { Handler } from "server";
 import BuilderService from "services/builder-service";
 import Fs from "fs";
 import Path from "path";
+import { Authenticated } from "utils/authenticate";
 
 export default class extends Handler {
   readonly #config_repository: IConfigRepository;
@@ -28,6 +29,7 @@ export default class extends Handler {
   readonly Method = HttpMethod.Post;
   readonly Url = "/api/v1/publications";
 
+  @Authenticated
   async Process(request: PureRequest) {
     await this.#builder_service.BuildApp();
     const config = await this.#config_repository.GetConfig();

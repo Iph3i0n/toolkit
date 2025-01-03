@@ -3,6 +3,7 @@ import { IsString } from "@ipheion/safe-type";
 import { i_config_repository } from "bootstrap/integrations/i-config-repository";
 import IConfigRepository from "integrations/i-config-repository";
 import { Handler } from "server";
+import { Authenticated } from "utils/authenticate";
 
 export default class extends Handler {
   readonly #config_repository: IConfigRepository;
@@ -15,6 +16,7 @@ export default class extends Handler {
   readonly Method = HttpMethod.Get;
   readonly Url = "/api/v1/pages/:id";
 
+  @Authenticated
   async Process(request: PureRequest) {
     const { id } = request.Parameters({ id: IsString });
     const match = this.State.pages[id];

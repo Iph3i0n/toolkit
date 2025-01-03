@@ -29,3 +29,13 @@ customElements.define(
   "image-manager",
   CreateComponent(() => import("./components/image-manager.std"))
 );
+
+customElements.define(
+  "wisdom-login",
+  CreateComponent(() => import("./components/login.std"))
+);
+
+customElements.define(
+  "wisdom-home",
+  CreateComponent(() => import("./components/home.std"))
+);
