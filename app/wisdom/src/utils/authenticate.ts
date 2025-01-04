@@ -13,16 +13,20 @@ export function Authenticated(
   context: ClassMethodDecoratorContext<Handler, HandlerFunction>
 ) {
   return function (this: Handler, request: PureRequest) {
-    debugger;
-    const token = request.headers.authorization?.replace("Bearer ", "");
-    if (!token) return new EmptyResponse("Unauthorised");
+    try {
+      const token = request.headers.authorization?.replace("Bearer ", "");
+      if (!token) return new EmptyResponse("Unauthorised");
 
-    const decoded = Jwt.verify(token, secret);
-    if (typeof decoded === "string") return new EmptyResponse("Unauthorised");
-    const user_id = decoded.user_id;
-    if (!user_id) return new EmptyResponse("Unauthorised");
-    if (!users.find((u) => u === user_id))
+      const decoded = Jwt.verify(token, secret);
+      if (typeof decoded === "string") return new EmptyResponse("Unauthorised");
+      const user_id = decoded.user_id;
+      if (!user_id) return new EmptyResponse("Unauthorised");
+      if (!users.find((u) => u === user_id))
+        return new EmptyResponse("Unauthorised");
+    } catch (err) {
+      console.error(err);
       return new EmptyResponse("Unauthorised");
+    }
 
     return original.bind(this, request)();
   } as any;

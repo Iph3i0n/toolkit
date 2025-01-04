@@ -48,15 +48,18 @@
           </span>
 
           <l-row no-padding>
-            <s:if check=":self.data.slots[slot.name]">
+            <s:if check=":self.data.slot_previews[slot.name]">
               <l-col xs="12">
                 <d-listgroup>
-                  <s:for subject=":self.data.slots[slot.name]" key="entry">
+                  <s:for
+                    subject=":self.data.slot_previews[slot.name]"
+                    key="entry"
+                  >
                     <t-link
-                      href=":new Url('/blocks/:block_id', { block_id: entry }).Href"
+                      href=":new Url('/blocks/:block_id', { block_id: entry?.id }).Href"
                       spa
                     >
-                      <s:text use=":entry" />
+                      <s:text use=":entry.preview" />
                     </t-link>
                   </s:for>
                 </d-listgroup>
@@ -89,7 +92,7 @@
         <t-heading level="h5">Create a new Block</t-heading>
       </l-col>
       <l-col xs="12">
-        <f-input name="slug" validate="^[0-9a-z\-]+$">
+        <f-input name="slug">
           Slug (optional)
           <span slot="help">
             Use this to allow reuse of the block in other places. Otherwise it

@@ -1,0 +1,11 @@
+<s:meta name="image-panel">
+  <attr name="title" type="string">Title</attr>
+  <attr name="content" type="richtext">Content</attr>
+  <attr name="background" type="file">Background Image</attr>
+</s:meta>
+
+<div>
+  <img src=":self.background" />
+  <h2><s:text use=":self.title" /></h2>
+  <rich-text use=":self.content" />
+</div>

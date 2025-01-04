@@ -1,8 +1,8 @@
-FROM node:lts-alpine AS builder
+FROM node:lts-alpine
 
 RUN npm install -g @go-task/cli
 
-WORKDIR /app
+WORKDIR /lib
 
 COPY . .
 
@@ -10,20 +10,14 @@ RUN npm install
 
 RUN task wisdom:build
 
-FROM node:lts-alpine as runner
-
-WORKDIR /wisdom
-
-COPY --from=builder /app/app/wisdom/dist /wisdom/dist
-COPY --from=builder /app/app/wisdom/bin /wisdom/bin
-COPY --from=builder /app/app/wisdom/package.json /wisdom
-
-RUN npm install
+WORKDIR /lib/app/wisdom
 RUN npm link
 
-ENV DATA_DIR=/data
-
 WORKDIR /app
+
+ENV DATA_DIR=/data
+ENV DIST_DIR=/dist
+ENV NO_PREVIEW=true
 
 EXPOSE 3000
 EXPOSE 3001

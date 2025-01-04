@@ -44,12 +44,7 @@
     <l-container>
       <l-row>
         <l-col xs="12">
-          <f-input
-            name="slug"
-            prefill=":data.slug"
-            validate="^[0-9a-z\-]+$"
-            type="text"
-          >
+          <f-input name="slug" prefill=":data.slug" type="text">
             Slug (optional)
             <span slot="help">
               Use this to allow reuse of the block in other places. Otherwise it

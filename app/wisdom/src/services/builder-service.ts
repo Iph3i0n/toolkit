@@ -8,24 +8,28 @@ import { Config } from "types/config";
 import * as Js from "@ipheion/js-model";
 import EsBuild from "esbuild";
 import WholemealLoader from "@ipheion/wholemeal/dist/esbuild";
-import { State } from "state";
+import { Database, State } from "state";
+import HooksService from "./hooks-service";
 
 export default class BuilderService {
   readonly #page_service: PageService;
   readonly #schema_repository: ISchemaRepository;
   readonly #config_repository: IConfigRepository;
   readonly #state: State;
+  readonly #hooks_service: HooksService;
 
   constructor(
     page_service: PageService,
     schema_repository: ISchemaRepository,
     config_repository: IConfigRepository,
-    state: State
+    state: State,
+    hooks_service: HooksService
   ) {
     this.#page_service = page_service;
     this.#schema_repository = schema_repository;
     this.#config_repository = config_repository;
     this.#state = state;
+    this.#hooks_service = hooks_service;
   }
 
   async #render_block(id: string, slot?: string): Promise<string> {
@@ -52,7 +56,7 @@ export default class BuilderService {
     slots: Record<string, string>,
     is_home = false
   ) {
-    const entry = this.#page_service.GetPage(id);
+    const entry = this.#page_service.TreePage(id);
     const schema = await this.#schema_repository.get_layout(entry.layout);
 
     const output = is_home
@@ -76,11 +80,13 @@ export default class BuilderService {
       {} as Record<string, string>
     );
 
-    debugger;
     const html = await schema.ToString({
       components: {},
       parameters: {
         self: entry.properties,
+        page: entry,
+        tree: this.#page_service.Tree,
+        database: Database,
       },
       slots: {
         ...slots,
@@ -112,11 +118,7 @@ export default class BuilderService {
       ? Path.resolve(__dirname, "..")
       : __dirname;
     const template = [
-      new Js.Import(
-        "CreateComponent",
-        Path.resolve(dir, "wholemeal.js"),
-        false
-      ),
+      new Js.Import("CreateComponent", "@ipheion/wholemeal", false),
       ...(await Promise.all(
         blocks.map(async (c) => {
           const schema = await this.#schema_repository.get_block(c);
@@ -177,6 +179,16 @@ export default class BuilderService {
       format: "esm",
       plugins: [WholemealLoader()],
       minify: true,
+      alias: {
+        "@ipheion/wholemeal": Path.resolve(
+          __dirname,
+          "../../../../lib/wholemeal/dist/mod.js"
+        ),
+        "@ipheion/wholemeal/dist/runner/component": Path.resolve(
+          __dirname,
+          "../../../../lib/wholemeal/dist/runner/component.js"
+        ),
+      },
     });
 
     const files = await Fs.readdir(outdir);
@@ -222,6 +234,13 @@ export default class BuilderService {
         // We do not care if it does not exist
       }
 
+      try {
+        await Fs.mkdir(config.dist_dir);
+      } catch {
+        // We do not care if it does not exist
+      }
+      await this.#hooks_service.Trigger("pre-build", config.dist_dir);
+
       const script_file = await this.#build_scripts(config);
 
       for (const pub of config.publics)
@@ -250,6 +269,7 @@ export default class BuilderService {
       );
 
       await this.#build_images(config);
+      await this.#hooks_service.Trigger("post-build", config.dist_dir);
     } catch (err) {
       debugger;
       console.error(err);

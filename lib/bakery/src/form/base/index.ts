@@ -1,10 +1,4 @@
-import {
-  LoadedEvent,
-  RenderEvent,
-  ComponentWrapper,
-  ComponentBase,
-  OnElementLoaded,
-} from "@ipheion/wholemeal";
+import { LoadedEvent, RenderEvent, OnElementLoaded } from "@ipheion/wholemeal";
 import c from "../../utils/html/classes";
 import Router, { UrlBuilder } from "../../global/base-classes/router";
 import ContextFetcher from "../../global/base-classes/context-fetcher";
@@ -46,6 +40,8 @@ export abstract class FormManagerElement extends UrlBuilder {
   abstract submit: string;
 
   readonly #elements: Array<FormElement> = [];
+
+  static Headers: Record<string, string> = {};
 
   [`$${REGISTER_KEY}`](event: Event) {
     if (!(event instanceof RegisterFormElementEvent))
@@ -90,10 +86,12 @@ export abstract class FormManagerElement extends UrlBuilder {
           ? data
           : JSON.stringify(data),
       credentials: this.credentials,
-      headers:
-        data instanceof FormData
-          ? undefined
-          : { "content-type": "application/json" },
+      headers: {
+        ...FormManagerElement.Headers,
+        ...(data instanceof FormData
+          ? {}
+          : { "content-type": "application/json" }),
+      },
     });
 
     let json: unknown;
@@ -206,6 +204,8 @@ export abstract class FormManagerElement extends UrlBuilder {
     }
   }
 }
+
+(window as any).FormManagerElement = FormManagerElement;
 
 export default abstract class FormElement extends ContextFetcher {
   #value: FormElementValue = undefined;

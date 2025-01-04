@@ -28,7 +28,7 @@ export default class ConfigRepository implements IConfigRepository {
       blocks,
       components,
       publics,
-      dist_dir,
+      dist_dir: process.env.DIST_DIR ?? dist_dir,
       preview_url,
       hooks_dir,
     };

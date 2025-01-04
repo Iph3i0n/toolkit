@@ -1,7 +1,6 @@
 <s:meta name="main-page">
   <attr name="title" type="string">The page title</attr>
-  <attr name="file" type="file">The page image</attr>
-  <slot name="title-extra">Extra title content</slot>
+  <slot name="content">Main Content</slot>
 </s:meta>
 
 <html>

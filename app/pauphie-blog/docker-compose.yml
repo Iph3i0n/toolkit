@@ -1,10 +1,11 @@
 version: "3.9"
 services:
   wisdom:
-    image: wisdom:latest
+    env_file:
+      - .env
     build:
       context: ../../
-      dockerfile: ../../Dockerfile.wisdom
+      dockerfile: Dockerfile.wisdom
     restart: unless-stopped
     networks:
       - public_facing
@@ -13,14 +14,27 @@ services:
       VIRTUAL_PORT: 3000
       LETSENCRYPT_HOST: wisdom.paulandsophie.uk
     volumes:
-      - .:/app:rw
+      - .:/app:r
       - data:/data:rw
+      - dist:/dist:rw
+
+  preview:
+    image: lipanski/docker-static-website:latest
+    restart: unless-stopped
+    networks:
+      - public_facing
+    volumes:
+      - dist:/home/static:r
+    environment:
+      VIRTUAL_HOST: preview.paulandsophie.uk
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: preview.paulandsophie.uk
 
 networks:
   public_facing:
     name: public_facing
     external: true
 
-  
 volumes:
   data:
+  dist:

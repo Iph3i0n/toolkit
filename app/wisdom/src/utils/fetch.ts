@@ -5,7 +5,12 @@ const auth_header = () => `Bearer ${sessionStorage.getItem("token")}`;
 
 declare global {
   export const Router: any;
+  export const FormManagerElement: any;
 }
+
+FormManagerElement.Headers = {
+  Authorization: auth_header(),
+};
 
 export function Login(username: string, password: string) {
   return fetch(new Url("/api/v1/token", { username, password }).Href)
@@ -17,6 +22,9 @@ export function Login(username: string, password: string) {
     .then((json) => {
       Assert(IsObject({ token: IsString }), json);
       sessionStorage.setItem("token", json.token);
+      FormManagerElement.Headers = {
+        Authorization: auth_header(),
+      };
     });
 }
 

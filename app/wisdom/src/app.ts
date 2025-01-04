@@ -24,9 +24,14 @@ function Build() {
 export async function StartWisdom(port: number) {
   await SetupData();
   const config = await i_config_repository().GetConfig();
-  HttpServer.createServer({
-    root: config.dist_dir,
-  }).listen(3001, () => console.log(`Preview available on port 3001`));
+
+  const builder_service = n_builder_service();
+  await builder_service.BuildApp();
+
+  if (!process.env.NO_PREVIEW)
+    HttpServer.createServer({
+      root: config.dist_dir,
+    }).listen(3001, () => console.log(`Preview available on port 3001`));
 
   StartServer({
     handler_dir: Path.resolve(__dirname, "handlers"),
