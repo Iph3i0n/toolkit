@@ -5,10 +5,10 @@
 
 <html>
   <head>
-    <title><s:text use=":self.title" /></title>
+    <title><s:text use=":site_properties.site_title" /></title>
     <slot name="scripts" />
   </head>
   <body>
-    <slot name="title-extra" />
+    <slot name="content" />
   </body>
 </html>

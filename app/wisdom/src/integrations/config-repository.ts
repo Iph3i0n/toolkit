@@ -19,6 +19,7 @@ export default class ConfigRepository implements IConfigRepository {
       dist_dir = "./dist",
       preview_url = "http://localhost:3001",
       hooks_dir = "./hooks",
+      properties = [],
     } = package_json.wisdom ?? {};
 
     Assert(Publics, publics);
@@ -31,6 +32,7 @@ export default class ConfigRepository implements IConfigRepository {
       dist_dir: process.env.DIST_DIR ?? dist_dir,
       preview_url,
       hooks_dir,
+      properties,
     };
 
     Assert(Config, result);

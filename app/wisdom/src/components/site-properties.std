@@ -1,0 +1,19 @@
+<s:meta name="site-properties"></s:meta>
+
+<script>
+  import { GetJson, PutJson } from "../utils/fetch";
+  const layout = await GetJson("/api/v1/schema/site-properties");
+</script>
+
+<script on="mut">
+  const data = await GetJson("/api/v1/site-properties");
+</script>
+
+<content-form
+  url="/api/v1/site-properties"
+  data=":{ properties: data }"
+  schema=":{ properties: layout }"
+  on:submit-complete="() => self.should_render()"
+>
+  Update Site Properties
+</content-form>

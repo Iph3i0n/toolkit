@@ -1,9 +1,9 @@
 import {
   IsArray,
-  IsNumber,
   IsObject,
   IsString,
   IsType,
+  Optional,
 } from "@ipheion/safe-type";
 
 export const Publics = IsArray(
@@ -13,6 +13,13 @@ export const Publics = IsArray(
   })
 );
 
+export const Property = IsObject({
+  label: IsString,
+  name: IsString,
+  type: IsString,
+  options: Optional(IsArray(IsString)),
+});
+
 export const Config = IsObject({
   layouts: IsString,
   blocks: IsString,
@@ -21,6 +28,7 @@ export const Config = IsObject({
   dist_dir: IsString,
   preview_url: IsString,
   hooks_dir: IsString,
+  properties: IsArray(Property),
 });
 
 export type Config = IsType<typeof Config>;

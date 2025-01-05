@@ -39,3 +39,8 @@ customElements.define(
   "wisdom-home",
   CreateComponent(() => import("./components/home.std"))
 );
+
+customElements.define(
+  "site-properties",
+  CreateComponent(() => import("./components/site-properties.std"))
+);

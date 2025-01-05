@@ -24,6 +24,13 @@
     ],
     "dist_dir": "./dist",
     "preview_url": "https://preview.paulandsophie.uk",
-    "hooks_dir": "./hooks"
+    "hooks_dir": "./hooks",
+    "properties": [
+      {
+        "label": "Site Title",
+        "name": "site_title",
+        "type": "string"
+      }
+    ]
   }
 }

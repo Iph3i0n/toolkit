@@ -33,6 +33,7 @@
 
 <l-header logo="/_/favicon.svg">
   <t-link href="/" spa>Home</t-link>
+  <t-link href="/site-properties" spa>Site Properties</t-link>
 
   <f-button slot="right" type="button" on:click="publish">
     Publish Site
@@ -64,3 +65,4 @@
 <u-route path="/pages/:page_id" ele="wisdom-page" />
 <u-route path="/blocks/:block_id" ele="wisdom-block" />
 <u-route path="/login" ele="wisdom-login" />
+<u-route path="/site-properties" ele="site-properties" />

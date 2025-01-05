@@ -87,6 +87,7 @@ export default class BuilderService {
         page: entry,
         tree: this.#page_service.Tree,
         database: Database,
+        site_properties: this.#state.properties,
       },
       slots: {
         ...slots,
@@ -229,6 +230,12 @@ export default class BuilderService {
 
       const config = await this.#config_repository.GetConfig();
       try {
+        for (const item of await Fs.readdir(config.dist_dir))
+          await Fs.rm(Path.resolve(config.dist_dir, item), {
+            recursive: (
+              await Fs.stat(Path.resolve(config.dist_dir, item))
+            ).isDirectory(),
+          });
         await Fs.rm(config.dist_dir, { recursive: true });
       } catch {
         // We do not care if it does not exist
