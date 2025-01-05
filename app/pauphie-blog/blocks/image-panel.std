@@ -21,7 +21,7 @@
 
   section {
     position: relative;
-    padding: 1rem;
+    padding: 3rem 1rem;
   }
 
   img {
@@ -46,9 +46,10 @@
   }
 
   .content {
-    max-width: 500px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
-    padding-right: 250px;
+    padding-right: 500px;
+    box-sizing: border-box;
   }
 </style>

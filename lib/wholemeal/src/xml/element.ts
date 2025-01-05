@@ -367,7 +367,7 @@ export default class Element extends Node {
             return {
               html: Render({
                 tag: this.#tag,
-                attributes: this.#attributes,
+                attributes: attributes,
                 children: [children],
               }),
               css,
@@ -408,7 +408,7 @@ export default class Element extends Node {
         return {
           html: Render({
             tag: this.#tag,
-            attributes: this.#attributes,
+            attributes: attributes,
             children: [children],
           }),
           css,
