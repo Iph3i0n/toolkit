@@ -1,0 +1,5 @@
+<s:meta name="content-block">
+  <attr name="content" type="richtext">Content</attr>
+</s:meta>
+
+<rich-text use=":self.content" />

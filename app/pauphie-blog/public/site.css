@@ -21,6 +21,10 @@ header .header-content a {
   color: black;
 }
 
+header .header-content a:first-of-type {
+  margin-left: 0;
+}
+
 header .header-content a:hover,
 header .header-content a:hover {
   text-decoration: underline;
