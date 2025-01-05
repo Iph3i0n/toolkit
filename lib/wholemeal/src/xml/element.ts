@@ -319,7 +319,10 @@ export default class Element extends Node {
           subject.map((s) =>
             Join(
               this.#children.map((c) =>
-                c.ToString({ ...context, parameters: { ...context, [key]: s } })
+                c.ToString({
+                  ...context,
+                  parameters: { ...context.parameters, [key]: s },
+                })
               )
             )
           )

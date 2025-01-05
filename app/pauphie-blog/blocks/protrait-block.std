@@ -1,0 +1,52 @@
+<s:meta name="portrait-block">
+  <attr name="portrait" type="file">Background Image</attr>
+  <attr name="order" type="select" options="left-right,right-left">
+    Direction
+  </attr>
+  <slot name="content">Block Content</slot>
+</s:meta>
+
+<section>
+  <img src=":self.portrait" />
+  <div class="content">
+    <slot name="content" />
+  </div>
+</section>
+
+<style>
+  :host {
+    display: block;
+    color: black;
+    padding: 1rem;
+  }
+
+  img {
+    max-width: 100%;
+    border: 1px solid black;
+  }
+
+  section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 1rem;
+  }
+
+  @if self.order === "right-left" {
+    .content {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 400px) {
+    section {
+      grid-template-columns: auto;
+    }
+
+    .content {
+      order: unset;
+    }
+  }
+</style>

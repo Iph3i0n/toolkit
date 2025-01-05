@@ -12,6 +12,7 @@ type Slots = Record<string, Array<SlotInfo>>;
 type TreePage = Page & {
   children: Record<string, TreePage>;
   slot_previews: Slots;
+  url: string;
 };
 
 type PagePreview = Page & {
@@ -64,24 +65,26 @@ export default class PageService {
 
   TreePage(id: string): TreePage {
     const match = this.GetPage(id);
-    const children_array = this.#state.pages
+    const children = this.#state.pages
       .Filter((_, p) => p.parent === id)
-      .map(([id]) => id);
+      .reduce(
+        (c, [id]) => ({ ...c, [id]: this.TreePage(id) }),
+        {} as Record<string, TreePage>
+      );
 
-    const children: Record<string, TreePage> = new Proxy(
-      {},
-      {
-        get: (_, id) => {
-          if (typeof id !== "string") throw new Error("symbol not allowed");
-          if (!children_array.includes(id)) throw new Error("not found");
-          return this.TreePage(id);
-        },
-      }
-    );
+    const url_parts = [match.slug];
+    let current = this.#state.pages[id];
+    while (current.parent) {
+      const id = current.parent;
+      current = this.#state.pages[id];
+      // We exclude the home page as it is not used in the url
+      if (current.parent) url_parts.push(current.slug);
+    }
 
     return {
       ...match,
       children,
+      url: "/" + url_parts.join("/"),
     };
   }
 

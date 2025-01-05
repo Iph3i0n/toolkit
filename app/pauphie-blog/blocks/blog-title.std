@@ -1,0 +1,8 @@
+<s:meta name="blog-title">
+  <attr name="title" type="string">Blog Title</attr>
+  <attr name="summary" type="richtext">Summary</attr>
+  <attr name="published" type="string">Published Date</attr>
+  <attr name="author" type="string">Author</attr>
+</s:meta>
+
+<rich-text use=":self.content" />

@@ -25,47 +25,6 @@
     "dist_dir": "./dist",
     "preview_url": "https://preview.paulandsophie.uk",
     "hooks_dir": "./hooks",
-    "properties": [
-      {
-        "label": "Header Link 1 Href",
-        "name": "header_1_href",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 1 Text",
-        "name": "header_1_text",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 2 Href",
-        "name": "header_2_href",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 2 Text",
-        "name": "header_2_text",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 3 Href",
-        "name": "header_3_href",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 3 Text",
-        "name": "header_3_text",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 4 Href",
-        "name": "header_4_href",
-        "type": "string"
-      },
-      {
-        "label": "Header Link 4 Text",
-        "name": "header_4_text",
-        "type": "string"
-      }
-    ]
+    "properties": []
   }
 }

@@ -4,6 +4,10 @@ body {
   font-family: sans-serif;
 }
 
+header {
+  margin: 1rem;
+}
+
 header .header-content {
   max-width: 900px;
   margin-left: auto;
@@ -21,12 +25,26 @@ header .header-content a {
   color: black;
 }
 
-header .header-content a:first-of-type {
-  margin-left: 0;
-}
-
 header .header-content a:hover,
 header .header-content a:hover {
   text-decoration: underline;
   outline: none;
+}
+
+@media (max-width: 400px) {
+  header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  header .header-content a {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 401px) {
+  header .header-content a:first-of-type {
+    margin-left: 0;
+  }
 }

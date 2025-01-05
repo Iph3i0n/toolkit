@@ -12,18 +12,16 @@
   <body>
     <header>
       <div class="header-content">
-        <a href=":site_properties.header_1_href">
-          <s:text use=":site_properties.header_1_text" />
+        <a href="/">
+          <s:text use=":tree.properties.title" />
         </a>
-        <a href=":site_properties.header_2_href">
-          <s:text use=":site_properties.header_2_text" />
-        </a>
-        <a href=":site_properties.header_3_href">
-          <s:text use=":site_properties.header_3_text" />
-        </a>
-        <a href=":site_properties.header_4_href">
-          <s:text use=":site_properties.header_4_text" />
-        </a>
+        <s:for subject=":Object.keys(tree.children)" key="id">
+          <s:use get=":tree.children[id]" as="page">
+            <a href=":page.url">
+              <s:text use=":page.properties.title" />
+            </a>
+          </s:use>
+        </s:for>
       </div>
     </header>
     <slot name="content" />

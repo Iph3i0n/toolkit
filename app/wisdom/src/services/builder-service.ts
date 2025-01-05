@@ -80,6 +80,7 @@ export default class BuilderService {
       {} as Record<string, string>
     );
 
+    debugger;
     const html = await schema.ToString({
       components: {},
       parameters: {
