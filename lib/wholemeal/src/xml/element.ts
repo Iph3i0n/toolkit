@@ -10,7 +10,7 @@ import {
   type RenderResult,
 } from "./render-context";
 import Text from "./text";
-import { HtmlEncode, Wrap } from "./text-render";
+import { Render } from "@ipheion/html";
 
 const AllText = ["script", "style"];
 
@@ -365,24 +365,11 @@ export default class Element extends Node {
               web_components,
             } = await Join(this.#children.map((c) => c.ToString(context)));
             return {
-              html: Wrap(
-                children,
-                Wrap(
-                  [
-                    this.#tag,
-                    ...Object.keys(this.#attributes)
-                      .map((k) => [k, this.#attributes[k]] as const)
-                      .map(([key, value]) =>
-                        [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join(
-                          "="
-                        )
-                      ),
-                  ].join(" "),
-                  "<",
-                  ">"
-                ),
-                Wrap(this.#tag, "</", ">")
-              ),
+              html: Render({
+                tag: this.#tag,
+                attributes: this.#attributes,
+                children: [children],
+              }),
               css,
               web_components: {
                 ...web_components,
@@ -419,22 +406,11 @@ export default class Element extends Node {
           web_components,
         } = await Join(this.#children.map((c) => c.ToString(context)));
         return {
-          html: Wrap(
-            children,
-            Wrap(
-              [
-                this.#tag,
-                ...Object.keys(this.#attributes)
-                  .map((k) => [k, this.#attributes[k]] as const)
-                  .map(([key, value]) =>
-                    [HtmlEncode(key), Wrap(HtmlEncode(value), '"')].join("=")
-                  ),
-              ].join(" "),
-              "<",
-              ">"
-            ),
-            Wrap(this.#tag, "</", ">")
-          ),
+          html: Render({
+            tag: this.#tag,
+            attributes: this.#attributes,
+            children: [children],
+          }),
           css,
           web_components,
         };

@@ -42,4 +42,5 @@ export async function StartWisdom(port: number) {
   console.log("Watching the dist directory for changes");
   const build = Build();
   (Chokidar.watch(config.dist_dir) as any).on("all", build);
+  (Chokidar.watch(".") as any).on("all", build);
 }

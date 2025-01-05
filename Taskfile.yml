@@ -121,6 +121,7 @@ tasks:
     deps:
       - safe-type:build
       - js-model:build
+      - html:build
     dir: "{{.TASKFILE_DIR}}/lib/wholemeal"
     cmds:
       - npx tsc

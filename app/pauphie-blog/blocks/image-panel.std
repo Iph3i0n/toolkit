@@ -4,8 +4,51 @@
   <attr name="background" type="file">Background Image</attr>
 </s:meta>
 
-<div>
+<section>
   <img src=":self.background" />
-  <h2><s:text use=":self.title" /></h2>
-  <rich-text use=":self.content" />
-</div>
+  <div class="overlay" />
+  <div class="content">
+    <h2><s:text use=":self.title" /></h2>
+    <rich-text use=":self.content" />
+  </div>
+</section>
+
+<style>
+  :host {
+    display: block;
+    color: white;
+  }
+
+  section {
+    position: relative;
+    padding: 1rem;
+  }
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    opacity: 0.5;
+    z-index: -1;
+  }
+
+  .content {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 250px;
+  }
+</style>

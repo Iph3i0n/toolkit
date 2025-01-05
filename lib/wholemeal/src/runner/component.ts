@@ -58,7 +58,7 @@ abstract class Base {
     const e = ele as any;
     const self = this as any;
     for (const key in e)
-      if (!self[key])
+      if (!(key in self))
         if (typeof e[key] === "function")
           self[key] = (...args: Array<any>) => e[key](...args);
         else {

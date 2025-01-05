@@ -7,28 +7,6 @@ type ComponentFactory = new (ele: HTMLElement) => ComponentBase;
 export abstract class ComponentWrapper extends HTMLElement {
   #awaited: ComponentBase | undefined;
 
-  constructor() {
-    super();
-
-    setTimeout(() => {
-      this.instance.then((b) => {
-        this.#awaited = b;
-      });
-
-      this.props.then((b) => {
-        for (const property of b) {
-          this.instance.then((b: any) => {
-            if (property in this) b[property] = (this as any)[property];
-            Object.defineProperty(this, property, {
-              get: () => b[property],
-              set: (val) => (b[property] = val),
-            });
-          });
-        }
-      });
-    });
-  }
-
   protected abstract readonly props: Promise<Array<string>>;
   protected abstract readonly instance: Promise<ComponentBase>;
 
@@ -40,7 +18,19 @@ export abstract class ComponentWrapper extends HTMLElement {
     this.style.display = "none";
     this.style.opacity = "0";
 
-    this.instance.then((i) => {
+    this.instance.then(async (i: any) => {
+      this.#awaited = i;
+
+      await this.props.then((b) => {
+        for (const property of b) {
+          if (property in this) i[property] = (this as any)[property];
+          Object.defineProperty(this, property, {
+            get: () => i[property],
+            set: (val) => (i[property] = val),
+          });
+        }
+      });
+
       try {
         this.style.removeProperty("display");
         this.style.removeProperty("opacity");
