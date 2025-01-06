@@ -61,7 +61,7 @@ export default class BuilderService {
 
     const output = is_home
       ? Path.resolve(location, "index.html")
-      : Path.resolve(location, entry.slug + ".html");
+      : Path.resolve(location, entry.slug, "index.html");
 
     const cms_slots = (
       await Promise.all(
@@ -80,7 +80,6 @@ export default class BuilderService {
       {} as Record<string, string>
     );
 
-    debugger;
     const html = await schema.ToString({
       components: {},
       parameters: {
@@ -97,7 +96,7 @@ export default class BuilderService {
     });
 
     try {
-      await Fs.mkdir(location, { recursive: true });
+      await Fs.mkdir(Path.dirname(output), { recursive: true });
     } catch {
       // We do not care if the directory already exists
     }
