@@ -28,10 +28,7 @@
     await PutJson(new Url("/api/v1/pages/:id/slots", { id: self.page_id }), {
       slots: {
         ...slots,
-        [event.detail.slot]: [
-          ...(slots[event.detail.slot] ?? []),
-          event.detail.id,
-        ],
+        [event.detail.slot_name]: event.detail.blocks,
       },
     });
     self.should_render();
@@ -144,7 +141,7 @@
   Update Content
 </content-form>
 
-<slot-manager data=":data" schema=":layout" on:block-added="add_block" />
+<slot-manager data=":data" schema=":layout" on:slot-changed="add_block" />
 
 <o-modal open=":creating" on:CloseRequested="() => (creating = false)">
   <span slot="title">Create a Page</span>

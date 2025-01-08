@@ -84,7 +84,7 @@ export default class PageService {
     return {
       ...match,
       children,
-      url: "/" + url_parts.join("/"),
+      url: "/" + url_parts.reverse().join("/"),
     };
   }
 
@@ -109,7 +109,7 @@ export default class PageService {
       id,
       ...match,
       slot_previews: this.#process_slots(match),
-      breadcrumbs,
+      breadcrumbs: breadcrumbs.reverse(),
     };
   }
 

@@ -1,6 +1,5 @@
 <s:meta name="main-page">
   <attr name="title" type="string">The page title</attr>
-  <attr name="publish_date" type="string">Creation Date (yyyy-mm-dd)</attr>
   <slot name="content">Main Content</slot>
 </s:meta>
 
@@ -27,5 +26,17 @@
       </div>
     </header>
     <slot name="content" />
+
+    <div class="container">
+      <list-group>
+        <s:for subject=":Object.keys(page.children)" key="id">
+          <s:use get=":page.children[id]" as="child">
+            <a class="nav-link" href=":child.url">
+              <s:text use=":child?.properties.title" />
+            </a>
+          </s:use>
+        </s:for>
+      </list-group>
+    </div>
   </body>
 </html>

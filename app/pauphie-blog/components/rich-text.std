@@ -22,7 +22,7 @@
     "img",
   ];
 
-  const allowed_children = ["b", "i", "a", "u", "li", "s"];
+  const allowed_children = ["b", "i", "a", "u", "li", "s", "span"];
 
   /** @param {HTMLAnchorElement} a */
   function is_current(a) {

@@ -280,7 +280,6 @@ export default class BuilderService {
     } catch (err) {
       debugger;
       console.error(err);
-      throw err;
     }
   }
 }

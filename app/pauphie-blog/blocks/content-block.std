@@ -3,3 +3,12 @@
 </s:meta>
 
 <rich-text use=":self.content" />
+
+<style>
+  :host {
+    display: block;
+    max-width: 900px;
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
+</style>

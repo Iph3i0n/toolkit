@@ -1,8 +1,14 @@
 <s:meta name="blog-title">
   <attr name="title" type="string">Blog Title</attr>
   <attr name="summary" type="richtext">Summary</attr>
-  <attr name="published" type="string">Published Date</attr>
+  <attr name="published" type="string">Published Date (yyyy-mm-dd)</attr>
   <attr name="author" type="string">Author</attr>
 </s:meta>
 
-<rich-text use=":self.content" />
+<h1><s:text use="self.title" /></h1>
+<rich-text use=":self.summary" />
+<p>
+  <s:text use=":new Date(self.published).toLocaleDateString('en-GB')" />
+  -
+  <s:text use=":self.author" />
+</p>

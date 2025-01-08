@@ -11,12 +11,12 @@
   const blocks = await GetJson("/api/v1/schema/blocks");
   const option_blocks = await GetJson("/api/v1/blocks");
 
-  function add_block(data) {
+  function trigger(target, blocks) {
     self.dispatchEvent(
-      new CustomEvent("block-added", {
+      new CustomEvent("slot-changed", {
         detail: {
-          id: data.ResponseJson.id,
-          slot: adding_block,
+          slot_name: target,
+          blocks: blocks,
         },
       })
     );
@@ -24,17 +24,43 @@
     self.should_render();
   }
 
+  function add(id) {
+    trigger(adding_block, [...(self.data.slots[adding_block] ?? []), id]);
+  }
+
+  function add_block(data) {
+    add(data.ResponseJson.id);
+  }
+
   function add_existing_block(data) {
-    self.dispatchEvent(
-      new CustomEvent("block-added", {
-        detail: {
-          id: data.FormData.id,
-          slot: adding_block,
-        },
-      })
-    );
-    adding_block = false;
-    self.should_render();
+    add(data.FormData.id);
+  }
+
+  function move_top(slot, id) {
+    return (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const existing = self.data.slots[slot] ?? [];
+      trigger(slot, [id, ...existing.filter((r) => r !== id)]);
+    };
+  }
+
+  function move_bottom(slot, id) {
+    return (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const existing = self.data.slots[slot] ?? [];
+      trigger(slot, [...existing.filter((r) => r !== id), id]);
+    };
+  }
+
+  function remove_block(slot, id) {
+    return (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const existing = self.data.slots[slot] ?? [];
+      trigger(slot, [...existing.filter((r) => r !== id)]);
+    };
   }
 </script>
 
@@ -59,7 +85,28 @@
                       href=":new Url('/blocks/:block_id', { block_id: entry?.id }).Href"
                       spa
                     >
-                      <s:text use=":entry.preview" />
+                      <span>
+                        <s:text use=":entry.preview" />
+                      </span>
+
+                      <t-icon
+                        name="arrow-up"
+                        colour="surface"
+                        text
+                        on:click="move_top(slot.name, entry?.id)"
+                      />
+                      <t-icon
+                        name="arrow-down"
+                        colour="surface"
+                        text
+                        on:click="move_bottom(slot.name, entry?.id)"
+                      />
+                      <t-icon
+                        name="delete-bin"
+                        colour="surface"
+                        text
+                        on:click="remove_block(slot.name, entry?.id)"
+                      />
                     </t-link>
                   </s:for>
                 </d-listgroup>
@@ -137,3 +184,19 @@
     </l-row>
   </f-form>
 </o-modal>
+
+<style>
+  d-listgroup t-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  d-listgroup t-link span {
+    flex: 1;
+  }
+
+  d-listgroup t-link t-icon {
+    padding: 0.25rem;
+  }
+</style>

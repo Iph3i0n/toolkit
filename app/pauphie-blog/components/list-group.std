@@ -1,0 +1,11 @@
+<s:meta name="list-group"></s:meta>
+
+<slot />
+
+<style>
+  :host {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 1rem;
+  }
+</style>
