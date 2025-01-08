@@ -3,7 +3,7 @@
 </s:meta>
 
 <script>
-  import { GetJson, PutJson } from "../utils/fetch";
+  import { GetJson, PutJson, Delete } from "../utils/fetch";
   import Url from "@ipheion/url";
 
   let creating = false;
@@ -14,6 +14,14 @@
   );
 
   const layouts = await GetJson("/api/v1/schema/layouts");
+
+  function delete_page(id) {
+    return async () => {
+      if (!confirm("Are you sure? This cannot be undone!")) return;
+      await Delete(new Url("/api/v1/pages/:id", { id: self.page_id }));
+      Router.Push("/");
+    };
+  }
 </script>
 
 <script on="mut">
@@ -80,6 +88,9 @@
         colour="contrast"
       >
         Preview Page
+      </f-button>
+      <f-button type="button" colour="warning" on:click="delete_page()">
+        Delete Page
       </f-button>
     </l-col>
   </l-row>

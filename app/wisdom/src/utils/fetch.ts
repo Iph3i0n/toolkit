@@ -75,3 +75,16 @@ export function PostJson(url: Url | string, data: unknown) {
     })
     .then((r) => r.json());
 }
+
+export function Delete(url: Url | string) {
+  return fetch(url instanceof Url ? url.Href : url, {
+    method: "DELETE",
+    headers: {
+      Authorization: auth_header(),
+    },
+  }).then((r) => {
+    if (r.status === 403) Router.Push("/login");
+    if (!r.ok) throw r;
+    return r;
+  });
+}

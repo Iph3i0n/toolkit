@@ -6,19 +6,17 @@
   import { GetJson, PutJson } from "../utils/fetch";
   import Url from "@ipheion/url";
 
-  let data = await GetJson(
+  const blocks = await GetJson("/api/v1/schema/blocks");
+</script>
+
+<script on="mut">
+  const data = await GetJson(
     new Url("/api/v1/blocks/:id", { id: self.block_id })
   );
 
   const layout = await GetJson(
     new Url("/api/v1/schema/blocks/:id", { id: data.type })
   );
-  const blocks = await GetJson("/api/v1/schema/blocks");
-</script>
-
-<script on="mut">
-  data = await GetJson(new Url("/api/v1/blocks/:id", { id: self.block_id }));
-
   /** @param {CustomEvent} event */
   async function add_block(event) {
     const slots = data.slots ?? {};
