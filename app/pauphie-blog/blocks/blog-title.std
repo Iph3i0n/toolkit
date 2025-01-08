@@ -7,8 +7,22 @@
 
 <h1><s:text use="self.title" /></h1>
 <rich-text use=":self.summary" />
-<p>
+<p class="metadata">
   <s:text use=":new Date(self.published).toLocaleDateString('en-GB')" />
-  -
-  <s:text use=":self.author" />
+  <s:text use=":' - ' + self.author" />
 </p>
+
+<hr />
+
+<style>
+  :host {
+    display: block;
+    max-width: 900px;
+    padding: 1rem 1rem 2rem;
+    margin: 0 auto;
+  }
+
+  .metadata {
+    margin-bottom: 2rem;
+  }
+</style>

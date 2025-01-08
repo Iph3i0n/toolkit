@@ -1,0 +1,43 @@
+<s:meta name="about-author">
+  <attr name="name" type="string">Author Name</attr>
+  <attr name="short-bio" type="richtext">Short Bio</attr>
+  <attr name="profile" type="file">Profile Picture</attr>
+</s:meta>
+
+<section>
+  <hr />
+
+  <h2><s:text use="self.name" /></h2>
+  <div>
+    <rich-text use=":self['short-bio']" />
+    <img src=":self.profile" />
+  </div>
+</section>
+
+<style>
+  :host {
+    display: block;
+    max-width: 900px;
+    padding: 2rem 1rem;
+    margin: 0 auto;
+  }
+
+  h2 {
+    margin-top: 2rem;
+  }
+
+  div {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  rich-text {
+    flex: 1;
+  }
+
+  img {
+    max-width: 25%;
+    border: 1px solid black;
+    border-radius: 50%;
+  }
+</style>
