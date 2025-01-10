@@ -43,12 +43,12 @@
     });
   }
 
-  function select_image(id) {
+  function select_image(file) {
     return () => {
       self.dispatchEvent(
         new CustomEvent("image-selected", {
           detail: {
-            value: "/_images/" + [directory, id].join("_"),
+            value: "$file:" + file.id,
           },
         })
       );
@@ -71,15 +71,9 @@
     <l-col xs="12" md="6" lg="4" xl="3" style="text-align: right">
       <f-button type="button" on:click="() => (open = true)">+</f-button>
     </l-col>
-    <s:if check=":self.value">
-      <s:use
-        get=":self.value.replace('/_images/', '').split('_')"
-        as="[dir, ...name]"
-      >
-        <img
-          src=":new Url('/api/v1/media/:id/files/:file_name', { id: dir, file_name: name.join('_') }).Href"
-          alt=":name"
-        />
+    <s:if check=":self.value && self.value.startsWith('$file:')">
+      <s:use get=":self.value.replace('$file:', '')" as="id">
+        <img src=":new Url('/api/v1/files/:id', { id }).Href" alt=":id" />
       </s:use>
     </s:if>
   </l-row>
@@ -113,7 +107,7 @@
       <l-col xs="12" md="6" lg="4" xl="3">
         <d-panel class="image-panel" bordered on:click="select_image(file)">
           <img
-            src=":new Url('/api/v1/media/:id/files/:file_name', { id: directory, file_name: file }).Href"
+            src=":new Url('/api/v1/files/:id', { id: file.id }).Href"
             alt=":file"
           />
         </d-panel>
@@ -160,7 +154,9 @@
   }
 
   img {
-    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     max-height: 20rem;
   }
 

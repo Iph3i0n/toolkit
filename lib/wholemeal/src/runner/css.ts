@@ -6,7 +6,7 @@ function IsProperty(
   return Array.isArray(data);
 }
 
-export default function RenderSheet(sheet: Ast.Css.Sheet, suffix?: string) {
+export default function RenderSheet(sheet: Ast.Css.Sheet, suffix: string = "") {
   function RenderRule(rule: Ast.Css.Rule) {
     const queries = rule.properties.reduce((c, v) => {
       if (IsProperty(v)) {

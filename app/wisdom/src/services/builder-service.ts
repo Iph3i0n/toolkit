@@ -13,6 +13,8 @@ import HooksService from "./hooks-service";
 import { RenderResult } from "@ipheion/wholemeal/dist/xml/render-context";
 import Component from "@ipheion/wholemeal/dist/xml/component";
 import { v4 as Guid } from "uuid";
+import PropertiesService from "./properties-service";
+import { MediaDir } from "state/media";
 
 export default class BuilderService {
   readonly #page_service: PageService;
@@ -20,19 +22,22 @@ export default class BuilderService {
   readonly #config_repository: IConfigRepository;
   readonly #state: State;
   readonly #hooks_service: HooksService;
+  readonly #properties_service: PropertiesService;
 
   constructor(
     page_service: PageService,
     schema_repository: ISchemaRepository,
     config_repository: IConfigRepository,
     state: State,
-    hooks_service: HooksService
+    hooks_service: HooksService,
+    properties_service: PropertiesService
   ) {
     this.#page_service = page_service;
     this.#schema_repository = schema_repository;
     this.#config_repository = config_repository;
     this.#state = state;
     this.#hooks_service = hooks_service;
+    this.#properties_service = properties_service;
   }
 
   async #get_components() {
@@ -98,7 +103,7 @@ export default class BuilderService {
       const result = await schema.ToString({
         components: await this.#get_components(),
         parameters: {
-          self: entry.properties,
+          self: this.#properties_service.ProcessProps(entry.properties),
           page: entry,
           tree: this.#page_service.Tree,
           database: Database,
@@ -152,7 +157,7 @@ export default class BuilderService {
       const data = await schema.ToString({
         components: await this.#get_components(),
         parameters: {
-          self: entry.properties,
+          self: this.#properties_service.ProcessProps(entry.properties),
           page: entry,
           tree: this.#page_service.Tree,
           database: Database,
@@ -270,24 +275,34 @@ export default class BuilderService {
     });
   }
 
-  async #build_images(config: Config) {
-    const dir = Path.resolve(config.dist_dir, "_images");
-    try {
-      await Fs.mkdir(dir, { recursive: true });
-    } catch {
-      // We do not care if it does exist
-    }
+  async #build_files(config: Config) {
+    const process = async (id: string, subject: MediaDir, dir: string) => {
+      try {
+        await Fs.mkdir(dir, { recursive: true });
+      } catch {
+        // We do not care if it does exist
+      }
 
-    for (const [id, data] of this.#state.media) {
-      for (const file of data.files) {
+      for (const file of subject.files) {
         const instance = this.#state.files[file.local_name];
 
         await Fs.writeFile(
-          Path.resolve(dir, [id, file.name].join("_")),
+          Path.resolve(dir, file.name),
           Buffer.from(instance.data)
         );
+
+        const children = this.#state.media.Filter(
+          (_, value) => value.parent === id
+        );
+        for (const [id, child] of children)
+          await process(id, child, Path.resolve(dir, child.slug));
       }
-    }
+    };
+
+    const [[id, home]] = this.#state.media.Filter(
+      (_, value) => value.parent === null
+    );
+    await process(id, home, Path.resolve(config.dist_dir, "_files"));
   }
 
   async BuildApp() {
@@ -347,7 +362,7 @@ export default class BuilderService {
 
       await this.#build_scripts(config, web_components, script_file);
 
-      await this.#build_images(config);
+      await this.#build_files(config);
       await this.#hooks_service.Trigger("post-build", config.dist_dir);
     } catch (err) {
       debugger;

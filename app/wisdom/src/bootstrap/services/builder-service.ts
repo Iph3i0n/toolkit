@@ -5,6 +5,7 @@ import { i_schema_repository } from "bootstrap/integrations/i-schema-repository"
 import { i_config_repository } from "bootstrap/integrations/i-config-repository";
 import { n_state } from "bootstrap/integrations/state";
 import { n_hooks_service } from "./hooks-service";
+import { n_properties_service } from "./properties-service";
 
 export const n_builder_service = c(
   () =>
@@ -13,6 +14,7 @@ export const n_builder_service = c(
       i_schema_repository(),
       i_config_repository(),
       n_state(),
-      n_hooks_service()
+      n_hooks_service(),
+      n_properties_service()
     )
 );

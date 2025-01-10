@@ -5,7 +5,7 @@
 </s:meta>
 
 <section>
-  <img src=":self.background" />
+  <img src=":self.background ?? ''" />
   <div class="overlay" />
   <div class="content">
     <h2><s:text use=":self.title ?? ''" /></h2>

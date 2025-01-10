@@ -28,7 +28,7 @@ export default class extends Handler {
 
     return new JsonResponse("Ok", {
       slug: match.slug,
-      files: match.files.map((f) => f.name),
+      files: match.files.map((f) => ({ name: f.name, id: f.local_name })),
       breadcrumbs,
       children: this.State.media
         .Filter((_, item) => item.parent === id)
