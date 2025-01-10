@@ -2,6 +2,9 @@ import StringIterator from "../compiler-utils/string-iterator";
 import Sheet from "./sheet";
 import * as Js from "@ipheion/js-model";
 import { PssBlock } from "./block";
+import { Ast } from "../types/ast";
+import { RenderContext } from "../xml/render-context";
+import { EvaluateIf } from "../xml/evaluate";
 
 export class PssIfBlock extends PssBlock {
   static IsValid(data: string) {
@@ -38,5 +41,10 @@ export class PssIfBlock extends PssBlock {
     return [
       new Js.If(this.#check, new Js.Block(...this.#sheet.InlineJavaScript)),
     ];
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.Block>> {
+    if (!(await EvaluateIf(this.#check.toString(), ctx))) return [];
+    return this.#sheet.Ast(ctx);
   }
 }

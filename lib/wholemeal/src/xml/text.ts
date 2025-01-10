@@ -35,7 +35,7 @@ export default class Text extends Node {
   async ToString(context: RenderContext) {
     return {
       html: this.TextContent,
-      css: {},
+      css: "",
       web_components: {},
     };
   }

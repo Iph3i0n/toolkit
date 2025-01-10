@@ -7,12 +7,29 @@ import * as Js from "@ipheion/js-model";
 import Metadata from "./metadata/mod";
 import { Assert, IsInstanceOf } from "@ipheion/safe-type";
 import { JoinComponents, RenderContext, RenderResult } from "./render-context";
+import RenderSheet from "../runner/css";
 
 const IsImport = /import (?:(?:[^;'"]|\n)+ from )?['"].+['"]/gm;
 
 type ScriptContents = {
   main: string;
   handlers: Record<string, string>;
+};
+
+const HashCode = (str: string, seed = 0): string => {
+  let h1 = 0xdeadbeef ^ seed,
+    h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)) as any;
 };
 
 export default class Component {
@@ -96,24 +113,33 @@ export default class Component {
     return new Metadata(tag);
   }
 
-  async ToString(context: RenderContext) {
+  async ToString(context: RenderContext, in_slot?: string) {
     if (this.HasBehaviour)
       throw new Error("Static components may not have behaviour");
 
-    return (
+    const hash = HashCode(JSON.stringify(context.parameters.self ?? {}));
+
+    const result = (
       await Promise.all(
         this.#children
           .filter((c) => !(c instanceof Element) || !c.IsMetaTag)
-          .map((c) => c.ToString(context))
+          .map((c) => c.ToString(context, hash, in_slot))
       )
     ).reduce(
       (c, n) => ({
         html: c.html + n.html,
-        css: { ...c.css, ...n.css },
+        css: c.css + n.css,
         web_components: { ...c.web_components, ...n.web_components },
       }),
-      { html: "", css: {}, web_components: {} } as RenderResult
+      { html: "", css: "", web_components: {} } as RenderResult
     );
+
+    return {
+      ...result,
+      css:
+        result.css +
+        RenderSheet(await this.Css.Ast(context), `[data-css-id="${hash}"]`),
+    };
   }
 
   GetWebComponents(context: RenderContext): Record<string, Component> {

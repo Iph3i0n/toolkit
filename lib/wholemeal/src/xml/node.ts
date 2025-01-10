@@ -11,6 +11,10 @@ export default abstract class Node {
 
   abstract readonly JavaScript: Js.Any;
 
-  abstract ToString(context: RenderContext): Promise<RenderResult>;
+  abstract ToString(
+    context: RenderContext,
+    css_hash: string,
+    in_slot: string | undefined
+  ): Promise<RenderResult>;
   abstract GetWebComponents(context: RenderContext): Record<string, Component>;
 }

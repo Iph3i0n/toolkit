@@ -5,17 +5,19 @@
   <attr name="author" type="string">Author</attr>
 </s:meta>
 
-<h1><s:text use="self.title" /></h1>
-<rich-text use=":self.summary" />
-<p class="metadata">
-  <s:text use=":new Date(self.published).toLocaleDateString('en-GB')" />
-  <s:text use=":' - ' + self.author" />
-</p>
+<section>
+  <h1><s:text use="self.title ?? ''" /></h1>
+  <rich-text use=":self.summary ?? ''" />
+  <p class="metadata">
+    <s:text use=":new Date(self.published).toLocaleDateString('en-GB')" />
+    <s:text use=":' - ' + self.author" />
+  </p>
+</section>
 
 <hr />
 
 <style>
-  :host {
+  section {
     display: block;
     max-width: 900px;
     padding: 1rem 1rem 2rem;

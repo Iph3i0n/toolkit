@@ -7,7 +7,7 @@ export type RenderContext = {
 };
 
 export type RenderResult = {
-  css: Record<string, string>;
+  css: string;
   web_components: Record<string, Component>;
   html: string;
 };
@@ -17,10 +17,10 @@ export function Join(input: Array<Promise<RenderResult>>) {
     data.reduce(
       (c, n) => ({
         html: c.html + n.html,
-        css: { ...c.css, ...n.css },
+        css: c.css + n.css,
         web_components: { ...c.web_components, ...n.web_components },
       }),
-      { html: "", css: {}, web_components: {} } as RenderResult
+      { html: "", css: "", web_components: {} } as RenderResult
     )
   );
 }

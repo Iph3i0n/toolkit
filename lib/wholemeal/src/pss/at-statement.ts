@@ -1,6 +1,9 @@
 import { PssBlock } from "./block";
 import * as Js from "@ipheion/js-model";
 import StringIterator from "../compiler-utils/string-iterator";
+import { Ast } from "../types/ast";
+import Evaluate from "../xml/evaluate";
+import { RenderContext } from "../xml/render-context";
 
 export class PssAtStatement extends PssBlock {
   static IsValid(data: string) {
@@ -38,6 +41,16 @@ export class PssAtStatement extends PssBlock {
           statement: this.#statement,
         })
       ),
+    ];
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.AtStatement>> {
+    const statement = this.#statement;
+    return [
+      {
+        rule: this.#variant,
+        statement: await Evaluate(statement.toString(), ctx),
+      },
     ];
   }
 }

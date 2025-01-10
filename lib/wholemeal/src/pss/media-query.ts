@@ -2,6 +2,8 @@ import StringIterator from "../compiler-utils/string-iterator";
 import Sheet from "./sheet";
 import * as Js from "@ipheion/js-model";
 import { PssBlock } from "./block";
+import { Ast } from "../types/ast";
+import { RenderContext } from "../xml/render-context";
 
 export class PssMediaQuery extends PssBlock {
   static IsValid(data: string) {
@@ -36,5 +38,9 @@ export class PssMediaQuery extends PssBlock {
 
   get JavaScript() {
     return this.#sheet.InlineJavaScript;
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.Block>> {
+    return this.#sheet.Ast(ctx);
   }
 }

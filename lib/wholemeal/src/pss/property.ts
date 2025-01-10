@@ -1,5 +1,8 @@
 import * as Js from "@ipheion/js-model";
 import StringIterator from "../compiler-utils/string-iterator";
+import { RenderContext } from "../xml/render-context";
+import { Ast } from "../types/ast";
+import Evaluate, { EvaluateJsModel } from "../xml/evaluate";
 
 export class PssProperty {
   readonly #data: string;
@@ -53,5 +56,17 @@ export class PssProperty {
         ...args.map((a) => new Js.Reference(a))
       ),
     });
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.Property>> {
+    const media = this.#media
+      ? await EvaluateJsModel(this.#media, ctx)
+      : undefined;
+    if (!this.#is_function) {
+      const { id, value } = this.#basic_data;
+      return [[id, await Evaluate(value, ctx), media]];
+    }
+
+    throw new Error("Function properties are not allowed in static PSS");
   }
 }

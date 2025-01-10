@@ -8,18 +8,15 @@
   <img src=":self.background" />
   <div class="overlay" />
   <div class="content">
-    <h2><s:text use=":self.title" /></h2>
-    <rich-text use=":self.content" />
+    <h2><s:text use=":self.title ?? ''" /></h2>
+    <rich-text use=":self.content ?? ''" />
   </div>
 </section>
 
 <style>
-  :host {
+  section {
     display: block;
     color: white;
-  }
-
-  section {
     position: relative;
     padding: 3rem 1rem;
   }

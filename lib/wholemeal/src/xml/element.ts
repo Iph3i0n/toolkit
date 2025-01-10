@@ -11,6 +11,8 @@ import {
 } from "./render-context";
 import Text from "./text";
 import { Render } from "@ipheion/html";
+import Sheet from "../pss/sheet";
+import RenderSheet from "../runner/css";
 
 const AllText = ["script", "style"];
 
@@ -286,7 +288,11 @@ export default class Element extends Node {
     }
   }
 
-  async ToString(context: RenderContext): Promise<RenderResult> {
+  async ToString(
+    context: RenderContext,
+    css_hash: string,
+    in_slot: string | undefined
+  ): Promise<RenderResult> {
     const attribute_entries = await Promise.all(
       Object.keys(this.#attributes)
         .map((k) => [k, this.#attributes[k]] as const)
@@ -300,13 +306,18 @@ export default class Element extends Node {
       {} as Record<string, any>
     );
 
+    attributes["data-css-id"] = css_hash;
+    if (in_slot) attributes.slot = in_slot;
+
     switch (this.#tag) {
       case "s:if": {
         if (attributes.check)
-          return Join(this.#children.map((c) => c.ToString(context)));
+          return Join(
+            this.#children.map((c) => c.ToString(context, css_hash, undefined))
+          );
         return {
           html: "",
-          css: {},
+          css: "",
           web_components: {},
         };
       }
@@ -319,10 +330,14 @@ export default class Element extends Node {
           subject.map((s) =>
             Join(
               this.#children.map((c) =>
-                c.ToString({
-                  ...context,
-                  parameters: { ...context.parameters, [key]: s },
-                })
+                c.ToString(
+                  {
+                    ...context,
+                    parameters: { ...context.parameters, [key]: s },
+                  },
+                  css_hash,
+                  undefined
+                )
               )
             )
           )
@@ -333,17 +348,21 @@ export default class Element extends Node {
         const key = attributes.as;
         return Join(
           this.#children.map((c) =>
-            c.ToString({
-              ...context,
-              parameters: { ...context, [key]: subject },
-            })
+            c.ToString(
+              {
+                ...context,
+                parameters: { ...context, [key]: subject },
+              },
+              css_hash,
+              undefined
+            )
           )
         );
       }
       case "s:text": {
         return {
           html: attributes.use,
-          css: {},
+          css: "",
           web_components: {},
         };
       }
@@ -354,7 +373,7 @@ export default class Element extends Node {
         const name = attributes.name ?? "$default";
         return {
           html: context.slots[name] ?? "",
-          css: {},
+          css: "",
           web_components: {},
         };
       }
@@ -366,7 +385,11 @@ export default class Element extends Node {
               html: children,
               css,
               web_components,
-            } = await Join(this.#children.map((c) => c.ToString(context)));
+            } = await Join(
+              this.#children.map((c) =>
+                c.ToString(context, css_hash, undefined)
+              )
+            );
             return {
               html: Render({
                 tag: this.#tag,
@@ -380,7 +403,7 @@ export default class Element extends Node {
               },
             };
           } else {
-            let css: Record<string, string> = {};
+            let css: string = "";
             let web_components: Record<string, Component> = {};
             const slots: Record<string, string> = {};
             for (const c of this.#children) {
@@ -389,9 +412,9 @@ export default class Element extends Node {
                   ? c.#attributes.slot?.toString() ?? "$default"
                   : "$default";
 
-              const result = await c.ToString(context);
+              const result = await c.ToString(context, css_hash, undefined);
               slots[slot] = (slots[slot] ?? "") + result.html;
-              css = { ...css, ...result.css };
+              css = css + result.css;
               web_components = { ...web_components, ...result.web_components };
             }
 
@@ -407,7 +430,9 @@ export default class Element extends Node {
           html: children,
           css,
           web_components,
-        } = await Join(this.#children.map((c) => c.ToString(context)));
+        } = await Join(
+          this.#children.map((c) => c.ToString(context, css_hash, undefined))
+        );
         return {
           html: Render({
             tag: this.#tag,

@@ -7,19 +7,13 @@
 </s:meta>
 
 <section>
-  <img src=":self.portrait" />
+  <img src=":self.portrait ?? ''" />
   <div class="content">
     <slot name="content" />
   </div>
 </section>
 
 <style>
-  :host {
-    display: block;
-    color: black;
-    padding: 1rem;
-  }
-
   img {
     max-width: 100%;
     border: 1px solid black;
@@ -32,6 +26,8 @@
     margin-left: auto;
     margin-right: auto;
     gap: 1rem;
+    color: black;
+    padding: 1rem;
   }
 
   @if self.order === "right-left" {

@@ -6,7 +6,7 @@ function IsProperty(
   return Array.isArray(data);
 }
 
-export default function RenderSheet(sheet: Ast.Css.Sheet) {
+export default function RenderSheet(sheet: Ast.Css.Sheet, suffix?: string) {
   function RenderRule(rule: Ast.Css.Rule) {
     const queries = rule.properties.reduce((c, v) => {
       if (IsProperty(v)) {
@@ -37,12 +37,14 @@ export default function RenderSheet(sheet: Ast.Css.Sheet) {
     const result = [];
     if (queries[""])
       result.push(
-        `${rule.selector}{${queries[""].map((q) => q.join(":")).join(";")}}`
+        `${rule.selector}${suffix}{${queries[""]
+          .map((q) => q.join(":"))
+          .join(";")}}`
       );
     delete queries[""];
     for (const key in queries)
       result.push(
-        `@media ${key}{${rule.selector}{${queries[key]
+        `@media ${key}{${rule.selector}${suffix}{${queries[key]
           .map((q) => q.join(":"))
           .join(";")}}}`
       );

@@ -2,6 +2,9 @@ import * as Js from "@ipheion/js-model";
 import { PssProperty } from "./property";
 import StringIterator from "../compiler-utils/string-iterator";
 import { PssBlock } from "./block";
+import { Ast } from "../types/ast";
+import { RenderContext } from "../xml/render-context";
+import { EvaluateJsModel } from "../xml/evaluate";
 
 export class PssRule extends PssBlock {
   static IsValid(data: string) {
@@ -48,6 +51,17 @@ export class PssRule extends PssBlock {
           ),
         })
       ),
+    ];
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.Rule>> {
+    return [
+      {
+        selector: await EvaluateJsModel(this.#selector, ctx),
+        properties: (
+          await Promise.all(this.#properties.map((p) => p.Ast(ctx)))
+        ).flat(),
+      },
     ];
   }
 }

@@ -7,15 +7,15 @@
 <section>
   <hr />
 
-  <h2><s:text use="self.name" /></h2>
+  <h2><s:text use="self.name ?? ''" /></h2>
   <div>
-    <rich-text use=":self['short-bio']" />
-    <img src=":self.profile" />
+    <rich-text use=":self['short-bio'] ?? ''" />
+    <img src=":self.profile ?? ''" />
   </div>
 </section>
 
 <style>
-  :host {
+  section {
     display: block;
     max-width: 900px;
     padding: 2rem 1rem;

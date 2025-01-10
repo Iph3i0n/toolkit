@@ -10,6 +10,7 @@ import EsBuild from "esbuild";
 import WholemealLoader from "@ipheion/wholemeal/dist/esbuild";
 import { Database, State } from "state";
 import HooksService from "./hooks-service";
+import { RenderResult } from "@ipheion/wholemeal/dist/xml/render-context";
 
 export default class BuilderService {
   readonly #page_service: PageService;
@@ -32,22 +33,70 @@ export default class BuilderService {
     this.#hooks_service = hooks_service;
   }
 
-  async #render_block(id: string, slot?: string): Promise<string> {
+  async #render_block(id: string, slot?: string): Promise<RenderResult> {
     const entry = this.#page_service.GetBlock(id);
     let schema = await this.#schema_repository.get_block(entry.type);
 
-    return Render({
-      tag: schema.Metadata.Name,
-      attributes: {
-        ...entry.properties,
-        ...(slot ? { slot } : {}),
-      },
-      children: await Promise.all(
-        Object.keys(entry.slots)
-          .map((s) => [s, entry.slots[s]] as const)
-          .flatMap(([k, v]) => v.map((v) => this.#render_block(v, k)))
-      ),
-    });
+    try {
+      if (schema.HasBehaviour) {
+        let css = "";
+        const children: Array<string> = [];
+        for (const id in entry.slots) {
+          const value = entry.slots[id];
+          for (const v of value) {
+            const result = await this.#render_block(v, id);
+            css += result.css;
+            children.push(result.html);
+          }
+        }
+
+        return {
+          html: Render({
+            tag: schema.Metadata.Name,
+            attributes: {
+              ...entry.properties,
+              ...(slot ? { slot } : {}),
+            },
+            children,
+          }),
+          css,
+          web_components: {},
+        };
+      }
+
+      let css = "";
+      const children: Record<string, string> = {};
+      for (const id in entry.slots) {
+        const value = entry.slots[id];
+        for (const v of value) {
+          const result = await this.#render_block(v, id);
+          css += result.css;
+          children[id] = (children[id] ?? "") + result.html;
+        }
+      }
+
+      const result = await schema.ToString({
+        components: {},
+        parameters: {
+          self: entry.properties,
+          page: entry,
+          tree: this.#page_service.Tree,
+          database: Database,
+          site_properties: this.#state.properties,
+        },
+        slots: children,
+      });
+
+      return {
+        ...result,
+        css: result.css + css,
+      };
+    } catch (err) {
+      console.log(
+        `Failed to render block ${schema.Metadata.Name}. Error below.`
+      );
+      throw err;
+    }
   }
 
   async #build_page(
@@ -59,65 +108,78 @@ export default class BuilderService {
     const entry = this.#page_service.TreePage(id);
     const schema = await this.#schema_repository.get_layout(entry.layout);
 
-    const output = is_home
-      ? Path.resolve(location, "index.html")
-      : Path.resolve(location, entry.slug, "index.html");
-
-    const cms_slots = (
-      await Promise.all(
-        Object.keys(entry.slots)
-          .map((s) => [s, entry.slots[s]] as const)
-          .map(
-            async ([k, v]) =>
-              [
-                k,
-                await Promise.all(v.map((v) => this.#render_block(v))),
-              ] as const
-          )
-      )
-    ).reduce(
-      (c, [k, v]) => ({ ...c, [k]: v.join("") }),
-      {} as Record<string, string>
-    );
-
-    const html = await schema.ToString({
-      components: {},
-      parameters: {
-        self: entry.properties,
-        page: entry,
-        tree: this.#page_service.Tree,
-        database: Database,
-        site_properties: this.#state.properties,
-      },
-      slots: {
-        ...slots,
-        ...cms_slots,
-      },
-    });
-
     try {
-      await Fs.mkdir(Path.dirname(output), { recursive: true });
-    } catch {
-      // We do not care if the directory already exists
-    }
+      const output = is_home
+        ? Path.resolve(location, "index.html")
+        : Path.resolve(location, entry.slug, "index.html");
 
-    await Fs.writeFile(output, "<!DOCTYPE html>\n" + html.html);
+      slots.scripts =
+        (slots.scripts ?? "") +
+        Render({
+          tag: "link",
+          attributes: {
+            rel: "stylesheet",
+            href: "styles.css",
+          },
+          children: [],
+        });
 
-    for (const child of this.#page_service.GetChildren(id))
-      await this.#build_page(
-        child.id,
-        is_home ? location : Path.resolve(location, entry.slug),
-        slots
+      let css = "";
+      const children: Record<string, string> = {};
+      for (const id in entry.slots) {
+        const value = entry.slots[id];
+        for (const v of value) {
+          const result = await this.#render_block(v, id);
+          css += result.css;
+          children[id] = (children[id] ?? "") + result.html;
+        }
+      }
+
+      const html = await schema.ToString({
+        components: {},
+        parameters: {
+          self: entry.properties,
+          page: entry,
+          tree: this.#page_service.Tree,
+          database: Database,
+          site_properties: this.#state.properties,
+        },
+        slots: {
+          ...slots,
+          ...children,
+        },
+      });
+
+      try {
+        await Fs.mkdir(Path.dirname(output), { recursive: true });
+      } catch {
+        // We do not care if the directory already exists
+      }
+
+      await Fs.writeFile(output, "<!DOCTYPE html>\n" + html.html);
+      await Fs.writeFile(
+        Path.resolve(Path.dirname(output), "styles.css"),
+        css + html.css
       );
+
+      for (const child of this.#page_service.GetChildren(id))
+        await this.#build_page(
+          child.id,
+          is_home ? location : Path.resolve(location, entry.slug),
+          slots
+        );
+    } catch (err) {
+      console.log(
+        `Failed to render page ${schema.Metadata.Name}. Error below.`
+      );
+      throw err;
+    }
   }
 
   async #build_scripts(config: Config) {
     const blocks = await this.#schema_repository.get_blocks();
     const components = await this.#schema_repository.get_components();
 
-    const dir = __dirname.endsWith("handlers")
-      ? Path.resolve(__dirname, "..")
-      : __dirname;
     const template = [
       new Js.Import("CreateComponent", "@ipheion/wholemeal", false),
       ...(await Promise.all(

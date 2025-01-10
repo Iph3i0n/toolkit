@@ -2,10 +2,12 @@
   <attr name="content" type="richtext">Content</attr>
 </s:meta>
 
-<rich-text use=":self.content" />
+<section>
+  <rich-text use=":self.content ?? ''" />
+</section>
 
 <style>
-  :host {
+  section {
     display: block;
     max-width: 900px;
     padding: 0 1rem;

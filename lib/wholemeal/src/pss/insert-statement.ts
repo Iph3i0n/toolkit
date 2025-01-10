@@ -1,3 +1,5 @@
+import { Ast } from "../types/ast";
+import { RenderContext } from "../xml/render-context";
 import { PssBlock } from "./block";
 import * as Js from "@ipheion/js-model";
 
@@ -31,5 +33,9 @@ export class PssInsertStatement extends PssBlock {
         )
       ),
     ];
+  }
+
+  async Ast(ctx: RenderContext): Promise<Array<Ast.Css.Block>> {
+    throw new Error("Insert is not allowed in static PSS");
   }
 }

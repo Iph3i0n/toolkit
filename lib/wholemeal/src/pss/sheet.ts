@@ -8,6 +8,8 @@ import { PssInsertStatement } from "./insert-statement";
 import { PssJsStatement } from "./js-statement";
 import { PssMediaQuery } from "./media-query";
 import { PssRule } from "./rule";
+import { Ast } from "../types/ast";
+import { RenderContext } from "../xml/render-context";
 
 export default class Sheet {
   readonly #data: Code;
@@ -50,5 +52,11 @@ export default class Sheet {
 
   get InlineJavaScript(): Array<Js.Any> {
     return [...this.#parts()].flatMap((p) => p.JavaScript);
+  }
+
+  async Ast(ctx: RenderContext): Promise<Ast.Css.Sheet> {
+    return (
+      await Promise.all([...this.#parts()].map((p) => p.Ast(ctx)))
+    ).flat();
   }
 }
