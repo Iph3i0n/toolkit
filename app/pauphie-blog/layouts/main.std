@@ -1,6 +1,8 @@
 <s:meta name="main-page">
   <attr name="title" type="string">The page title</attr>
   <attr name="publish_date" type="string">Creation Date (yyyy-mm-dd)</attr>
+  <attr name="tags" type="string">Tags (comma separated)</attr>
+  <attr name="include_in_nav" type="toggle">Navigation</attr>
   <slot name="content">Main Content</slot>
 </s:meta>
 
@@ -12,20 +14,7 @@
     <link rel="stylesheet" href="/_/site.css" />
   </head>
   <body>
-    <header>
-      <div class="container">
-        <a class="nav-link" href="/">
-          <s:text use=":tree.properties.title" />
-        </a>
-        <s:for subject=":Object.keys(tree.children)" key="id">
-          <s:use get=":tree.children[id]" as="page">
-            <a class="nav-link" href=":page.url">
-              <s:text use=":page.properties.title" />
-            </a>
-          </s:use>
-        </s:for>
-      </div>
-    </header>
+    <site-nav />
     <slot name="content" />
   </body>
 </html>

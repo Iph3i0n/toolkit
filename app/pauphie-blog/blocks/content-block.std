@@ -3,7 +3,7 @@
 </s:meta>
 
 <section>
-  <rich-text use=":self.content ?? ''" />
+  <s:text use=":self.content ?? ''" html />
 </section>
 
 <style>

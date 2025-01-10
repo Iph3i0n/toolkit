@@ -7,9 +7,11 @@
 <section>
   <hr />
 
-  <h2><s:text use="self.name ?? ''" /></h2>
-  <div>
-    <rich-text use=":self['short-bio'] ?? ''" />
+  <h2><s:text use=":self.name ?? ''" /></h2>
+  <div class="main-panel">
+    <div>
+      <s:text use=":self['short-bio'] ?? ''" html />
+    </div>
     <img src=":self.profile ?? ''" />
   </div>
 </section>
@@ -26,7 +28,7 @@
     margin-top: 2rem;
   }
 
-  div {
+  .main-panel {
     display: flex;
     align-items: flex-start;
   }

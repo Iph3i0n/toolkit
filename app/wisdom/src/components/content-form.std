@@ -23,6 +23,17 @@
                 <s:text use=":property.label" />
               </f-input>
             </s:if>
+            <s:if check=":property.type === 'toggle'">
+              <f-toggle
+                type="text"
+                name=":`properties.${property.name}`"
+                prefill=":self.data.properties[property.name]"
+              >
+                <s:text use=":property.label" />
+                <span slot="on">On</span>
+                <span slot="off">Off</span>
+              </f-toggle>
+            </s:if>
             <s:if check=":property.type === 'code'">
               <f-code
                 name=":`properties.${property.name}`"

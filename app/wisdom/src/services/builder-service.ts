@@ -206,7 +206,8 @@ export default class BuilderService {
       console.log(
         `Failed to render page ${schema.Metadata.Name}. Error below.`
       );
-      throw err;
+
+      return {};
     }
   }
 

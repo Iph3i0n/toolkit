@@ -7,11 +7,6 @@
   import Url from "@ipheion/url";
 
   let creating = false;
-  let data = await GetJson(new Url("/api/v1/pages/:id", { id: self.page_id }));
-
-  const layout = await GetJson(
-    new Url("/api/v1/schema/layouts/:id", { id: data.layout })
-  );
 
   const layouts = await GetJson("/api/v1/schema/layouts");
 
@@ -25,7 +20,13 @@
 </script>
 
 <script on="mut">
-  data = await GetJson(new Url("/api/v1/pages/:id", { id: self.page_id }));
+  const data = await GetJson(
+    new Url("/api/v1/pages/:id", { id: self.page_id })
+  );
+
+  const layout = await GetJson(
+    new Url("/api/v1/schema/layouts/:id", { id: data.layout })
+  );
   const pages = await GetJson(
     new Url("/api/v1/pages/:id/children", { id: self.page_id })
   );

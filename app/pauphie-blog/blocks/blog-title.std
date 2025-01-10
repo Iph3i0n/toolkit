@@ -6,15 +6,16 @@
 </s:meta>
 
 <section>
-  <h1><s:text use="self.title ?? ''" /></h1>
-  <rich-text use=":self.summary ?? ''" />
+  <h1><s:text use=":self.title ?? ''" /></h1>
+  <div>
+    <s:text use=":self.summary ?? ''" html />
+  </div>
   <p class="metadata">
     <s:text use=":new Date(self.published).toLocaleDateString('en-GB')" />
     <s:text use=":' - ' + self.author" />
   </p>
+  <hr />
 </section>
-
-<hr />
 
 <style>
   section {

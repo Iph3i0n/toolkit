@@ -13,6 +13,7 @@ import Text from "./text";
 import { Render } from "@ipheion/html";
 import Sheet from "../pss/sheet";
 import RenderSheet from "../runner/css";
+import { HtmlEncode } from "./text-render";
 
 const AllText = ["script", "style"];
 
@@ -248,6 +249,10 @@ export default class Element extends Node {
           ...this.Children
         );
       case "s:text":
+        if (this.#attributes.html)
+          console.warn(
+            "HTML text is not supported on web components. It will be escaped."
+          );
         return new Js.Call(
           new Js.Access("push", new Js.Reference("result")),
           new Js.Reference(
@@ -361,7 +366,7 @@ export default class Element extends Node {
       }
       case "s:text": {
         return {
-          html: attributes.use,
+          html: attributes.html ? attributes.use : HtmlEncode(attributes.use),
           css: "",
           web_components: {},
         };
@@ -419,7 +424,10 @@ export default class Element extends Node {
             }
 
             const data = await component.ToString({
-              parameters: attributes,
+              parameters: {
+                ...context.parameters,
+                self: attributes,
+              },
               slots,
               components: context.components,
             });
