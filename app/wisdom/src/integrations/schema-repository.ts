@@ -1,4 +1,5 @@
 import Path from "node:path";
+import SyncFs from "node:fs";
 import Fs from "node:fs/promises";
 import Component from "@ipheion/wholemeal/dist/xml/component";
 import ISchemaRepository from "./i-schema-repository";
@@ -17,6 +18,11 @@ export default class SchemaRepository implements ISchemaRepository {
     return (await Fs.readdir(Path.resolve(layouts))).map((l) =>
       l.replace(".std", "")
     );
+  }
+
+  async is_block(name: string): Promise<boolean> {
+    const { blocks } = await this.#config_repository.GetConfig();
+    return SyncFs.existsSync(Path.resolve(blocks, name + ".std"));
   }
 
   async get_blocks() {

@@ -1,9 +1,11 @@
 <s:meta name="list-group"></s:meta>
 
-<slot />
+<div class="list-group">
+  <slot />
+</div>
 
 <style>
-  :host {
+  .list-group {
     display: grid;
     grid-template-columns: auto;
     gap: 1rem;

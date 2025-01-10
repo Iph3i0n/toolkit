@@ -11,6 +11,8 @@ import WholemealLoader from "@ipheion/wholemeal/dist/esbuild";
 import { Database, State } from "state";
 import HooksService from "./hooks-service";
 import { RenderResult } from "@ipheion/wholemeal/dist/xml/render-context";
+import Component from "@ipheion/wholemeal/dist/xml/component";
+import { v4 as Guid } from "uuid";
 
 export default class BuilderService {
   readonly #page_service: PageService;
@@ -31,6 +33,18 @@ export default class BuilderService {
     this.#config_repository = config_repository;
     this.#state = state;
     this.#hooks_service = hooks_service;
+  }
+
+  async #get_components() {
+    const components = await this.#schema_repository.get_components();
+    return (
+      await Promise.all(
+        components.map((c) => this.#schema_repository.get_component(c))
+      )
+    ).reduce(
+      (c, n) => ({ ...c, [n.Metadata.Name]: n }),
+      {} as Record<string, Component>
+    );
   }
 
   async #render_block(id: string, slot?: string): Promise<RenderResult> {
@@ -60,23 +74,29 @@ export default class BuilderService {
             children,
           }),
           css,
-          web_components: {},
+          web_components: {
+            [schema.Metadata.Name]: schema,
+          },
         };
       }
 
       let css = "";
+      let web_components: Record<string, Component> = {};
       const children: Record<string, string> = {};
       for (const id in entry.slots) {
         const value = entry.slots[id];
         for (const v of value) {
           const result = await this.#render_block(v, id);
           css += result.css;
+          web_components = {
+            ...web_components,
+            ...result.web_components,
+          };
           children[id] = (children[id] ?? "") + result.html;
         }
       }
-
       const result = await schema.ToString({
-        components: {},
+        components: await this.#get_components(),
         parameters: {
           self: entry.properties,
           page: entry,
@@ -104,7 +124,7 @@ export default class BuilderService {
     location: string,
     slots: Record<string, string>,
     is_home = false
-  ) {
+  ): Promise<Record<string, Component>> {
     const entry = this.#page_service.TreePage(id);
     const schema = await this.#schema_repository.get_layout(entry.layout);
 
@@ -113,30 +133,24 @@ export default class BuilderService {
         ? Path.resolve(location, "index.html")
         : Path.resolve(location, entry.slug, "index.html");
 
-      slots.scripts =
-        (slots.scripts ?? "") +
-        Render({
-          tag: "link",
-          attributes: {
-            rel: "stylesheet",
-            href: "styles.css",
-          },
-          children: [],
-        });
-
       let css = "";
+      let web_components: Record<string, Component> = {};
       const children: Record<string, string> = {};
       for (const id in entry.slots) {
         const value = entry.slots[id];
         for (const v of value) {
           const result = await this.#render_block(v, id);
           css += result.css;
+          web_components = {
+            ...web_components,
+            ...result.web_components,
+          };
           children[id] = (children[id] ?? "") + result.html;
         }
       }
 
-      const html = await schema.ToString({
-        components: {},
+      const data = await schema.ToString({
+        components: await this.#get_components(),
         parameters: {
           self: entry.properties,
           page: entry,
@@ -147,6 +161,16 @@ export default class BuilderService {
         slots: {
           ...slots,
           ...children,
+          scripts:
+            (slots.scripts ?? "") +
+            Render({
+              tag: "link",
+              attributes: {
+                rel: "stylesheet",
+                href: "styles.css",
+              },
+              children: [],
+            }),
         },
       });
 
@@ -156,18 +180,23 @@ export default class BuilderService {
         // We do not care if the directory already exists
       }
 
-      await Fs.writeFile(output, "<!DOCTYPE html>\n" + html.html);
+      await Fs.writeFile(output, "<!DOCTYPE html>\n" + data.html);
       await Fs.writeFile(
         Path.resolve(Path.dirname(output), "styles.css"),
-        css + html.css
+        css + data.css
       );
 
       for (const child of this.#page_service.GetChildren(id))
-        await this.#build_page(
-          child.id,
-          is_home ? location : Path.resolve(location, entry.slug),
-          slots
-        );
+        web_components = {
+          ...web_components,
+          ...(await this.#build_page(
+            child.id,
+            is_home ? location : Path.resolve(location, entry.slug),
+            slots
+          )),
+        };
+
+      return web_components;
     } catch (err) {
       console.log(
         `Failed to render page ${schema.Metadata.Name}. Error below.`
@@ -176,16 +205,28 @@ export default class BuilderService {
     }
   }
 
-  async #build_scripts(config: Config) {
-    const blocks = await this.#schema_repository.get_blocks();
-    const components = await this.#schema_repository.get_components();
+  async #build_scripts(
+    config: Config,
+    web_components: Record<string, Component>,
+    script_file: string
+  ) {
+    const with_paths = await Promise.all(
+      Object.keys(web_components).map(
+        async (c) =>
+          [
+            (await this.#schema_repository.is_block(c))
+              ? Path.resolve(config.blocks, c + ".std")
+              : Path.resolve(config.components, c + ".std"),
+            web_components[c],
+          ] as const
+      )
+    );
 
     const template = [
       new Js.Import("CreateComponent", "@ipheion/wholemeal", false),
-      ...(await Promise.all(
-        blocks.map(async (c) => {
-          const schema = await this.#schema_repository.get_block(c);
-          return new Js.Call(
+      ...with_paths.map(
+        ([path, schema]) =>
+          new Js.Call(
             new Js.Access("define", new Js.Reference("customElements")),
             new Js.String(schema.Metadata.Name),
             new Js.Call(
@@ -194,40 +235,15 @@ export default class BuilderService {
                 [],
                 "arrow",
                 undefined,
-                new Js.Call(
-                  new Js.Reference("import"),
-                  new Js.String(Path.resolve(config.blocks, c + ".std"))
-                )
+                new Js.Call(new Js.Reference("import"), new Js.String(path))
               )
             )
-          );
-        })
-      )),
-      ...(await Promise.all(
-        components.map(async (c) => {
-          const schema = await this.#schema_repository.get_component(c);
-          return new Js.Call(
-            new Js.Access("define", new Js.Reference("customElements")),
-            new Js.String(schema.Metadata.Name),
-            new Js.Call(
-              new Js.Reference("CreateComponent"),
-              new Js.Function(
-                [],
-                "arrow",
-                undefined,
-                new Js.Call(
-                  new Js.Reference("import"),
-                  new Js.String(Path.resolve(config.components, c + ".std"))
-                )
-              )
-            )
-          );
-        })
-      )),
+          )
+      ),
     ]
       .map((i) => i.toString())
       .join(";\n");
-    const outdir = Path.resolve(config.dist_dir, "_js");
+    const outdir = Path.resolve(config.dist_dir, "_js", script_file);
 
     await EsBuild.build({
       stdin: {
@@ -235,7 +251,6 @@ export default class BuilderService {
         resolveDir: __dirname,
       },
       outdir: outdir,
-      entryNames: "[name]-[hash]",
       splitting: true,
       bundle: true,
       platform: "browser",
@@ -253,13 +268,6 @@ export default class BuilderService {
         ),
       },
     });
-
-    const files = await Fs.readdir(outdir);
-
-    const result = files.find((f) => f.startsWith("stdin-"));
-
-    if (!result) throw new Error("Could not find file to create");
-    return result;
   }
 
   async #build_images(config: Config) {
@@ -310,8 +318,6 @@ export default class BuilderService {
       }
       await this.#hooks_service.Trigger("pre-build", config.dist_dir);
 
-      const script_file = await this.#build_scripts(config);
-
       for (const pub of config.publics)
         await Fs.cp(
           Path.resolve(pub.at),
@@ -319,7 +325,9 @@ export default class BuilderService {
           { recursive: true }
         );
 
-      await this.#build_page(
+      const script_file = Guid();
+
+      const web_components = await this.#build_page(
         home.id,
         config.dist_dir,
         {
@@ -328,7 +336,7 @@ export default class BuilderService {
               tag: "script",
               attributes: {
                 type: "module",
-                src: `/_js/${script_file}`,
+                src: `/_js/${script_file}/stdin.js`,
               },
               children: [],
             }),
@@ -336,6 +344,8 @@ export default class BuilderService {
         },
         true
       );
+
+      await this.#build_scripts(config, web_components, script_file);
 
       await this.#build_images(config);
       await this.#hooks_service.Trigger("post-build", config.dist_dir);

@@ -418,11 +418,20 @@ export default class Element extends Node {
               web_components = { ...web_components, ...result.web_components };
             }
 
-            return await component.ToString({
+            const data = await component.ToString({
               parameters: attributes,
               slots,
               components: context.components,
             });
+
+            return {
+              html: data.html,
+              css: css + data.css,
+              web_components: {
+                ...web_components,
+                ...data.web_components,
+              },
+            };
           }
         }
 

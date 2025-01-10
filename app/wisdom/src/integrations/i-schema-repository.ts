@@ -1,6 +1,8 @@
 import Component from "@ipheion/wholemeal/dist/xml/component";
 
 export default interface ISchemaRepository {
+  is_block(name: string): Promise<boolean>;
+
   get_layouts(): Promise<Array<string>>;
   get_blocks(): Promise<Array<string>>;
   get_components(): Promise<Array<string>>;

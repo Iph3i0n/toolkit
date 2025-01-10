@@ -87,6 +87,14 @@ export default class Component {
     return !!this.#script_contents.main;
   }
 
+  get HasCss() {
+    const target = this.#children.find(
+      (c) => c instanceof Element && c.TagName === "style"
+    );
+
+    return target && target instanceof Element;
+  }
+
   get Css() {
     const target = this.#children.find(
       (c) => c instanceof Element && c.TagName === "style"
@@ -134,11 +142,12 @@ export default class Component {
       { html: "", css: "", web_components: {} } as RenderResult
     );
 
+    const css = this.HasCss
+      ? RenderSheet(await this.Css.Ast(context), `[data-css-id="${hash}"]`)
+      : "";
     return {
       ...result,
-      css:
-        result.css +
-        RenderSheet(await this.Css.Ast(context), `[data-css-id="${hash}"]`),
+      css: result.css + css,
     };
   }
 

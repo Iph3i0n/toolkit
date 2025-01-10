@@ -2,9 +2,10 @@ import type { RenderContext } from "./render-context";
 import * as Js from "@ipheion/js-model";
 
 function parameters(context: RenderContext) {
+  const keys = Object.keys(context.parameters).filter((p) => !p.includes("-"));
   return {
-    names: Object.keys(context.parameters),
-    values: Object.keys(context.parameters).map((k) => context.parameters[k]),
+    names: keys,
+    values: keys.map((k) => context.parameters[k]),
   };
 }
 
@@ -29,7 +30,9 @@ export async function EvaluateJsModel(
 ) {
   const p = parameters(context);
 
-  return new Function(...p.names, "return " + expression.toString())(...p.values);
+  const function_text = "return " + expression.toString();
+  const func = new Function(...p.names, function_text);
+  return func(...p.values);
 }
 
 export async function EvaluateFor(expression: string, context: RenderContext) {
