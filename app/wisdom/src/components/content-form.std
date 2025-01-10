@@ -48,6 +48,23 @@
                 </span>
               </image-manager>
             </s:if>
+            <s:if check=":property.type === 'link'">
+              <f-hidden
+                name=":`properties.${property.name}`"
+                prefill=":self.data.properties[property.name]"
+              />
+
+              <link-manager
+                name=":`properties.${property.name}`"
+                value=":self.data.properties[property.name]"
+                on:page-selected="e => (self.data.properties[property.name] = e.detail.value)"
+              >
+                <s:text use=":property.label" />
+                <span slot="heading">
+                  <s:text use=":property.label" />
+                </span>
+              </link-manager>
+            </s:if>
             <s:if check=":property.type === 'richtext'">
               <f-richtext
                 name=":`properties.${property.name}`"

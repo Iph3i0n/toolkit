@@ -44,3 +44,9 @@ customElements.define(
   "site-properties",
   CreateComponent(() => import("./components/site-properties.std"))
 );
+
+customElements.define(
+  "link-manager",
+  CreateComponent(() => import("./components/link-manager.std"))
+);
+

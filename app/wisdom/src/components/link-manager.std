@@ -1,0 +1,84 @@
+<s:meta name="link-manager">
+  <attr name="name" />
+  <attr name="value" />
+</s:meta>
+
+<script>
+  import { GetJson } from "../utils/fetch";
+  import Url from "@ipheion/url";
+
+  const homepage = await GetJson("/api/v1/layout/homepage");
+  let open = false;
+
+  let selected_id = homepage.id;
+
+  function select_page(page) {
+    return () => {
+      self.dispatchEvent(
+        new CustomEvent("page-selected", {
+          detail: {
+            value: "$link:" + page.id,
+          },
+        })
+      );
+      open = false;
+    };
+  }
+</script>
+<script on="mut">
+  const current = self.value
+    ? await GetJson(
+        new Url("/api/v1/pages/:id", { id: self.value.replace("$link:", "") })
+      )
+    : undefined;
+
+  const data = await GetJson(new Url("/api/v1/pages/:id", { id: selected_id }));
+  const children = await GetJson(
+    new Url("/api/v1/pages/:id/children", { id: selected_id })
+  );
+</script>
+
+<d-panel colour="surface" bordered>
+  <l-row>
+    <l-col xs="12" md="6" lg="8" xl="9">
+      <t-paragraph>
+        <slot />
+      </t-paragraph>
+    </l-col>
+    <l-col xs="12" md="6" lg="4" xl="3" style="text-align: right">
+      <f-button type="button" on:click="() => (open = true)">+</f-button>
+    </l-col>
+    <l-col xs="12">
+      <s:if check=":current">
+        <t-link href=":current.preview_url" target="_blank" block>
+          <s:text use=":current.slug" />
+        </t-link>
+      </s:if>
+    </l-col>
+  </l-row>
+</d-panel>
+
+<o-modal open=":open" on:CloseRequested="() => (open = false)" size="large">
+  <span slot="title"><slot name="heading" /></span>
+  <s:if check="data.breadcrumbs.length">
+    <l-row>
+      <l-col xs="12">
+        <t-link on:click="() => (selected_id = data.parent)" block>
+          <t-icon name="arrow-go-back" colour="contrast" text />
+        </t-link>
+      </l-col>
+    </l-row>
+  </s:if>
+  <s:for subject=":children" key="child">
+    <l-row>
+      <l-col xs="8">
+        <t-link on:click="select_page(child)" block>
+          <s:text use=":child.slug" />
+        </t-link>
+      </l-col>
+      <l-col xs="4">
+        <t-link on:click="() => (selected_id = child.id)" block>Open</t-link>
+      </l-col>
+    </l-row>
+  </s:for>
+</o-modal>

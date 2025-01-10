@@ -39,6 +39,10 @@ export default class PropertiesService {
       if (value.startsWith("$file:")) {
         const id = value.replace("$file:", "");
         result[item] = this.#file_url(id);
+      } else if (value.startsWith("$link:")) {
+        const id = value.replace("$link:", "");
+        const page = this.#page_service.TreePage(id);
+        result[item] = page.url;
       } else {
         result[item] = value;
       }
