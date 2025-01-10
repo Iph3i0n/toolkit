@@ -1,0 +1,25 @@
+<s:meta name="blog-nav">
+  <attr name="tag_filter" type="string">Look For Blocks</attr>
+</s:meta>
+
+<div class="container">
+  <list-group>
+    <s:use
+      get=":tree.children[Object.keys(tree.children).find(c => tree.children[c].slug === 'blog')]"
+      as="blog"
+    >
+      <s:for
+        subject=":Object.keys(blog.children).map(c => blog.children[c])"
+        key="page"
+      >
+        <s:if
+          check=":page.properties.include_in_nav === 'on' && page.properties.tags.split(',').map(t => t.trim()).includes(self.tag_filter)"
+        >
+          <a class="nav-link" href=":page.url">
+            <s:text use=":page.properties.title" />
+          </a>
+        </s:if>
+      </s:for>
+    </s:use>
+  </list-group>
+</div>

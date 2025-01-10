@@ -356,7 +356,7 @@ export default class Element extends Node {
             c.ToString(
               {
                 ...context,
-                parameters: { ...context, [key]: subject },
+                parameters: { ...context.parameters, [key]: subject },
               },
               css_hash,
               undefined
