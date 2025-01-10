@@ -290,13 +290,13 @@ export default class BuilderService {
           Path.resolve(dir, file.name),
           Buffer.from(instance.data)
         );
-
-        const children = this.#state.media.Filter(
-          (_, value) => value.parent === id
-        );
-        for (const [id, child] of children)
-          await process(id, child, Path.resolve(dir, child.slug));
       }
+
+      const children = this.#state.media.Filter(
+        (_, value) => value.parent === id
+      );
+      for (const [id, child] of children)
+        await process(id, child, Path.resolve(dir, child.slug));
     };
 
     const [[id, home]] = this.#state.media.Filter(
