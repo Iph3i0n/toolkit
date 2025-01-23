@@ -4,6 +4,16 @@
   <attr name="schema" type="any" />
 </s:meta>
 
+<script>
+  function add_image(e) {
+    const target = e.target;
+    e.URL = new Promise(async (res) => {
+      const value = await window.GetFile();
+      res(value.replace("$file:", "/api/v1/files/"));
+    });
+  }
+</script>
+
 <f-form
   url=":self.url"
   method="put"
@@ -80,6 +90,7 @@
               <f-richtext
                 name=":`properties.${property.name}`"
                 prefill=":self.data.properties[property.name]"
+                on:FileRequested="add_image"
               >
                 <s:text use=":property.label" />
               </f-richtext>

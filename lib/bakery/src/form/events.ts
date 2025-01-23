@@ -79,3 +79,15 @@ export class FileEvent extends Event {
     return this.#file;
   }
 }
+
+export class FileRequestedEvent extends Event {
+  constructor() {
+    super("FileRequested", {
+      bubbles: true,
+      cancelable: false,
+      composed: true,
+    });
+  }
+
+  URL: Promise<string> | string | undefined = undefined;
+}

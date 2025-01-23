@@ -1,0 +1,6 @@
+<s:meta name="site-footer"></s:meta>
+<footer>
+  <div class="container">
+    <p>&copy; Paul and Sophie Taylor (<s:text use=":new Date().getFullYear().toString()" />)</p>
+  </div>
+</footer>

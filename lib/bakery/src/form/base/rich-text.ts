@@ -4,7 +4,7 @@ import { CreateRef, LoadedEvent, ShouldRender } from "@ipheion/wholemeal";
 import FormElement from ".";
 import Slotted from "../../utils/toggleable-slot";
 import { get_file } from "../../utils/html/file";
-import { FileEvent } from "../events";
+import { FileEvent, FileRequestedEvent } from "../events";
 
 const BasicLineBreak = ["pre", "blockquote"];
 
@@ -57,6 +57,7 @@ export default abstract class RichText extends FormElement {
     this.#language_input.value =
       this.CurrentCode?.getAttribute("language")?.trim() ?? "";
     this.dispatchEvent(new ShouldRender());
+    this.value = this.#editor.innerHTML;
   }
 
   get #selection(): Selection {
@@ -76,7 +77,10 @@ export default abstract class RichText extends FormElement {
   $input(e: Event) {
     const selection = this.#selection;
     const range = selection.getRangeAt(0);
-    if (!range) return;
+    if (!range) {
+      this.value = this.#editor.innerHTML;
+      return;
+    }
 
     let target: Node | null = range.startContainer;
     if (!(target instanceof Node) || !(e as any).data) return;
@@ -288,11 +292,23 @@ export default abstract class RichText extends FormElement {
   }
 
   async Image() {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      this.#exec("insertImage", reader.result);
-      this.Format = "p";
-    });
+    const range = this.#selection.getRangeAt(0);
+    const target = range?.endContainer ?? this.#editor.childNodes[0];
+    if (!target) return;
+
+    const request_event = new FileRequestedEvent();
+    this.dispatchEvent(request_event);
+
+    const insert = (url: string) => {
+      const image = document.createElement("img");
+      image.src = url;
+      target.insertBefore(image, target.firstChild);
+      this.value = this.#editor.innerHTML;
+    };
+
+    if (request_event.URL) {
+      return insert(await request_event.URL);
+    }
 
     const file = await get_file();
     if (!file) return;
@@ -300,9 +316,15 @@ export default abstract class RichText extends FormElement {
     const event = new FileEvent(file);
     this.dispatchEvent(event);
     if (event.URL) {
-      this.#exec("insertImage", await event.URL);
-      this.Format = "p";
-    } else reader.readAsDataURL(file);
+      return insert(await event.URL);
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      insert(reader.result?.toString() ?? "");
+    });
+
+    reader.readAsDataURL(file);
   }
 
   get FormatOptions() {

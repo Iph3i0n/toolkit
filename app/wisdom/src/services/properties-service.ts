@@ -34,7 +34,7 @@ export default class PropertiesService {
     const result: Record<string, string> = {};
 
     for (const item in props) {
-      const value = props[item];
+      let value = props[item];
 
       if (value.startsWith("$file:")) {
         const id = value.replace("$file:", "");
@@ -44,6 +44,11 @@ export default class PropertiesService {
         const page = this.#page_service.TreePage(id);
         result[item] = page.url;
       } else {
+        for (const [full_match, id] of value.matchAll(
+          /"\/api\/v1\/files\/([a-zA-Z0-9\-]+)"/gm
+        )) {
+          value = value.replace(full_match, this.#file_url(id));
+        }
         result[item] = value;
       }
     }

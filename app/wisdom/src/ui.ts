@@ -50,3 +50,7 @@ customElements.define(
   CreateComponent(() => import("./components/link-manager.std"))
 );
 
+customElements.define(
+  "file-picker",
+  CreateComponent(() => import("./components/file-picker.std"))
+);

@@ -16,5 +16,6 @@
   <body>
     <site-nav />
     <slot name="content" />
+    <site-footer />
   </body>
 </html>

@@ -66,3 +66,5 @@
 <u-route path="/blocks/:block_id" ele="wisdom-block" />
 <u-route path="/login" ele="wisdom-login" />
 <u-route path="/site-properties" ele="site-properties" />
+
+<file-picker />
