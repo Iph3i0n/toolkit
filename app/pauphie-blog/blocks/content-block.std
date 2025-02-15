@@ -2,7 +2,7 @@
   <attr name="content" type="richtext">Content</attr>
 </s:meta>
 
-<section>
+<section class="rich-text">
   <s:text use=":self.content ?? ''" html />
 </section>
 

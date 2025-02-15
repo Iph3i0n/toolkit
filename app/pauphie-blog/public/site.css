@@ -25,3 +25,7 @@ body {
   outline: none;
 }
 
+.rich-text img {
+  max-width: 100%;
+  border: 1px solid black;
+}
