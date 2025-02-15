@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "lib": ["ES2023", "DOM"],
+    "downlevelIteration": true,
+    "declaration": true,
+    "baseUrl": "./src",
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "include": ["src/**/*", "tests/**/*", "types"],
+  "exclude": ["**/*.test.ts", "dist/**/*", "node_modules/**/*"]
+}

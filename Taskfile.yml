@@ -45,6 +45,20 @@ tasks:
     cmds:
       - node ./build.js
 
+  nandemo:build:
+    deps:
+      - safe-type:build
+      - bakery:build
+    dir: "{{.TASKFILE_DIR}}/app/nandemo"
+    cmds:
+      - node ./build.js
+
+  nandemo:dev:
+    dir: "{{.TASKFILE_DIR}}/app/nandemo"
+    cmds:
+      - node ./build.js
+      - node .
+
   pauphie-blog:serve:
     dir: "{{.TASKFILE_DIR}}/app/pauphie-blog"
     deps:
