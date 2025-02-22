@@ -1,14 +1,25 @@
-import { Request, Response as ExpressResponse } from "express";
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+  Express,
+} from "express";
+import Request from "request";
 import Response from "response";
 
-interface IHandler {
+export interface IHandler {
   Handle(request: Request): Promise<Response>;
 }
 
-export function Handler(subject: new () => IHandler): any {
-  return async (req: Request, res: ExpressResponse) => {
-    const instance = new subject();
-    const result = await instance.Handle(req);
-    result.Accept(res);
+export type HttpMethod = "get" | "put" | "post" | "patch" | "delete";
+
+export function Handler(url: string, method: HttpMethod) {
+  return (subject: new () => IHandler): any => {
+    return (app: Express) => {
+      app[method](url, async (req: ExpressRequest, res: ExpressResponse) => {
+        const instance = new subject();
+        const result = await instance.Handle(new Request(req));
+        result.Accept(res);
+      });
+    };
   };
 }

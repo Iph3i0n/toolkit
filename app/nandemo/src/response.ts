@@ -33,3 +33,20 @@ export class RedirectResponse extends Response {
     res.send();
   }
 }
+
+export class JsonResponse extends Response {
+  readonly #status: number;
+  readonly #body: any;
+
+  constructor(status: number, body: any) {
+    super();
+    this.#status = status;
+    this.#body = body;
+  }
+
+  Accept(res: ExpressResponse): void {
+    res.setHeader("Content-Type", "application/json");
+    res.status(this.#status);
+    res.send(JSON.stringify(this.#body));
+  }
+}

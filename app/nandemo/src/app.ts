@@ -11,7 +11,9 @@ import {
 import { database } from "domain/databaseable";
 import Express from "express";
 import PageHandler from "handlers/page";
+import AddEntityHandler from "handlers/add-entity";
 import { auth } from "express-openid-connect";
+import Env from "env";
 
 database.exec(`
   CREATE TABLE IF NOT EXISTS migrations (
@@ -45,19 +47,25 @@ for (const migration of Fs.readdirSync("./migrations")) {
     throw err;
   }
 }
-const config = {
-  authRequired: true,
-  auth0Logout: true,
-  secret: process.env.LOGIN_SECRET,
-  baseURL: "http://localhost:3000",
-  clientID: "WnNj9JeT66ARUSJY7KOL1osRojMmeY0R",
-  issuerBaseURL: "https://dev-2d63tvux8yf7n4ux.us.auth0.com",
-};
 
 const app = Express();
-app.use(auth(config));
+
+if (Env.Find("OAUTH_BASE_URL"))
+  app.use(
+    auth({
+      authRequired: true,
+      auth0Logout: true,
+      secret: Env.Get("LOGIN_SECRET"),
+      baseURL: Env.Get("OAUTH_BASE_URL"),
+      clientID: Env.Get("OAUTH_CLIENT_ID"),
+      issuerBaseURL: Env.Get("OAUTH_ISSUER_BASE_URL"),
+    })
+  );
 
 app.use(Express.static(Path.resolve(__dirname, "..")));
-app.get("*", PageHandler as any);
+
+for (const handler of Fs.readdirSync(Path.resolve(__dirname, "handlers"))) {
+  require(Path.resolve(__dirname, "handlers", handler)).default(app);
+}
 
 app.listen(3000, () => console.log("Successfully started app"));

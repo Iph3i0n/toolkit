@@ -40,6 +40,21 @@ async function main() {
   // await fs.cp(path.resolve(__dirname, "public"), path.resolve(app_dir), {
   //   recursive: true,
   // });
+
+  for (const handler of await fs.readdir(
+    path.resolve(__dirname, "src/handlers")
+  ))
+    await esbuild.build({
+      entryPoints: [path.resolve(__dirname, "src/handlers", handler)],
+      bundle: true,
+      platform: "node",
+      outfile: path.resolve(
+        app_dir,
+        "server/handlers",
+        handler.replace(".ts", ".js")
+      ),
+      external,
+    });
 }
 
 main();

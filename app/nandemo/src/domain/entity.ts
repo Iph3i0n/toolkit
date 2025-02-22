@@ -1,25 +1,14 @@
 import {
   Assert,
   IsArray,
-  IsNumber,
   IsObject,
+  IsNumber,
   IsString,
-  Optional,
 } from "@ipheion/safe-type";
 import Category from "./category";
 import Databaseable from "./databaseable";
 import Tag from "./tag";
-
-const IsEntityModel = IsObject({
-  id: IsNumber,
-  name: IsString,
-  quantity: IsNumber,
-  url: Optional(IsString),
-  img: Optional(IsString),
-  container: Optional(IsNumber),
-  category: Optional(IsNumber),
-  comment: Optional(IsString),
-});
+import { EntityModel } from "models/entity";
 
 export default class Entity extends Databaseable {
   readonly #id: number;
@@ -62,7 +51,7 @@ export default class Entity extends Databaseable {
     if (typeof args[0] === "number") {
       const [id] = args;
       const match = this.get`SELECT * FROM entities WHERE id = ${id} LIMIT 1`;
-      Assert(IsEntityModel, match);
+      Assert(EntityModel, match);
       const tags = this.query`SELECT tag FROM entity_tags WHERE entity = ${id}`;
       Assert(IsArray(IsObject({ tag: IsNumber })), tags);
 
@@ -233,5 +222,17 @@ export default class Entity extends Databaseable {
       this.exec`INSERT INTO (entity, tag) VALUES (${this.#id}, ${tag.Id})`;
 
     this.#tags = value.map((t) => t.Id);
+  }
+
+  static Children(entity?: Entity) {
+    const rows = this.query`
+      SELECT id
+      FROM entities
+      WHERE container = ${entity?.Id ?? null}
+    `;
+
+    Assert(IsArray(IsObject({ id: IsNumber })), rows);
+
+    return rows.map((r) => new Entity(r.id));
   }
 }
