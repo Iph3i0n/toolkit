@@ -24,6 +24,7 @@ async function main() {
     platform: "node",
     outfile: path.resolve(app_dir, "server/app.js"),
     external,
+    sourcemap: "inline",
   });
 
   await fs.cp(

@@ -225,11 +225,16 @@ export default class Entity extends Databaseable {
   }
 
   static Children(entity?: Entity) {
-    const rows = this.query`
-      SELECT id
-      FROM entities
-      WHERE container = ${entity?.Id ?? null}
-    `;
+    debugger;
+    const rows = entity
+      ? this.query`
+        SELECT id
+        FROM entities
+        WHERE container = ${entity?.Id ?? null}
+      `
+      : this.query`
+        SELECT id FROM entities WHERE container IS NULL
+      `;
 
     Assert(IsArray(IsObject({ id: IsNumber })), rows);
 

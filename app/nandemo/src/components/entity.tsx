@@ -1,15 +1,16 @@
 import { Assert } from "@ipheion/safe-type";
-import { AddEntity } from "api-client";
+import { AddEntity, GetEntity } from "api-client";
 import { FormSubmittedEvent } from "bakery";
 import { CreateEntityModel } from "models/entity";
 import { useCallback } from "preact/hooks";
+import { UseFetch } from "ui-utils/use-fetch";
 
-type Props = {
+type EntityFormProps = {
   id?: number;
   close: () => void;
 };
 
-export const EntityForm = (props: Props) => {
+export const EntityForm = (props: EntityFormProps) => {
   return (
     <f-form
       submit="event-only"
@@ -41,5 +42,23 @@ export const EntityForm = (props: Props) => {
         </l-col>
       </l-row>
     </f-form>
+  );
+};
+
+type EntityDisplayProps = {
+  id: number;
+};
+
+export const EntityDisplay = (props: EntityDisplayProps) => {
+  const [data] = UseFetch(props.id, GetEntity);
+
+  if (!data) return <></>;
+
+  return (
+    <d-panel bordered>
+      <l-row>
+        <l-col xs="12">{data.name}</l-col>
+      </l-row>
+    </d-panel>
   );
 };

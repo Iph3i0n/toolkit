@@ -1,10 +1,9 @@
 export type IsType<T> = T extends (arg: unknown) => arg is infer T ? T : never;
-export type Checker<T> = (arg: unknown, strict?: boolean) => arg is T;
+export type Checker<T> = (arg: unknown) => arg is T;
 
 type CheckerObject = { [key: string]: Checker<unknown> };
 type ObjectChecker<T extends CheckerObject> = (
-  arg: unknown,
-  strict?: boolean
+  arg: unknown
 ) => arg is { [TKey in keyof T]: IsType<T[TKey]> };
 
 type Checkerify<T extends unknown[]> = { [TKey in keyof T]: Checker<T[TKey]> };
@@ -50,7 +49,7 @@ export function IsArray<T>(checker: Checker<T>): Checker<T[]> {
     }
 
     return !arg.find((a, i) => {
-      const result = checker(a, true);
+      const result = checker(a);
       if (!result) {
         return true;
       }
@@ -72,7 +71,7 @@ export function IsIterable<T extends unknown>(
     }
 
     for (const part of arg as Iterable<unknown>) {
-      if (!checker(part, true)) return false;
+      if (!checker(part)) return false;
     }
 
     return true;
@@ -90,14 +89,14 @@ export function IsTuple<T extends unknown[]>(...checkers: Checkerify<T>) {
 export function IsUnion<T extends unknown[]>(
   ...checkers: { [K in keyof T]: Checker<T[K]> }
 ) {
-  return (arg: unknown, strict: boolean = true): arg is T[number] =>
-    checkers.filter((c) => c(arg, strict)).length > 0;
+  return (arg: unknown): arg is T[number] =>
+    checkers.filter((c) => c(arg)).length > 0;
 }
 
 export function IsOneOf<T extends Array<string | number | boolean>>(
   ...options: T
 ) {
-  return (arg: unknown, strict = true): arg is T[number] => {
+  return (arg: unknown): arg is T[number] => {
     for (const item of options) if (IsLiteral(item)(arg)) return true;
 
     return false;
@@ -112,7 +111,7 @@ export function IsIntersection<T extends unknown[]>(
   ...checkers: { [K in keyof T]: Checker<T[K]> }
 ) {
   return (arg: unknown): arg is UnionToIntersection<T> => {
-    for (const checker of checkers) if (!checker(arg, false)) return false;
+    for (const checker of checkers) if (!checker(arg)) return false;
     return true;
   };
 }
@@ -120,25 +119,13 @@ export function IsIntersection<T extends unknown[]>(
 export function IsObject<T extends CheckerObject>(
   checker: T
 ): ObjectChecker<T> {
-  return ((arg: unknown, strict: boolean = true) => {
+  return ((arg: unknown) => {
     if (!arg || typeof arg !== "object") return false;
 
     for (const key in checker) {
       if (!IsKeyOf(checker, key)) continue;
-      if (!checker[key]((arg as any)[key], true)) {
+      if (!checker[key]((arg as any)[key])) {
         return false;
-      }
-    }
-
-    if (strict) {
-      for (const key in arg) {
-        if (!IsKeyOf(arg, key)) {
-          continue;
-        }
-
-        if (!checker[key]) {
-          return false;
-        }
       }
     }
 
@@ -150,18 +137,16 @@ export function IsRecord<TKey extends string | symbol, T>(
   keys: Checker<TKey>,
   checker: Checker<T>
 ): Checker<Record<TKey, T>> {
-  return (arg: unknown, strict: boolean = true): arg is Record<TKey, T> => {
+  return (arg: unknown): arg is Record<TKey, T> => {
     if (!arg || typeof arg !== "object") return false;
     let any_match = false;
 
     const is_match = (key: string) =>
       keys(key) && IsKeyOf(arg as any, key) && checker((arg as any)[key]);
 
-    for (const key in arg ?? {})
-      if (strict && !is_match(key)) return false;
-      else if (!strict && is_match(key)) any_match = true;
+    for (const key in arg ?? {}) if (!is_match(key)) return false;
 
-    return strict || any_match;
+    return true;
   };
 }
 
@@ -171,7 +156,7 @@ export function IsDictionary<T>(c: Checker<T>): Checker<{ [key: string]: T }> {
 
 export function Optional<T>(c: Checker<T>): Checker<T | null | undefined> {
   return (arg: unknown): arg is T | null | undefined => {
-    return typeof arg === "undefined" || arg === null || c(arg, true);
+    return typeof arg === "undefined" || arg === null || c(arg);
   };
 }
 

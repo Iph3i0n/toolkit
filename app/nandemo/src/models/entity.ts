@@ -31,7 +31,7 @@ export const CreateEntityModel = IsObject({
   comment: Optional(IsString),
 });
 
-export type CreateEntityModel = IsType<typeof EntityModel>;
+export type CreateEntityModel = IsType<typeof CreateEntityModel>;
 
 export const GetEntityModel = IsObject({
   id: IsNumber,

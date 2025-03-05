@@ -8,47 +8,50 @@ import {
   IsObject,
   IsString,
 } from "@ipheion/safe-type";
-import { database } from "domain/databaseable";
+import Databaseable, { database } from "domain/databaseable";
 import Express from "express";
-import PageHandler from "handlers/page";
-import AddEntityHandler from "handlers/add-entity";
 import { auth } from "express-openid-connect";
 import Env from "env";
 
-database.exec(`
+Databaseable.exec`
   CREATE TABLE IF NOT EXISTS migrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     script TEXT NOT NULL
   )
-`);
+`;
 
-const ran = database.prepare("SELECT * FROM migrations").all();
+const ran = Databaseable.query`SELECT * FROM migrations`;
 
 Assert(IsArray(IsObject({ id: IsNumber, script: IsString })), ran);
 
 for (const migration of Fs.readdirSync("./migrations")) {
   if (ran.find((r) => r.script === migration)) continue;
-  database.exec("BEGIN TRANSACTION");
+
+  const content = Fs.readFileSync(
+    Path.resolve("./migrations", migration),
+    "utf8"
+  );
 
   try {
-    const content = Fs.readFileSync(
-      Path.resolve("./migrations", migration),
-      "utf8"
-    );
+    console.log(`Executing Migration: ${migration}`);
+    Databaseable.exec`BEGIN TRANSACTION`;
+    for (const statement of content.split(";")) {
+      if (statement.trim()) {
+        Databaseable.exec([statement.trim()]);
+      }
+    }
 
-    for (const statement of content.split(";"))
-      if (statement.trim()) database.exec(statement.trim());
-
-    database.exec(`INSERT INTO migrations (script)  VALUES ('${migration}')`);
-
-    database.exec("COMMIT");
+    Databaseable.exec`INSERT INTO migrations (script)  VALUES (${migration})`;
+    Databaseable.exec`COMMIT`;
   } catch (err) {
-    database.exec("ROLLBACK");
+    Databaseable.exec`ROLLBACK`;
     throw err;
   }
 }
 
 const app = Express();
+
+app.use(Express.json());
 
 if (Env.Find("OAUTH_BASE_URL"))
   app.use(

@@ -1,4 +1,4 @@
-import { Assert, IsArray } from "@ipheion/safe-type";
+import { Assert, IsArray, IsNumber } from "@ipheion/safe-type";
 import { CreateEntityModel, GetEntityModel } from "models/entity";
 
 export async function AddEntity(model: CreateEntityModel) {
@@ -24,6 +24,19 @@ export async function GetEntities(parent?: number) {
 
   const body = await result.json();
 
-  Assert(IsArray(GetEntityModel), body);
+  Assert(IsArray(IsNumber), body);
+  return body;
+}
+
+export async function GetEntity(id: number) {
+  const result = await fetch(`/entities/${id}`, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {},
+  });
+
+  const body = await result.json();
+
+  Assert(GetEntityModel, body);
   return body;
 }

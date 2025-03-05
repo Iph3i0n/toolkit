@@ -19,6 +19,12 @@ export type FormSubmittedEvent = Event & { FormData: unknown };
 declare global {
   namespace preact.JSX {
     interface IntrinsicElements {
+      "d-panel": HTMLAttributes & {
+        colour?: string;
+        bordered?: boolean;
+        children?: ComponentChildren;
+      };
+
       "l-container": HTMLAttributes & {
         flush?: boolean;
         children?: ComponentChildren;

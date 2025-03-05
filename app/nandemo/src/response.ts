@@ -50,3 +50,17 @@ export class JsonResponse extends Response {
     res.send(JSON.stringify(this.#body));
   }
 }
+
+export class EmptyResponse extends Response {
+  readonly #status: number;
+
+  constructor(status: number) {
+    super();
+    this.#status = status;
+  }
+
+  Accept(res: ExpressResponse): void {
+    res.status(this.#status);
+    res.send();
+  }
+}
