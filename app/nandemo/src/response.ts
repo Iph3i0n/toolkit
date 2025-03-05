@@ -4,19 +4,6 @@ export default abstract class Response {
   abstract Accept(res: ExpressResponse): void;
 }
 
-export class FileResponse extends Response {
-  readonly #path: string;
-
-  constructor(path: string) {
-    super();
-    this.#path = path;
-  }
-
-  Accept(res: ExpressResponse): void {
-    res.sendFile(this.#path);
-  }
-}
-
 export class RedirectResponse extends Response {
   readonly #status: number;
   readonly #location: string;
@@ -62,5 +49,45 @@ export class EmptyResponse extends Response {
   Accept(res: ExpressResponse): void {
     res.status(this.#status);
     res.send();
+  }
+}
+
+export class TextResponse extends Response {
+  readonly #status: number;
+  readonly #text: string;
+  readonly #mime: string;
+
+  constructor(status: number, text: string, mime: string) {
+    super();
+    this.#status = status;
+    this.#text = text;
+    this.#mime = mime;
+  }
+
+  Accept(res: ExpressResponse): void {
+    res.status(this.#status);
+    res.setHeader("Content-Type", this.#mime);
+    res.send(this.#text);
+  }
+}
+
+export class FileResponse extends Response {
+  readonly #path: string;
+  readonly #mime?: string;
+
+  constructor(path: string, mime?: string) {
+    super();
+    this.#path = path;
+    this.#mime = mime;
+  }
+
+  Accept(res: ExpressResponse): void {
+    res.sendFile(this.#path, {
+      headers: this.#mime
+        ? {
+            "Content-Type": this.#mime,
+          }
+        : undefined,
+    });
   }
 }

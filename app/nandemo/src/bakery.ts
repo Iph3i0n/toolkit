@@ -16,6 +16,8 @@ type ButtonType = "button" | "submit";
 
 export type FormSubmittedEvent = Event & { FormData: unknown };
 
+export type ValueChangedEvent = Event & { Value: unknown; Name: string };
+
 declare global {
   namespace preact.JSX {
     interface IntrinsicElements {
@@ -68,6 +70,44 @@ declare global {
         required?: boolean;
         validate?: string;
 
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
+        children?: ComponentChildren;
+      };
+      "f-multiselect": HTMLAttributes & {
+        prefill?: string;
+        disabled?: boolean;
+        sensitive?: boolean;
+        name: string;
+        required?: boolean;
+        validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
+        children?: ComponentChildren;
+      };
+      "f-singleselect": HTMLAttributes & {
+        prefill?: string;
+        disabled?: boolean;
+        sensitive?: boolean;
+        name: string;
+        required?: boolean;
+        validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
+        children?: ComponentChildren;
+      };
+      "f-richtext": HTMLAttributes & {
+        type?: Keyboard;
+        prefill?: string;
+        disabled?: boolean;
+        name: string;
+        required?: boolean;
+        validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
         children?: ComponentChildren;
       };
       "f-numeric": HTMLAttributes & {
@@ -80,6 +120,8 @@ declare global {
         name: string;
         required?: boolean;
         validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
 
         children?: ComponentChildren;
       };
@@ -104,6 +146,27 @@ declare global {
 
         onCloseRequested?: (e: Event) => void;
         onMatchChanged?: (e: Event) => void;
+
+        children?: ComponentChildren;
+      };
+
+      "t-link": HTMLAttributes & {
+        href?: string;
+        target?: Target;
+        private?: boolean;
+        block?: boolean;
+        spa?: boolean;
+        replace?: boolean;
+
+        children?: ComponentChildren;
+      };
+      "t-crumbs": HTMLAttributes & {
+        divider?: string;
+
+        children?: ComponentChildren;
+      };
+      "t-paragraph": HTMLAttributes & {
+        large?: boolean;
 
         children?: ComponentChildren;
       };

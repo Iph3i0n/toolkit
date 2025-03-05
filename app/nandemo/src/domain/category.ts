@@ -1,5 +1,6 @@
 import {
   Assert,
+  IsArray,
   IsNumber,
   IsObject,
   IsString,
@@ -78,5 +79,20 @@ export default class Category extends Databaseable {
     `;
 
     this.#parent = value?.Id;
+  }
+  static Children(entity?: Category) {
+    const rows = entity
+      ? this.query`
+        SELECT id
+        FROM categories
+        WHERE parent = ${entity?.Id ?? null}
+      `
+      : this.query`
+        SELECT id FROM categories WHERE parent IS NULL
+      `;
+
+    Assert(IsArray(IsObject({ id: IsNumber })), rows);
+
+    return rows.map((r) => new Category(r.id));
   }
 }

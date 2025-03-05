@@ -4,12 +4,12 @@ import Tag from "domain/tag";
 import { Handler, IHandler } from "handler";
 import { CreateEntityModel } from "models/entity";
 import Request from "request";
-import { JsonResponse } from "response";
+import { EmptyResponse, JsonResponse } from "response";
 import Ogs from "open-graph-scraper";
 import Axios from "axios";
 import Image from "domain/image";
 
-@Handler("/entities", "post")
+@Handler("/entities/:id", "put")
 export default class Controller implements IHandler {
   async #save_image(url: string) {
     const result = await Axios.get(url, {
@@ -32,22 +32,35 @@ export default class Controller implements IHandler {
   }
 
   async Handle(request: Request) {
+    const id = request.Param("id");
+    if (!id) return new EmptyResponse(404);
+
     const data = request.Body(CreateEntityModel);
-    const created = new Entity(
-      data.name,
-      data.quantity,
-      data.url ?? undefined,
-      data.img
+
+    try {
+      const result = new Entity(parseInt(id));
+
+      result.Name = data.name;
+      result.Quantity = data.quantity;
+      result.Url = data.url ?? undefined;
+      result.Img = data.img
         ? await this.#save_image(data.img)
         : data.url
         ? await this.#meta_image(data.url)
-        : undefined,
-      data.container ? new Entity(data.container) : undefined,
-      data.category ? new Category(data.category) : undefined,
-      data.tags?.map((t) => new Tag(t)) ?? [],
-      data.comment ?? undefined
-    );
+        : undefined;
+      result.Container = data.container
+        ? new Entity(data.container)
+        : undefined;
+      result.Category = data.category ? new Category(data.category) : undefined;
+      result.Tags = data.tags?.map((t) => new Tag(t)) ?? [];
+      result.Comment = data.comment ?? undefined;
 
-    return new JsonResponse(201, { created: true, id: created.Id });
+      return new JsonResponse(200, {
+        updated: true,
+      });
+    } catch (err) {
+      console.error(err);
+      return new EmptyResponse(404);
+    }
   }
 }

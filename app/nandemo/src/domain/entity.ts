@@ -1,21 +1,16 @@
-import {
-  Assert,
-  IsArray,
-  IsObject,
-  IsNumber,
-  IsString,
-} from "@ipheion/safe-type";
+import { Assert, IsArray, IsObject, IsNumber } from "@ipheion/safe-type";
 import Category from "./category";
 import Databaseable from "./databaseable";
 import Tag from "./tag";
 import { EntityModel } from "models/entity";
+import Image from "./image";
 
 export default class Entity extends Databaseable {
   readonly #id: number;
   #name: string;
   #quantity: number;
   #url?: string;
-  #img?: string;
+  #img_id?: number;
   #container?: number;
   #category?: number;
   #tags: Array<number>;
@@ -26,7 +21,7 @@ export default class Entity extends Databaseable {
     name: string,
     quantity: number,
     url?: string,
-    img?: string,
+    img?: Image,
     container?: Entity,
     category?: Category,
     tags?: Array<Tag>,
@@ -39,7 +34,7 @@ export default class Entity extends Databaseable {
           name: string,
           quantity: number,
           url?: string,
-          img?: string,
+          img?: Image,
           container?: Entity,
           category?: Category,
           tags?: Array<Tag>,
@@ -59,7 +54,7 @@ export default class Entity extends Databaseable {
       this.#name = match.name;
       this.#quantity = match.quantity;
       this.#url = match.url ?? undefined;
-      this.#img = match.img ?? undefined;
+      this.#img_id = match.img_id ?? undefined;
       this.#container = match.container ?? undefined;
       this.#category = match.category ?? undefined;
       this.#tags = tags.map((t) => t.tag);
@@ -72,7 +67,7 @@ export default class Entity extends Databaseable {
           name,
           quantity,
           url,
-          img,
+          img_id,
           container,
           category,
           comment
@@ -80,7 +75,7 @@ export default class Entity extends Databaseable {
          ${name},
          ${quantity ?? null},
          ${url ?? null},
-         ${img ?? null},
+         ${img?.Id ?? null},
          ${container?.Id ?? null},
          ${category?.Id ?? null},
          ${comment ?? null} 
@@ -103,7 +98,7 @@ export default class Entity extends Databaseable {
       this.#name = name;
       this.#quantity = quantity ?? 1;
       this.#url = url;
-      this.#img = img;
+      this.#img_id = img?.Id;
       this.#container = container?.Id;
       this.#category = category?.Id;
       this.#tags = tags?.map((t) => t.Id) ?? [];
@@ -155,16 +150,17 @@ export default class Entity extends Databaseable {
   }
 
   get Img() {
-    return this.#img;
+    return this.#img_id ? new Image(this.#img_id) : undefined;
   }
 
-  set Img(value: string | undefined) {
+  set Img(value: Image | undefined) {
     this.exec`
       UPDATE entities
-      SET img = ${value ?? null}
+      SET img_id = ${value?.Id ?? null}
       WHERE id = ${this.#id}
     `;
-    this.#img = value;
+
+    this.#img_id = value?.Id;
   }
 
   get Container() {
@@ -219,13 +215,14 @@ export default class Entity extends Databaseable {
     `;
 
     for (const tag of value)
-      this.exec`INSERT INTO (entity, tag) VALUES (${this.#id}, ${tag.Id})`;
+      this.exec`INSERT INTO entity_tags (entity, tag) VALUES (${this.#id}, ${
+        tag.Id
+      })`;
 
     this.#tags = value.map((t) => t.Id);
   }
 
   static Children(entity?: Entity) {
-    debugger;
     const rows = entity
       ? this.query`
         SELECT id

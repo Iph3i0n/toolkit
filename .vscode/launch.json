@@ -26,6 +26,14 @@
       "request": "launch",
       "name": "Node: Run current file",
       "program": "${file}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Nandemo Dev",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "task",
+      "runtimeArgs": ["nandemo:dev"]
     }
   ]
 }

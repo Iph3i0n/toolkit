@@ -12,7 +12,7 @@ export const EntityModel = IsObject({
   name: IsString,
   quantity: IsNumber,
   url: Optional(IsString),
-  img: Optional(IsString),
+  img_id: Optional(IsNumber),
   container: Optional(IsNumber),
   category: Optional(IsNumber),
   comment: Optional(IsString),
@@ -22,7 +22,7 @@ export type EntityModel = IsType<typeof EntityModel>;
 
 export const CreateEntityModel = IsObject({
   name: IsString,
-  quantity: IsString,
+  quantity: IsNumber,
   url: Optional(IsString),
   img: Optional(IsString),
   container: Optional(IsNumber),
@@ -39,10 +39,10 @@ export const GetEntityModel = IsObject({
   quantity: IsNumber,
   url: Optional(IsString),
   img: Optional(IsString),
-  container: Optional(IsObject({ id: IsString, name: IsString })),
-  category: Optional(IsObject({ id: IsString, name: IsString })),
-  tags: Optional(IsArray(IsObject({ id: IsString, name: IsString }))),
+  container: Optional(IsObject({ id: IsNumber, name: IsString })),
+  category: Optional(IsObject({ id: IsNumber, name: IsString })),
+  tags: Optional(IsArray(IsObject({ id: IsNumber, name: IsString }))),
   comment: Optional(IsString),
 });
 
-export type GetEntityModel = IsType<typeof EntityModel>;
+export type GetEntityModel = IsType<typeof GetEntityModel>;

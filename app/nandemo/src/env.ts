@@ -6,6 +6,7 @@ const EnvVars = {
   OAUTH_BASE_URL: IsString,
   OAUTH_CLIENT_ID: IsString,
   OAUTH_ISSUER_BASE_URL: IsString,
+  IMAGES_LOCATION: IsString,
 };
 
 type EnvVar = keyof typeof EnvVars;

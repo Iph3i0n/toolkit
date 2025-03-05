@@ -1,17 +1,7 @@
-import {
-  Assert,
-  IsNumber,
-  IsObject,
-  IsString,
-  Optional,
-} from "@ipheion/safe-type";
+import { Assert, IsArray, IsNumber, IsObject } from "@ipheion/safe-type";
 import Databaseable from "./databaseable";
-
-const IsTagModel = IsObject({
-  id: IsNumber,
-  name: IsString,
-  parent: Optional(IsNumber),
-});
+import { TagModel } from "models/tag";
+import Entity from "./entity";
 
 export default class Tag extends Databaseable {
   readonly #id: number;
@@ -26,7 +16,7 @@ export default class Tag extends Databaseable {
     if (typeof args[0] === "number") {
       const [id] = args;
       const match = this.get`SELECT * FROM tags WHERE id = ${id} LIMIT 1`;
-      Assert(IsTagModel, match);
+      Assert(TagModel, match);
       this.#id = match.id;
       this.#name = match.name;
       this.#parent = match.parent ?? undefined;
@@ -78,5 +68,21 @@ export default class Tag extends Databaseable {
     `;
 
     this.#parent = value?.Id;
+  }
+
+  static Children(entity?: Tag) {
+    const rows = entity
+      ? this.query`
+          SELECT id
+          FROM tags
+          WHERE parent = ${entity?.Id ?? null}
+        `
+      : this.query`
+          SELECT id FROM tags WHERE parent IS NULL
+        `;
+
+    Assert(IsArray(IsObject({ id: IsNumber })), rows);
+
+    return rows.map((r) => new Tag(r.id));
   }
 }
