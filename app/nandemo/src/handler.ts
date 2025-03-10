@@ -16,9 +16,15 @@ export function Handler(url: string, method: HttpMethod) {
   return (subject: new () => IHandler): any => {
     return (app: Express) => {
       app[method](url, async (req: ExpressRequest, res: ExpressResponse) => {
-        const instance = new subject();
-        const result = await instance.Handle(new Request(req));
-        result.Accept(res);
+        try {
+          const instance = new subject();
+          const result = await instance.Handle(new Request(req));
+          result.Accept(res);
+        } catch (err) {
+          console.error(err);
+          res.status(500);
+          res.send("Internal Server Error");
+        }
       });
     };
   };

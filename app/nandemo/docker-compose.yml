@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  wisdom:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+      target: nandemo
+    restart: unless-stopped
+    volumes:
+      - data:/data:rw
+    ports:
+      - 9876:3000
+
+volumes:
+  data:
