@@ -163,6 +163,16 @@ declare global {
 
         children?: ComponentChildren;
       };
+      "t-routeable": HTMLAttributes & {
+        href?: string;
+        target?: Target;
+        private?: boolean;
+        block?: boolean;
+        spa?: boolean;
+        replace?: boolean;
+
+        children?: ComponentChildren;
+      };
       "t-crumbs": HTMLAttributes & {
         divider?: string;
 

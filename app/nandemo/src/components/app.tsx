@@ -60,7 +60,7 @@ export const App = () => {
                   <d-panel
                     colour="surface"
                     bordered
-                    style={{ overflow: "hidden" }}
+                    style={{ overflow: "hidden", fontSize: 0 }}
                   >
                     <img
                       src={current.img}
@@ -110,18 +110,32 @@ export const App = () => {
             </>
           ) : undefined}
           {entities?.map((e) => (
-            <l-col xs="12" key={e}>
+            <l-col xs="12" md="3" lg="2" xl="1" key={e}>
               <EntityDisplay id={e} url_start={crumbs.join("/")} />
             </l-col>
           ))}
-        </l-row>
-      </l-container>
-      <l-container>
-        <l-row>
-          <l-col xs="12">
-            <f-button type="button" onClick={() => set_adding(true)}>
-              +
-            </f-button>
+          <l-col xs="12" md="3" lg="2" xl="1">
+            <t-routeable onClick={() => set_adding(true)}>
+              <d-panel bordered colour="primary" style={{ overflow: "hidden" }}>
+                <div style={{ textAlign: "center" }}>
+                  <img
+                    src="/_/file-add.svg"
+                    style={{
+                      maxHeight: "10rem",
+                      width: "100%",
+                      objectFit: "cover",
+                      padding: "1rem",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                <l-row>
+                  <l-col xs="12">
+                    <t-paragraph style={{ textAlign: "center" }}>+</t-paragraph>
+                  </l-col>
+                </l-row>
+              </d-panel>
+            </t-routeable>
           </l-col>
         </l-row>
       </l-container>

@@ -106,26 +106,26 @@ export const EntityDisplay = (props: EntityDisplayProps) => {
   if (!data) return <></>;
 
   return (
-    <d-panel bordered colour="surface">
-      <l-row>
-        <l-col xs="12" md="6">
-          <t-link block href={[props.url_start, props.id].join("/")}>
-            {data.name}
-          </t-link>
-        </l-col>
-        <l-col xs="12" md="6">
-          <div style={{ textAlign: "center" }}>
-            <img
-              src={`/entities/${props.id}/image`}
-              alt={data.name}
-              style={{
-                maxHeight: "10rem",
-              }}
-            />
-          </div>
-        </l-col>
-      </l-row>
-    </d-panel>
+    <t-routeable href={[props.url_start, props.id].join("/")}>
+      <d-panel bordered colour="surface" style={{ overflow: "hidden" }}>
+        <div style={{ textAlign: "center" }}>
+          <img
+            src={`/entities/${props.id}/image`}
+            alt={data.name}
+            style={{
+              maxHeight: "10rem",
+              width: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+        <l-row>
+          <l-col xs="12">
+            <t-paragraph>{data.name}</t-paragraph>
+          </l-col>
+        </l-row>
+      </d-panel>
+    </t-routeable>
   );
 };
 

@@ -44,3 +44,9 @@ customElements.define(
   "t-richtext",
   CreateComponent(() => import("./richtext.std"))
 );
+
+
+customElements.define(
+  "t-routeable",
+  CreateComponent(() => import("./routable.std"))
+);

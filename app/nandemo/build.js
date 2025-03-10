@@ -33,6 +33,10 @@ async function main() {
     { recursive: true }
   );
 
+  await fs.cp(path.resolve(__dirname, "public"), path.resolve(app_dir, "_"), {
+    recursive: true,
+  });
+
   await fs.cp(
     path.resolve(__dirname, "index.html"),
     path.resolve(app_dir, "server/index.html")
