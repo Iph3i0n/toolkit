@@ -18,7 +18,7 @@ export const App = () => {
     GetEntities
   );
 
-  const [current] = UseFetch(current_id, async (id) =>
+  const [current, , , edited] = UseFetch(current_id, async (id) =>
     id ? await GetEntity(id) : undefined
   );
 
@@ -29,6 +29,7 @@ export const App = () => {
     set_editing(undefined);
     set_adding(false);
     reset();
+    edited();
   }, [set_adding, reset]);
 
   return (
@@ -65,15 +66,47 @@ export const App = () => {
                     <img
                       src={current.img}
                       style={{
-                        maxWidth: "100%",
+                        width: "100%",
                       }}
                     />
                   </d-panel>
                 </l-col>
               )}
               <l-col xs="12" md={current.img ? "9" : "12"}>
-                <t-heading level="h3">{current?.name}</t-heading>
-                <t-richtext use={{ html: current?.comment ?? "" }} />
+                <t-routeable
+                  href={current.url ?? "#"}
+                  target="_blank"
+                  no-transform
+                >
+                  <t-heading level="h3">{current.name}</t-heading>
+                  <t-richtext use={{ html: current?.comment ?? "" }} />
+                  <t-link href={current.url ?? "#"} target="_blank">
+                    Access
+                  </t-link>
+                </t-routeable>
+              </l-col>
+              <l-col xs="12">
+                {current.category && (
+                  <t-paragraph>
+                    Category:{" "}
+                    <t-link href={`/categories/${current.category.id}`}>
+                      {current.category?.name}
+                    </t-link>
+                  </t-paragraph>
+                )}
+                {!!current.tags?.length && (
+                  <t-paragraph>
+                    Tags:{" "}
+                    {current.tags.map((t) => (
+                      <t-link
+                        style={{ marginLeft: "0.5rem" }}
+                        href={`/categories/${t.id}`}
+                      >
+                        {t.name}
+                      </t-link>
+                    ))}
+                  </t-paragraph>
+                )}
               </l-col>
               <l-col xs="12">
                 <d-panel colour="surface" bordered>
@@ -149,7 +182,7 @@ export const App = () => {
       >
         <span slot="title">Add Entity</span>
         <EntityForm
-          id={crumbs[crumbs.length - 1]}
+          id={crumbs[crumbs.length - 2]}
           updating={editing}
           close={finished}
         />

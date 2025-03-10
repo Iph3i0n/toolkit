@@ -5,7 +5,6 @@ import Response, {
   EmptyResponse,
   FileResponse,
   RedirectResponse,
-  TextResponse,
 } from "response";
 
 @Handler("/entities/:id/image", "get")

@@ -113,7 +113,7 @@ export const EntityDisplay = (props: EntityDisplayProps) => {
             src={`/entities/${props.id}/image`}
             alt={data.name}
             style={{
-              maxHeight: "10rem",
+              height: "10rem",
               width: "100%",
               objectFit: "cover",
             }}

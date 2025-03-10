@@ -171,6 +171,8 @@ declare global {
         spa?: boolean;
         replace?: boolean;
 
+        'no-transform'?: boolean;
+
         children?: ComponentChildren;
       };
       "t-crumbs": HTMLAttributes & {

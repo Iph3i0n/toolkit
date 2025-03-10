@@ -23,6 +23,9 @@
     Only used if `spa` is set. Will make the link replace the state rather than
     push. Useful if you don't want the back button to keep people on the page.
   </attr>
+  <attr name="no-transform" type="boolean">
+    If set to true, the elemenet will not grow larger on focus.
+  </attr>
   <aria role="button" />
   <base use="UrlBuilder" from="../global/base-classes/router" />
 </s:meta>
@@ -62,7 +65,6 @@
     display: block;
     cursor: pointer;
     opacity: 1;
-    transform: scale(1);
     transition: opacity 100ms, transform 100ms;
   }
 
@@ -71,7 +73,17 @@
     outline: none;
     text-decoration: none;
     opacity: 0.75;
-    transform: scale(1.05);
+  }
+
+  @if !self[ "no-transform"] {
+    :host {
+      transform: scale(1);
+    }
+
+    :host(:hover),
+    :host(:focus) {
+      transform: scale(1.05);
+    }
   }
 </style>
 
