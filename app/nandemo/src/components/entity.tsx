@@ -98,7 +98,6 @@ export const EntityForm = (props: EntityFormProps) => {
 type EntityDisplayProps = {
   id: number;
   url_start: string;
-  on_edit: (id: number) => void;
 };
 
 export const EntityDisplay = (props: EntityDisplayProps) => {
@@ -124,11 +123,6 @@ export const EntityDisplay = (props: EntityDisplayProps) => {
               }}
             />
           </div>
-        </l-col>
-        <l-col xs="12">
-          <f-button type="button" onClick={() => props.on_edit(props.id)}>
-            Update
-          </f-button>
         </l-col>
       </l-row>
     </d-panel>

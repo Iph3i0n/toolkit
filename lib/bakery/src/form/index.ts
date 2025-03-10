@@ -30,6 +30,11 @@ customElements.define(
 );
 
 customElements.define(
+  "f-group",
+  CreateComponent(() => import("./group.std"))
+);
+
+customElements.define(
   "f-image",
   CreateComponent(() => import("./image.std"))
 );

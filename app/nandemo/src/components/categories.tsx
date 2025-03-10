@@ -66,19 +66,19 @@ export const CategorySelector = (props: { prefill?: number }) => {
 
   return (
     <>
-      <l-col xs="10">
-        <f-input
-          name="create_category"
-          onValueChanged={creating_changed}
-          onKeyDown={keydown}
-        >
-          Create a Category
-        </f-input>
-      </l-col>
-      <l-col xs="2">
-        <f-button type="button" onClick={create_category}>
-          +
-        </f-button>
+      <l-col xs="12">
+        <f-group>
+          <f-input
+            name="create_category"
+            onValueChanged={creating_changed}
+            onKeyDown={keydown}
+          >
+            Create a Category
+          </f-input>
+          <f-button type="button" onClick={create_category}>
+            +
+          </f-button>
+        </f-group>
       </l-col>
       <l-col xs="12">
         <f-singleselect name="category" prefill={props.prefill?.toString()}>

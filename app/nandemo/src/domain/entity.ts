@@ -237,4 +237,17 @@ export default class Entity extends Databaseable {
 
     return rows.map((r) => new Entity(r.id));
   }
+
+  static Delete(entity: Entity) {
+    this.exec`
+      DELETE
+      FROM entity_tags
+      WHERE entity = ${entity.Id}
+    `;
+    this.exec`
+      DELETE
+      FROM entities
+      WHERE id = ${entity.Id}
+    `;
+  }
 }

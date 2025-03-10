@@ -102,6 +102,34 @@
     position: relative;
     left: 0.5px;
   }
+
+  @js const group = self.parentElement?.tagName === 'F-GROUP';
+  @js const group_left = !!self.previousElementSibling?.tagName;
+  @js const group_right = !!self.nextElementSibling?.tagName;
+
+  @if group {
+    :host {
+      flex: 1;
+    }
+  }
+
+  @if group_left {
+    .label {
+      border-left: none !important;
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  @if group_right {
+    .label {
+      border-right: none !important;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      box-shadow: none !important;
+    }
+  }
 </style>
 
 <div style="display: none">

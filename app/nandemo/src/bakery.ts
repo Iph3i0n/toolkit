@@ -46,6 +46,9 @@ declare global {
         children?: ComponentChildren;
       };
 
+      "f-group": HTMLAttributes & {
+        children?: ComponentChildren;
+      };
       "f-form": HTMLAttributes & {
         url?: string;
         method?: "get" | "put" | "post" | "delete" | "patch";
@@ -165,8 +168,18 @@ declare global {
 
         children?: ComponentChildren;
       };
+      "t-heading": HTMLAttributes & {
+        level?: `h${1 | 2 | 3 | 4 | 5 | 6}`;
+
+        children?: ComponentChildren;
+      };
       "t-paragraph": HTMLAttributes & {
         large?: boolean;
+
+        children?: ComponentChildren;
+      };
+      "t-richtext": HTMLAttributes & {
+        use: { html: string };
 
         children?: ComponentChildren;
       };

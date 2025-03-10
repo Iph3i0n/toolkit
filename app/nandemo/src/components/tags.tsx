@@ -63,19 +63,19 @@ export const TagSelector = (props: { prefill?: Array<number> }) => {
 
   return (
     <>
-      <l-col xs="10">
-        <f-input
-          name="create_tag"
-          onValueChanged={creating_changed}
-          onKeyDown={keydown}
-        >
-          Create a Tag
-        </f-input>
-      </l-col>
-      <l-col xs="2">
-        <f-button type="button" onClick={create_tag}>
-          +
-        </f-button>
+      <l-col xs="12">
+        <f-group>
+          <f-input
+            name="create_tag"
+            onValueChanged={creating_changed}
+            onKeyDown={keydown}
+          >
+            Create a Tag
+          </f-input>
+          <f-button type="button" onClick={create_tag}>
+            +
+          </f-button>
+        </f-group>
       </l-col>
       <l-col xs="12">
         <f-multiselect name="tags" prefill={props.prefill?.join(",")}>

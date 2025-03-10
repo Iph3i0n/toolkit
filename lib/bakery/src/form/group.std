@@ -1,0 +1,13 @@
+<s:meta name="f-group">
+  A group to put multiple form items next to each other and provide nice styling
+  when done so.
+  <base use="BakeryBase" from="../global/base-classes/main" default />
+</s:meta>
+
+<style>
+  :host {
+    display: flex;
+  }
+</style>
+
+<slot></slot>

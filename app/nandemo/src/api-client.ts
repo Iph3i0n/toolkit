@@ -54,6 +54,14 @@ export async function GetEntity(id: number) {
   return body;
 }
 
+export async function DeleteEntity(id: number) {
+  await fetch(`/entities/${id}`, {
+    method: "DELETE",
+    credentials: "same-origin",
+    headers: {},
+  });
+}
+
 export async function GetTagTree() {
   const result = await fetch(`/tags`, {
     method: "GET",

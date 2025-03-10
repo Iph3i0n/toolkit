@@ -1,7 +1,7 @@
 import { useCallback, useState } from "preact/hooks";
 import { EntityDisplay, EntityForm, EntityName } from "./entity";
 import { UseFetch } from "ui-utils/use-fetch";
-import { GetEntities } from "api-client";
+import { DeleteEntity, GetEntities, GetEntity } from "api-client";
 
 const crumbs = [
   undefined,
@@ -12,9 +12,14 @@ const crumbs = [
 ];
 
 export const App = () => {
+  const current_id = crumbs[crumbs.length - 1];
   const [entities, , , reset] = UseFetch(
     crumbs[crumbs.length - 1],
     GetEntities
+  );
+
+  const [current] = UseFetch(current_id, async (id) =>
+    id ? await GetEntity(id) : undefined
   );
 
   const [adding, set_adding] = useState(false);
@@ -48,17 +53,65 @@ export const App = () => {
               ))}
             </t-paragraph>
           </l-col>
-        </l-row>
-      </l-container>
-      <l-container>
-        <l-row>
+          {current ? (
+            <>
+              {current.img && (
+                <l-col xs="12" md="3">
+                  <d-panel
+                    colour="surface"
+                    bordered
+                    style={{ overflow: "hidden" }}
+                  >
+                    <img
+                      src={current.img}
+                      style={{
+                        maxWidth: "100%",
+                      }}
+                    />
+                  </d-panel>
+                </l-col>
+              )}
+              <l-col xs="12" md={current.img ? "9" : "12"}>
+                <t-heading level="h3">{current?.name}</t-heading>
+                <t-richtext use={{ html: current?.comment ?? "" }} />
+              </l-col>
+              <l-col xs="12">
+                <d-panel colour="surface" bordered>
+                  <l-row>
+                    <l-col xs="12">
+                      <f-button
+                        type="button"
+                        onClick={() => set_editing(current.id)}
+                      >
+                        Edit
+                      </f-button>
+                      <f-button
+                        type="button"
+                        colour="warning"
+                        onClick={async () => {
+                          if (!confirm("Are you sure? This cannot be undone."))
+                            return;
+
+                          await DeleteEntity(current.id);
+
+                          if (crumbs.length <= 1) window.location.href = "/";
+                          window.location.href = [
+                            "",
+                            ...crumbs.slice(0, crumbs.length - 1),
+                          ].join("/");
+                        }}
+                      >
+                        Delete
+                      </f-button>
+                    </l-col>
+                  </l-row>
+                </d-panel>
+              </l-col>
+            </>
+          ) : undefined}
           {entities?.map((e) => (
             <l-col xs="12" key={e}>
-              <EntityDisplay
-                id={e}
-                on_edit={() => set_editing(e)}
-                url_start={crumbs.join("/")}
-              />
+              <EntityDisplay id={e} url_start={crumbs.join("/")} />
             </l-col>
           ))}
         </l-row>

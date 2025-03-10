@@ -78,6 +78,20 @@
     if (next instanceof Text && next.wholeText.trim()) return false;
     return self.previousElementSibling?.tagName !== "F-BUTTON";
   };
+
+  const group_left = () => {
+    const parent = self.parentElement;
+    if (parent?.tagName !== "F-GROUP") return false;
+
+    return !!self.previousElementSibling?.tagName;
+  };
+
+  const group_right = () => {
+    const parent = self.parentElement;
+    if (parent?.tagName !== "F-GROUP") return false;
+
+    return !!self.nextElementSibling?.tagName;
+  };
 </script>
 <script on="after">
   if (is_last_button()) return;
@@ -131,7 +145,7 @@
     theme.shadow("small");
   }
 
-  @if !is_last_button() {
+  @if !is_last_button() || group_right() {
     :host {
       border-right: none !important;
       border-top-right-radius: 0 !important;
@@ -140,7 +154,7 @@
     }
   }
 
-  @if !is_first_button() {
+  @if !is_first_button() || group_left() {
     :host {
       border-left: none !important;
       border-top-left-radius: 0 !important;
