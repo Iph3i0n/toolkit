@@ -182,7 +182,11 @@ export const App = () => {
       >
         <span slot="title">Add Entity</span>
         <EntityForm
-          id={crumbs[crumbs.length - 2]}
+          id={
+            typeof editing !== "undefined"
+              ? crumbs[crumbs.length - 2]
+              : crumbs[crumbs.length - 1]
+          }
           updating={editing}
           close={finished}
         />
