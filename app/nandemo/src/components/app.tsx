@@ -157,8 +157,6 @@ export const App = () => {
                       maxHeight: "10rem",
                       width: "100%",
                       objectFit: "cover",
-                      padding: "1rem",
-                      boxSizing: "border-box",
                     }}
                   />
                 </div>

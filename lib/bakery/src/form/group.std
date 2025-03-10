@@ -5,8 +5,12 @@
 </s:meta>
 
 <style>
+  @js const [theme, spec] = require("../global/theme");
+
   :host {
     display: flex;
+    theme.shadow("small");
+    border-radius: ":spec.borders.body.radius";
   }
 </style>
 

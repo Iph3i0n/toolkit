@@ -146,6 +146,7 @@ declare global {
         size?: "small" | "medium" | "large";
         path?: string;
         open?: boolean;
+        colour?: string;
 
         onCloseRequested?: (e: Event) => void;
         onMatchChanged?: (e: Event) => void;
@@ -171,7 +172,7 @@ declare global {
         spa?: boolean;
         replace?: boolean;
 
-        'no-transform'?: boolean;
+        "no-transform"?: boolean;
 
         children?: ComponentChildren;
       };

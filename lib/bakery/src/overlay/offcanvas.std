@@ -15,6 +15,7 @@
   <attr name="open" type="boolean">
     If set then overrides all other behaviour to open the modal.
   </attr>
+  <attr name="colour" type="string">The colour of the body.</attr>
 
   <event name="CloseRequested" type="CloseRequestedEvent">
     When the user closes the offcanvas. Good for frameworks.
@@ -151,6 +152,12 @@
   }
 
   @insert ../styles/custom-scrollbar.pss;
+
+  @if self.colour {
+    .body {
+      theme.colour(self.colour);
+    }
+  }
 </style>
 
 <div class="overlay" on:click="close"></div>
