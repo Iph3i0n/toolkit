@@ -88,7 +88,7 @@ export const EntityForm = (props: EntityFormProps) => {
             Name
           </f-input>
         </l-col>
-        <ContainerPicker id={props.id} />
+        <ContainerPicker id={data?.container?.id ?? props.id} />
         <l-col xs="12">
           <f-numeric
             name="quantity"
