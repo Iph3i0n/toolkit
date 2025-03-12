@@ -1,8 +1,8 @@
 import { Assert } from "@ipheion/safe-type";
-import { AddEntity, GetEntity, UpdateEntity } from "api-client";
+import { AddEntity, GetEntities, GetEntity, UpdateEntity } from "api-client";
 import { FormSubmittedEvent } from "bakery";
 import { CreateEntityModel } from "models/entity";
-import { useCallback } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 import { UseFetch } from "ui-utils/use-fetch";
 import { TagSelector } from "./tags";
 import { CategorySelector } from "./categories";
@@ -11,6 +11,41 @@ type EntityFormProps = {
   id?: number;
   updating?: number;
   close: () => void;
+};
+
+export const ContainerPicker = (props: { id?: number }) => {
+  const [value, set_value] = useState(props.id);
+
+  const [current] = UseFetch(value, async (id) =>
+    id ? await GetEntity(id) : undefined
+  );
+  const [children] = UseFetch(value, GetEntities);
+  return (
+    <>
+      <f-hidden name="container" prefill={value?.toString() ?? ""} />
+      <l-col xs="12">
+        <d-panel>
+          <l-row>
+            <l-col xs="12">
+              <t-paragraph style={{ marginTop: 0 }}>Parent</t-paragraph>
+              <d-listgroup>
+                {current && (
+                  <t-link onClick={() => set_value(current.container?.id)}>
+                    ../{current.container?.name}
+                  </t-link>
+                )}
+                {children?.map((c) => (
+                  <t-link onClick={() => set_value(c)}>
+                    <EntityName id={c} />
+                  </t-link>
+                ))}
+              </d-listgroup>
+            </l-col>
+          </l-row>
+        </d-panel>
+      </l-col>
+    </>
+  );
 };
 
 export const EntityForm = (props: EntityFormProps) => {
@@ -29,7 +64,7 @@ export const EntityForm = (props: EntityFormProps) => {
             quantity: parseInt(temp.quantity),
             url: temp.url,
             img: temp.img,
-            container: props.id,
+            container: temp.container ? parseInt(temp.container) : undefined,
             category: temp.category ? parseInt(temp.category) : undefined,
             tags:
               temp.tags
@@ -53,6 +88,7 @@ export const EntityForm = (props: EntityFormProps) => {
             Name
           </f-input>
         </l-col>
+        <ContainerPicker id={props.id} />
         <l-col xs="12">
           <f-numeric
             name="quantity"

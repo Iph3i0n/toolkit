@@ -43,11 +43,12 @@ export default class Controller implements IHandler {
       result.Name = data.name;
       result.Quantity = data.quantity;
       result.Url = data.url ?? undefined;
-      result.Img = data.img
-        ? await this.#save_image(data.img)
-        : data.url
-        ? await this.#meta_image(data.url)
-        : undefined;
+      if (data.img !== result.Img?.OriginalUrl)
+        result.Img = data.img
+          ? await this.#save_image(data.img)
+          : data.url
+          ? await this.#meta_image(data.url)
+          : undefined;
       result.Container = data.container
         ? new Entity(data.container)
         : undefined;

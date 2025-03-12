@@ -26,6 +26,9 @@ declare global {
         bordered?: boolean;
         children?: ComponentChildren;
       };
+      "d-listgroup": HTMLAttributes & {
+        children?: ComponentChildren;
+      };
 
       "l-container": HTMLAttributes & {
         flush?: boolean;
@@ -69,6 +72,16 @@ declare global {
         prefill?: string;
         disabled?: boolean;
         sensitive?: boolean;
+        name: string;
+        required?: boolean;
+        validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
+        children?: ComponentChildren;
+      };
+      "f-hidden": HTMLAttributes & {
+        prefill?: string;
         name: string;
         required?: boolean;
         validate?: string;

@@ -1,7 +1,12 @@
 import { useCallback, useState } from "preact/hooks";
-import { EntityDisplay, EntityForm, EntityName } from "./entity";
+import {
+  ContainerPicker,
+  EntityDisplay,
+  EntityForm,
+  EntityName,
+} from "./entity";
 import { UseFetch } from "ui-utils/use-fetch";
-import { DeleteEntity, GetEntities, GetEntity } from "api-client";
+import { DeleteEntity, GetEntities, GetEntity, UpdateEntity } from "api-client";
 
 const crumbs = [
   undefined,
@@ -24,13 +29,18 @@ export const App = () => {
 
   const [adding, set_adding] = useState(false);
   const [editing, set_editing] = useState(undefined as number | undefined);
+  const [bulk_moving, set_bulk_moving] = useState(false);
+
+  const reset_all = () => {
+    reset();
+    edited();
+  };
 
   const finished = useCallback(() => {
     set_editing(undefined);
     set_adding(false);
-    reset();
-    edited();
-  }, [set_adding, reset]);
+    reset_all();
+  }, [set_adding, reset, reset]);
 
   return (
     <>
@@ -136,6 +146,13 @@ export const App = () => {
                       >
                         Delete
                       </f-button>
+                      <f-button
+                        type="button"
+                        colour="contrast"
+                        onClick={() => set_bulk_moving(true)}
+                      >
+                        Bulk Move
+                      </f-button>
                     </l-col>
                   </l-row>
                 </d-panel>
@@ -188,6 +205,48 @@ export const App = () => {
           updating={editing}
           close={finished}
         />
+      </o-modal>
+      <o-modal
+        open={bulk_moving}
+        onCloseRequested={() => {
+          set_bulk_moving(false);
+        }}
+      >
+        <span slot="title">Bulk Move</span>
+        <f-form
+          submit="event-only"
+          onSubmitted={async (e) => {
+            set_bulk_moving(false);
+            const temp = e.FormData as any;
+            const target = parseInt(temp.container ?? "");
+            if (typeof target !== "number" || isNaN(target)) return;
+
+            await Promise.all(
+              entities?.map(async (part) => {
+                const data = await GetEntity(part);
+                await UpdateEntity(part, {
+                  name: data.name,
+                  quantity: data.quantity,
+                  url: data.url,
+                  img: data.img,
+                  container: target,
+                  category: data.category?.id,
+                  tags: data.tags?.map((t) => t.id),
+                  comment: data.comment,
+                });
+              }) ?? []
+            );
+
+            reset_all();
+          }}
+        >
+          <l-row>
+            <ContainerPicker id={current_id} />
+            <l-col xs="12">
+              <f-button type="submit">Move</f-button>
+            </l-col>
+          </l-row>
+        </f-form>
       </o-modal>
     </>
   );
