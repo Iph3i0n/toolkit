@@ -1,27 +1,18 @@
 import { useCallback, useState } from "preact/hooks";
 import {
+  Breadcrumbs,
   ContainerPicker,
   EntityDisplay,
   EntityForm,
-  EntityName,
 } from "./entity";
 import { UseFetch } from "ui-utils/use-fetch";
 import { DeleteEntity, GetEntities, GetEntity, UpdateEntity } from "api-client";
 
-const crumbs = [
-  undefined,
-  ...window.location.pathname
-    .split("/")
-    .filter((r) => r)
-    .map((i) => parseInt(i)),
-];
-
-export const App = () => {
-  const current_id = crumbs[crumbs.length - 1];
-  const [entities, , , reset] = UseFetch(
-    crumbs[crumbs.length - 1],
-    GetEntities
-  );
+export const App = (props: { path: Array<string> }) => {
+  const current_id = isNaN(props.path[0] as any)
+    ? undefined
+    : parseInt(props.path[0] ?? "");
+  const [entities, , , reset] = UseFetch(current_id, GetEntities);
 
   const [current, , , edited] = UseFetch(current_id, async (id) =>
     id ? await GetEntity(id) : undefined
@@ -47,22 +38,7 @@ export const App = () => {
       <l-container>
         <l-row>
           <l-col xs="12">
-            <t-paragraph>
-              {crumbs.map((c, i) => (
-                <>
-                  {typeof c === "number" ? (
-                    <t-link
-                      href={crumbs.slice(0, crumbs.indexOf(c) + 1).join("/")}
-                    >
-                      <EntityName id={c} />
-                    </t-link>
-                  ) : (
-                    <t-link href="/">Home</t-link>
-                  )}
-                  {i < crumbs.length - 1 ? " / " : ""}
-                </>
-              ))}
-            </t-paragraph>
+            <Breadcrumbs id={current_id} />
           </l-col>
           {current ? (
             <>
@@ -137,10 +113,12 @@ export const App = () => {
 
                           await DeleteEntity(current.id);
 
-                          if (crumbs.length <= 1) window.location.href = "/";
+                          if (typeof current_id === "undefined")
+                            window.location.href = "/";
                           window.location.href = [
                             "",
-                            ...crumbs.slice(0, crumbs.length - 1),
+                            "items",
+                            current.container?.id,
                           ].join("/");
                         }}
                       >
@@ -161,7 +139,7 @@ export const App = () => {
           ) : undefined}
           {entities?.map((e) => (
             <l-col xs="12" md="3" lg="2" xl="1" key={e}>
-              <EntityDisplay id={e} url_start={crumbs.join("/")} />
+              <EntityDisplay id={e} />
             </l-col>
           ))}
           <l-col xs="12" md="3" lg="2" xl="1">
@@ -199,8 +177,8 @@ export const App = () => {
         <EntityForm
           id={
             typeof editing !== "undefined"
-              ? crumbs[crumbs.length - 2]
-              : crumbs[crumbs.length - 1]
+              ? current?.container?.id
+              : current?.id
           }
           updating={editing}
           close={finished}

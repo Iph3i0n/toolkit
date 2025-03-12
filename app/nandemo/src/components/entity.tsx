@@ -1,5 +1,11 @@
 import { Assert } from "@ipheion/safe-type";
-import { AddEntity, GetEntities, GetEntity, UpdateEntity } from "api-client";
+import {
+  AddEntity,
+  GetBreadcrumbs,
+  GetEntities,
+  GetEntity,
+  UpdateEntity,
+} from "api-client";
 import { FormSubmittedEvent } from "bakery";
 import { CreateEntityModel } from "models/entity";
 import { useCallback, useEffect, useState } from "preact/hooks";
@@ -11,6 +17,26 @@ type EntityFormProps = {
   id?: number;
   updating?: number;
   close: () => void;
+};
+
+export const Breadcrumbs = (props: { id?: number }) => {
+  const [crumbs] = UseFetch(props.id, async (id) =>
+    id ? GetBreadcrumbs(id) : []
+  );
+
+  return (
+    <t-paragraph>
+      <t-link href="/">Home</t-link>
+      {crumbs?.map((c, i) => (
+        <>
+          {" / "}
+          <t-link href={`/${c}`}>
+            <EntityName id={c} />
+          </t-link>
+        </>
+      ))}
+    </t-paragraph>
+  );
 };
 
 export const ContainerPicker = (props: { id?: number }) => {
@@ -137,7 +163,6 @@ export const EntityForm = (props: EntityFormProps) => {
 
 type EntityDisplayProps = {
   id: number;
-  url_start: string;
 };
 
 export const EntityDisplay = (props: EntityDisplayProps) => {
@@ -146,7 +171,7 @@ export const EntityDisplay = (props: EntityDisplayProps) => {
   if (!data) return <></>;
 
   return (
-    <t-routeable href={[props.url_start, props.id].join("/")}>
+    <t-routeable href={["", "items", props.id].join("/")}>
       <d-panel bordered colour="surface" style={{ overflow: "hidden" }}>
         <div style={{ textAlign: "center" }}>
           <img
@@ -161,7 +186,7 @@ export const EntityDisplay = (props: EntityDisplayProps) => {
         </div>
         <l-row>
           <l-col xs="12">
-            <t-paragraph>{data.name}</t-paragraph>
+            <t-paragraph style={{ textAlign: "left" }}>{data.name}</t-paragraph>
           </l-col>
         </l-row>
       </d-panel>

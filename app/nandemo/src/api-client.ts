@@ -25,9 +25,41 @@ export async function UpdateEntity(id: number, model: CreateEntityModel) {
   });
 }
 
-export async function GetEntities(parent?: number) {
+type GetEntitiesProps = {
+  category?: number;
+  tags?: Array<number>;
+  require_all_tags?: boolean;
+  term?: string;
+};
+
+export async function GetEntities(parent?: number, props?: GetEntitiesProps) {
+  const url = new URL(parent ? `/entities/${parent}/children` : "/entities");
+  if (props) {
+    if (typeof props.category !== "undefined")
+      url.searchParams.set("category", props.category.toString());
+    if (typeof props.tags !== "undefined")
+      url.searchParams.set("category", props.tags.join(","));
+    if (typeof props.require_all_tags !== "undefined" && props.require_all_tags)
+      url.searchParams.set("require_all_tags", "true");
+    if (typeof props.term !== "undefined")
+      url.searchParams.set("term", props.term.toString());
+  }
+
+  const result = await fetch(url, {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {},
+  });
+
+  const body = await result.json();
+
+  Assert(IsArray(IsNumber), body);
+  return body;
+}
+
+export async function GetBreadcrumbs(parent?: number) {
   const result = await fetch(
-    parent ? `/entities/${parent}/children` : "/entities",
+    parent ? `/entities/${parent}/breadcrumbs` : "/entities",
     {
       method: "GET",
       credentials: "same-origin",

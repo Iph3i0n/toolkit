@@ -30,6 +30,14 @@ declare global {
         children?: ComponentChildren;
       };
 
+      "l-header": HTMLAttributes & {
+        logo: string;
+        "logo-alt"?: string;
+        bg?: string;
+        flush?: boolean;
+
+        children?: ComponentChildren;
+      };
       "l-container": HTMLAttributes & {
         flush?: boolean;
         children?: ComponentChildren;
@@ -141,6 +149,18 @@ declare global {
 
         children?: ComponentChildren;
       };
+      "f-toggle": HTMLAttributes & {
+        prefill?: 'on' | 'off';
+        disabled?: boolean;
+        sensitive?: boolean;
+        name: string;
+        required?: boolean;
+        validate?: string;
+
+        onValueChanged?: (event: ValueChangedEvent) => void;
+
+        children?: ComponentChildren;
+      };
 
       "f-button": HTMLAttributes & {
         colour?: string;
@@ -206,6 +226,17 @@ declare global {
       };
       "t-richtext": HTMLAttributes & {
         use: { html: string };
+
+        children?: ComponentChildren;
+      };
+      "t-icon": HTMLAttributes & {
+        name: string;
+        fill?: boolean;
+        plain?: boolean;
+        size?: string;
+        colour?: string;
+        text?: boolean;
+        spin?: boolean;
 
         children?: ComponentChildren;
       };

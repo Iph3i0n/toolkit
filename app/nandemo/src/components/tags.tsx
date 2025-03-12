@@ -19,7 +19,10 @@ const TagTreeItem = (props: { model: GetTagTreeModel; parent?: string }) => (
   </>
 );
 
-export const TagSelector = (props: { prefill?: Array<number> }) => {
+export const TagSelector = (props: {
+  prefill?: Array<number>;
+  no_create?: boolean;
+}) => {
   const [tag_tree, , , refresh] = UseFetch(undefined, GetTagTree);
   const [creating, set_creating] = useState("");
 
@@ -63,20 +66,22 @@ export const TagSelector = (props: { prefill?: Array<number> }) => {
 
   return (
     <>
-      <l-col xs="12">
-        <f-group>
-          <f-input
-            name="create_tag"
-            onValueChanged={creating_changed}
-            onKeyDown={keydown}
-          >
-            Create a Tag
-          </f-input>
-          <f-button type="button" onClick={create_tag}>
-            +
-          </f-button>
-        </f-group>
-      </l-col>
+      {!props.no_create && (
+        <l-col xs="12">
+          <f-group>
+            <f-input
+              name="create_tag"
+              onValueChanged={creating_changed}
+              onKeyDown={keydown}
+            >
+              Create a Tag
+            </f-input>
+            <f-button type="button" onClick={create_tag}>
+              +
+            </f-button>
+          </f-group>
+        </l-col>
+      )}
       <l-col xs="12">
         <f-multiselect name="tags" prefill={props.prefill?.join(",")}>
           <span slot="label">Tags</span>

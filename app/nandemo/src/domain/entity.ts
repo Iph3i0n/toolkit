@@ -5,6 +5,13 @@ import Tag from "./tag";
 import { EntityModel } from "models/entity";
 import Image from "./image";
 
+type SearchProps = {
+  category?: Category;
+  tags: Array<Tag>;
+  require_all_tags?: boolean;
+  term?: string;
+};
+
 export default class Entity extends Databaseable {
   readonly #id: number;
   #name: string;
@@ -235,6 +242,39 @@ export default class Entity extends Databaseable {
 
     Assert(IsArray(IsObject({ id: IsNumber })), rows);
 
+    return rows.map((r) => new Entity(r.id));
+  }
+
+  static Search(props: SearchProps) {
+    const query = [
+      props.term ? "e.name LIKE ?" : "",
+      props.category ? "e.category = ?" : "",
+      props.tags
+        .map(() => "t.tag = ?")
+        .join(props.require_all_tags ? " AND " : " OR "),
+    ]
+      .filter((r) => r)
+      .join(" AND ");
+
+    const parameters = [
+      props.term ? `%${props.term}%` : undefined,
+      props.category?.Id,
+      ...props.tags.map((t) => t.Id),
+    ].filter((r) => typeof r !== "undefined");
+
+    const rows = this.query(
+      [
+        `
+        SELECT DISTINCT e.id
+        FROM entities e
+        RIGHT JOIN entity_tags t ON e.id = t.entity
+        WHERE ${query}
+      `,
+      ],
+      ...parameters
+    );
+
+    Assert(IsArray(IsObject({ id: IsNumber })), rows);
     return rows.map((r) => new Entity(r.id));
   }
 

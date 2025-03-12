@@ -22,7 +22,10 @@ const CategoryTreeItem = (props: {
   </>
 );
 
-export const CategorySelector = (props: { prefill?: number }) => {
+export const CategorySelector = (props: {
+  prefill?: number;
+  no_create?: boolean;
+}) => {
   const [category_tree, , , refresh] = UseFetch(undefined, GetCategoryTree);
   const [creating, set_creating] = useState("");
 
@@ -66,20 +69,22 @@ export const CategorySelector = (props: { prefill?: number }) => {
 
   return (
     <>
-      <l-col xs="12">
-        <f-group>
-          <f-input
-            name="create_category"
-            onValueChanged={creating_changed}
-            onKeyDown={keydown}
-          >
-            Create a Category
-          </f-input>
-          <f-button type="button" onClick={create_category}>
-            +
-          </f-button>
-        </f-group>
-      </l-col>
+      {!props.no_create && (
+        <l-col xs="12">
+          <f-group>
+            <f-input
+              name="create_category"
+              onValueChanged={creating_changed}
+              onKeyDown={keydown}
+            >
+              Create a Category
+            </f-input>
+            <f-button type="button" onClick={create_category}>
+              +
+            </f-button>
+          </f-group>
+        </l-col>
+      )}
       <l-col xs="12">
         <f-singleselect name="category" prefill={props.prefill?.toString()}>
           <span slot="label">Categories</span>
