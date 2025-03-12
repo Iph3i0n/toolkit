@@ -33,15 +33,23 @@ export default class Controller implements IHandler {
 
   async Handle(request: Request) {
     const data = request.Body(CreateEntityModel);
+
+    let img: Image | undefined;
+    try {
+      img = data.img
+        ? await this.#save_image(data.img)
+        : data.url
+        ? await this.#meta_image(data.url)
+        : undefined;
+    } catch (err) {
+      console.error(err);
+    }
+
     const created = new Entity(
       data.name,
       data.quantity,
       data.url ?? undefined,
-      data.img
-        ? await this.#save_image(data.img)
-        : data.url
-        ? await this.#meta_image(data.url)
-        : undefined,
+      img,
       data.container ? new Entity(data.container) : undefined,
       data.category ? new Category(data.category) : undefined,
       data.tags?.map((t) => new Tag(t)) ?? [],
