@@ -23,24 +23,32 @@ export default class Controller implements IHandler {
     return new Image(Buffer.from(result.data), mime, url);
   }
 
-  async #meta_image(url: string) {
+  async #meta_data(url: string) {
     const data = await Ogs({ url });
     const [image] = data.result.ogImage ?? [];
     if (!image) return undefined;
 
-    return await this.#save_image(image.url);
+    return {
+      img: await this.#save_image(image.url),
+      description: data.result.ogDescription,
+    };
   }
 
   async Handle(request: Request) {
     const data = request.Body(CreateEntityModel);
 
     let img: Image | undefined;
+    let comment = data.comment;
     try {
-      img = data.img
-        ? await this.#save_image(data.img)
-        : data.url
-        ? await this.#meta_image(data.url)
-        : undefined;
+      if (data.url) {
+        const res = await this.#meta_data(data.url);
+        img = res?.img;
+        comment = res?.description ?? comment;
+      }
+
+      if (data.img) {
+        img = await this.#save_image(data.img);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -53,7 +61,7 @@ export default class Controller implements IHandler {
       data.container ? new Entity(data.container) : undefined,
       data.category ? new Category(data.category) : undefined,
       data.tags?.map((t) => new Tag(t)) ?? [],
-      data.comment ?? undefined
+      comment ?? undefined
     );
 
     return new JsonResponse(201, { created: true, id: created.Id });

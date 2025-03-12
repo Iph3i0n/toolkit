@@ -23,12 +23,15 @@ export default class Controller implements IHandler {
     return new Image(Buffer.from(result.data), mime, url);
   }
 
-  async #meta_image(url: string) {
+  async #meta_data(url: string) {
     const data = await Ogs({ url });
     const [image] = data.result.ogImage ?? [];
     if (!image) return undefined;
 
-    return await this.#save_image(image.url);
+    return {
+      img: await this.#save_image(image.url),
+      description: data.result.ogDescription,
+    };
   }
 
   async Handle(request: Request) {
@@ -39,17 +42,22 @@ export default class Controller implements IHandler {
 
     try {
       const result = new Entity(parseInt(id));
+      if (data.url && data.url !== result.Url) {
+        try {
+          const metadata = await this.#meta_data(data.url);
+          if (!data.img) result.Img = metadata?.img;
+          if (!data.comment) result.Comment = metadata?.description;
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
       result.Name = data.name;
       result.Quantity = data.quantity;
       result.Url = data.url ?? undefined;
-      if (data.img !== result.Img?.OriginalUrl) {
+      if (data.img !== result.Img?.OriginalUrl && data.img) {
         try {
-          result.Img = data.img
-            ? await this.#save_image(data.img)
-            : data.url
-            ? await this.#meta_image(data.url)
-            : undefined;
+          result.Img = data.img ? await this.#save_image(data.img) : undefined;
         } catch (err) {
           console.error(err);
         }
