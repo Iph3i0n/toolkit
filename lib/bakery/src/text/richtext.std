@@ -87,8 +87,10 @@
 
     const template = document.createElement("template");
     template.innerHTML = html;
-    for (const root of template.content.children)
-      if (!(root instanceof HTMLElement)) continue;
+    for (const root of template.content.childNodes)
+      if (root instanceof Text)
+        result.push({ tag: "p", children: root.textContent });
+      else if (!(root instanceof HTMLElement)) continue;
       else if (!allowed_roots.includes(root.tagName.toLowerCase())) continue;
       else result.push(parse_element(root));
 
