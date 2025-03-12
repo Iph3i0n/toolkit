@@ -2,7 +2,7 @@ import { Assert } from "@ipheion/safe-type";
 import { AddEntity, GetEntities, GetEntity, UpdateEntity } from "api-client";
 import { FormSubmittedEvent } from "bakery";
 import { CreateEntityModel } from "models/entity";
-import { useCallback, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import { UseFetch } from "ui-utils/use-fetch";
 import { TagSelector } from "./tags";
 import { CategorySelector } from "./categories";
@@ -15,6 +15,10 @@ type EntityFormProps = {
 
 export const ContainerPicker = (props: { id?: number }) => {
   const [value, set_value] = useState(props.id);
+
+  useEffect(() => {
+    set_value(props.id);
+  }, [props.id]);
 
   const [current] = UseFetch(value, async (id) =>
     id ? await GetEntity(id) : undefined
