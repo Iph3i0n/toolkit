@@ -33,7 +33,10 @@ type GetEntitiesProps = {
 };
 
 export async function GetEntities(parent?: number, props?: GetEntitiesProps) {
-  const url = new URL(parent ? `/entities/${parent}/children` : "/entities");
+  const url = new URL(
+    parent ? `/entities/${parent}/children` : "/entities",
+    window.location.origin
+  );
   if (props) {
     if (typeof props.category !== "undefined")
       url.searchParams.set("category", props.category.toString());

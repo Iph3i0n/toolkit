@@ -22,6 +22,7 @@ const TagTreeItem = (props: { model: GetTagTreeModel; parent?: string }) => (
 export const TagSelector = (props: {
   prefill?: Array<number>;
   no_create?: boolean;
+  on_change?: (c: Array<number>) => void;
 }) => {
   const [tag_tree, , , refresh] = UseFetch(undefined, GetTagTree);
   const [creating, set_creating] = useState("");
@@ -83,7 +84,20 @@ export const TagSelector = (props: {
         </l-col>
       )}
       <l-col xs="12">
-        <f-multiselect name="tags" prefill={props.prefill?.join(",")}>
+        <f-multiselect
+          name="tags"
+          prefill={props.prefill?.join(",")}
+          onValueChanged={(e) =>
+            props.on_change
+              ? props.on_change(
+                  (e.Value as string)
+                    ?.split(",")
+                    .filter((r) => r.trim())
+                    .map((r) => parseInt(r.trim()) ?? [])
+                )
+              : undefined
+          }
+        >
           <span slot="label">Tags</span>
           {tag_tree?.map((t) => (
             <TagTreeItem model={t} key={t.id} />

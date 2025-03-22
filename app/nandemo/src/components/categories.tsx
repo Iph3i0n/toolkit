@@ -25,6 +25,7 @@ const CategoryTreeItem = (props: {
 export const CategorySelector = (props: {
   prefill?: number;
   no_create?: boolean;
+  on_change?: (c: number) => void;
 }) => {
   const [category_tree, , , refresh] = UseFetch(undefined, GetCategoryTree);
   const [creating, set_creating] = useState("");
@@ -86,7 +87,15 @@ export const CategorySelector = (props: {
         </l-col>
       )}
       <l-col xs="12">
-        <f-singleselect name="category" prefill={props.prefill?.toString()}>
+        <f-singleselect
+          name="category"
+          prefill={props.prefill?.toString()}
+          onValueChanged={(e) =>
+            props.on_change
+              ? props.on_change(parseInt(e.Value as string))
+              : undefined
+          }
+        >
           <span slot="label">Categories</span>
           {category_tree?.map((t) => (
             <CategoryTreeItem model={t} key={t.id} />

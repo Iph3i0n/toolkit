@@ -15,7 +15,10 @@ export function UseFetch<TSeed, TResult>(
     factory(seed).then(set_value);
   }, [seed]);
 
-  const reset = useCallback(() => factory(seed).then(set_value), [seed]);
+  const reset = useCallback(
+    () => factory(seed).then(set_value),
+    [seed, factory]
+  );
 
   return [value, set_seed, seed, reset] as const;
 }
