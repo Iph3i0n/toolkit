@@ -1,14 +1,12 @@
 import type ScriptsFile from "scripts-file";
 
-export default abstract class Node<TProps> {
+export default abstract class Node {
   readonly #scope: ScriptsFile;
   readonly #element: Element;
-  readonly #props: TProps;
 
-  constructor(scope: ScriptsFile, element: Element, props: TProps) {
+  constructor(scope: ScriptsFile, element: Element) {
     this.#scope = scope;
     this.#element = element;
-    this.#props = props;
   }
 
   protected get scope() {
@@ -19,7 +17,17 @@ export default abstract class Node<TProps> {
     return this.#element;
   }
 
-  protected get props() {
-    return this.#props;
+  protected require_attribute(name: string) {
+    const result = this.#element.getAttribute(name);
+    if (!result) throw new Error(`Attribute ${name} is required`);
+
+    return result;
+  }
+
+  protected require_text() {
+    const result = this.#element.textContent;
+    if (!result) throw new Error(`Text content is required`);
+
+    return result;
   }
 }
