@@ -4,8 +4,8 @@ export default abstract class Node {
   readonly #scope: ScriptsFile;
   readonly #element: Element;
 
-  constructor(scope: ScriptsFile, element: Element) {
-    this.#scope = scope;
+  constructor(scope: ScriptsFile | Node, element: Element) {
+    this.#scope = scope instanceof Node ? scope.#scope : scope;
     this.#element = element;
   }
 
@@ -29,5 +29,11 @@ export default abstract class Node {
     if (!result) throw new Error(`Text content is required`);
 
     return result;
+  }
+
+  protected children_of_type(tag: string) {
+    return [...this.element.children].filter(
+      (c) => c.tagName.toLowerCase() === tag
+    );
   }
 }

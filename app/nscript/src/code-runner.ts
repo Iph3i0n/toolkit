@@ -1,6 +1,6 @@
 import Node from "node";
 import ChildProcess from "node:child_process";
-import { IsOneOf, IsType } from "@ipheion/safe-type";
+import { Assert, IsOneOf, IsType } from "@ipheion/safe-type";
 import RunnerContext from "runner-context";
 
 export const ValidShell = IsOneOf(
@@ -18,7 +18,7 @@ export default abstract class CodeRunner extends Node {
   #logs: string = "";
 
   #execute(command: string, args: Array<string>, ctx: RunnerContext) {
-    return new Promise<void>((res, rej) => {
+    return new Promise<string>((res, rej) => {
       const proc = ChildProcess.spawn(command, args, {
         cwd: ctx.Cwd,
         env: ctx.Env,
@@ -28,24 +28,35 @@ export default abstract class CodeRunner extends Node {
 
       proc.stdout.setEncoding("utf8");
       proc.stderr.setEncoding("utf8");
+      let stdout = "";
 
-      proc.stdout.on("data", (d) => (this.#logs += d.toString()));
+      proc.stdout.on("data", (d) => {
+        this.#logs += d.toString();
+        stdout += d.toString();
+      });
       proc.stderr.on("data", (d) => (this.#logs += d.toString()));
 
       proc.on("exit", (code) =>
         code === 0
-          ? res()
+          ? res(stdout)
           : rej(`Command ${this.Name} excited with code ${code}`)
       );
     });
   }
 
-  protected run(
-    code: string,
-    shell: ValidShell,
-    ctx: RunnerContext
-  ): Promise<void> {
-    switch (shell) {
+  protected get is_code() {
+    return !!this.element.getAttribute("type");
+  }
+
+  get #shell() {
+    const result = this.element.getAttribute("type") ?? "text/javascript";
+    Assert(ValidShell, result);
+    return result;
+  }
+
+  protected run(ctx: RunnerContext): Promise<string> {
+    const code = this.require_text();
+    switch (this.#shell) {
       case "text/javascript":
         return this.#execute("node", ["-e", code], ctx);
       case "text/python":
