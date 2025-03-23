@@ -1,0 +1,24 @@
+{
+  "name": "@ipheion/nscript",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "node ./build.js",
+    "dev": "npm run build && node ."
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "prettier": {
+    "htmlWhitespaceSensitivity": "ignore"
+  },
+  "dependencies": {
+    "esbuild": "^0.25.1",
+    "jsdom": "^26.0.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/yargs": "^17.0.33"
+  }
+}
