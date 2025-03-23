@@ -1,3 +1,4 @@
+import Dep from "dep";
 import EnvRepository from "env-repository";
 import Node from "node";
 import RunnerContext from "runner-context";
@@ -22,6 +23,10 @@ export default class Task extends Node {
       {
         script: (ele, ctx) => new Script(ele).Process(ctx),
         task: (ele, ctx): Promise<RunnerContext> => new Task(ele).Process(ctx),
+        dep: async (ele, ctx) => {
+          await new Dep(ele).Process(ctx);
+          return ctx;
+        },
       },
       ctx
     );

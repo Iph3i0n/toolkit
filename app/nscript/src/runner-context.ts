@@ -10,7 +10,7 @@ export default class RunnerContext {
   readonly #env: NodeJS.ProcessEnv;
   readonly #tasks: Array<Task>;
   readonly #running: Array<CodeRunner>;
-  readonly #original_script: ScriptsFile;
+  readonly #scripts_file: ScriptsFile;
 
   private constructor(
     task_name: string,
@@ -18,14 +18,14 @@ export default class RunnerContext {
     env: NodeJS.ProcessEnv,
     tasks: Array<Task>,
     scripts: Array<Script>,
-    original_script: ScriptsFile
+    scripts_file: ScriptsFile
   ) {
     this.#task_name = task_name;
     this.#cwd = cwd;
     this.#env = env;
     this.#tasks = tasks;
     this.#running = scripts;
-    this.#original_script = original_script;
+    this.#scripts_file = scripts_file;
   }
 
   static Start(task_name: string, self: ScriptsFile) {
@@ -51,6 +51,21 @@ export default class RunnerContext {
     return this.#env;
   }
 
+  get ScriptsFile() {
+    return this.#scripts_file;
+  }
+
+  WithDependency(task_name: string) {
+    return new RunnerContext(
+      task_name,
+      this.#cwd,
+      this.#env,
+      this.#tasks,
+      this.#running,
+      this.#scripts_file
+    );
+  }
+
   WithCompletedSegment() {
     return new RunnerContext(
       this.#task_name.split(":").slice(1).join(":"),
@@ -58,7 +73,7 @@ export default class RunnerContext {
       this.#env,
       this.#tasks,
       this.#running,
-      this.#original_script
+      this.#scripts_file
     );
   }
 
@@ -72,7 +87,7 @@ export default class RunnerContext {
       },
       this.#tasks,
       this.#running,
-      this.#original_script
+      this.#scripts_file
     );
   }
 
@@ -83,7 +98,7 @@ export default class RunnerContext {
       this.#env,
       this.#tasks,
       this.#running,
-      this.#original_script
+      this.#scripts_file
     );
   }
 
@@ -94,7 +109,7 @@ export default class RunnerContext {
       this.#env,
       [...this.#tasks, task],
       this.#running,
-      this.#original_script
+      this.#scripts_file
     );
   }
 
@@ -105,7 +120,7 @@ export default class RunnerContext {
       this.#env,
       this.#tasks,
       [...this.#running, code],
-      this.#original_script
+      this.#scripts_file
     );
   }
 }
