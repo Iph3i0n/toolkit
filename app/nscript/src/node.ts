@@ -1,16 +1,10 @@
-import type ScriptsFile from "scripts-file";
+import type RunnerContext from "runner-context";
 
 export default abstract class Node {
-  readonly #scope: ScriptsFile;
   readonly #element: Element;
 
-  constructor(scope: ScriptsFile | Node, element: Element) {
-    this.#scope = scope instanceof Node ? scope.#scope : scope;
+  constructor(element: Element) {
     this.#element = element;
-  }
-
-  protected get scope() {
-    return this.#scope;
   }
 
   protected get element() {
@@ -31,9 +25,27 @@ export default abstract class Node {
     return result;
   }
 
-  protected children_of_type(tag: string) {
-    return [...this.element.children].filter(
-      (c) => c.tagName.toLowerCase() === tag
+  protected children_of_type(...tags: Array<string>) {
+    return [...this.element.children].filter((c) =>
+      tags.includes(c.tagName.toLowerCase())
     );
   }
+
+  protected async map_children(
+    input: Record<
+      string,
+      (ele: Element, ctx: RunnerContext) => Promise<RunnerContext>
+    >,
+    ctx: RunnerContext
+  ) {
+    for (const ele of this.children_of_type(...Object(input))) {
+      const mapper = input[ele.tagName.toLowerCase()];
+      if (!mapper) throw new Error("Invalid mapper");
+      ctx = await mapper(ele, ctx);
+    }
+
+    return ctx;
+  }
+
+  abstract Process(ctx: RunnerContext): Promise<RunnerContext>;
 }

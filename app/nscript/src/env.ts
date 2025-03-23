@@ -6,7 +6,12 @@ export default class Env extends CodeRunner {
     return this.require_attribute("name");
   }
 
-  async Value(ctx: RunnerContext) {
-    return this.is_code ? await this.run(ctx) : this.require_text();
+  async Process(ctx: RunnerContext) {
+    if (this.is_code) {
+      return ctx.WithEnvVar(this.Name, this.require_text());
+    }
+
+    ctx = ctx.WithCode(this);
+    return ctx.WithEnvVar(this.Name, await this.run(ctx));
   }
 }
