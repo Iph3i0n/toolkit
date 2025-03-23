@@ -123,4 +123,15 @@ export default class RunnerContext {
       this.#scripts_file
     );
   }
+
+  WithScriptsFile(file: ScriptsFile) {
+    return new RunnerContext(
+      this.#task_name,
+      this.#cwd,
+      this.#env,
+      this.#tasks,
+      this.#running,
+      file
+    );
+  }
 }
