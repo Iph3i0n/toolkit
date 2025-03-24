@@ -1,0 +1,229 @@
+<app>
+  <task name="bakery" cwd="lib/bakery">
+    <dep task="safe-type:build" />
+    <dep task="wholemeal:build" />
+    <task name="build">
+      <env name="PRODUCTION">true</env>
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script type="shell/bash">
+        npx webpack
+      </script>
+    </task>
+    <task name="dev">
+      <env name="PRODUCTION">false</env>
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script type="shell/bash">
+        npx webpack
+      </script>
+    </task>
+  </task>
+  <task name="esbuild-workers" cwd="lib/esbuild-workers">
+    <task name="build">
+      <script type="shell/bash">
+        npx tsc
+      </script>
+    </task>
+  </task>
+  <task name="url" cwd="lib/url">
+    <task name="build">
+      <script type="shell/bash">
+        npx tsc
+      </script>
+    </task>
+  </task>
+  <task name="html" cwd="lib/html">
+    <task name="build">
+      <script type="shell/bash">
+        npx tsc
+      </script>
+    </task>
+  </task>
+  <task name="wisdom">
+    <task name="prepare-docker">
+      <script type="shell/bash">
+        docker build -f Dockerfile.wisdom . --tag=wisdom:latest
+      </script>
+    </task>
+    <task name="build" cwd="app/wisdom">
+      <dep task="puristee:build" />
+      <dep task="safe-type:build" />
+      <dep task="moulding-tin:build" />
+      <dep task="bakery:build" />
+      <dep task="esbuild-workers:build" />
+      <dep task="url:build" />
+      <dep task="html:build" />
+      <dep task="js-model:build" />
+      <env name="APP_DIR" type="text/javascript">
+        <!-- prettier-ignore -->
+        import path from "node:path";
+        
+        console.log(path.resolve("dist"))
+      </env>
+      <script>
+        import fs from "node:fs/promises";
+        import path from "node:path";
+
+        fs.rm(process.env.APP_DIR, { recursive: true })
+          .catch(() => {})
+          .finally(() => fs.mkdir(process.env.APP_DIR));
+      </script>
+      <script>
+        import path from "node:path";
+
+        const app_dir = process.env.APP_DIR;
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/ui.ts")],
+          bundle: true,
+          platform: "browser",
+          outdir: path.resolve(app_dir, "ui"),
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/app.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/app.js"),
+          external,
+          sourcemap: "inline",
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("../../lib/wholemeal/src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/wholemeal.js"),
+          external,
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/setup.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/setup.js"),
+          plugins: [WorkerLoader()],
+          external,
+        });
+        esbuild.build({
+          entryPoints: [path.resolve("src/build.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/build.js"),
+          plugins: [WorkerLoader()],
+          external,
+        });
+
+        fs.cp(
+          path.resolve("../../lib/bakery/dist"),
+          path.resolve(app_dir, "bakery"),
+          { recursive: true }
+        );
+
+        fs.cp(path.resolve("public"), path.resolve(app_dir), {
+          recursive: true,
+        });
+
+        fs.cp(
+          path.resolve("index.html"),
+          path.resolve(app_dir, "server/index.html")
+        );
+
+        fs.readdir(path.resolve("src/handlers")).then((r) => {
+          for (const handler of r)
+            esbuild.build({
+              entryPoints: [path.resolve("src/handlers", handler)],
+              bundle: true,
+              platform: "node",
+              outfile: path.resolve(
+                app_dir,
+                "server/handlers",
+                handler.replace(".ts", ".js")
+              ),
+              external,
+            });
+        });
+      </script>
+    </task>
+  </task>
+  <task name="nandemo" cwd="app/nandemo">
+    <dep task="safe-type:build" />
+    <dep task="bakery:build" />
+    <task name="build">
+      <env name="APP_DIR" type="text/javascript">
+        <!-- prettier-ignore -->
+        import path from "node:path";
+        
+        console.log(path.resolve("dist"))
+      </env>
+      <script>
+        import fs from "node:fs/promises";
+        import path from "node:path";
+
+        fs.rm(process.env.APP_DIR, { recursive: true })
+          .catch(() => {})
+          .finally(() => fs.mkdir(process.env.APP_DIR));
+      </script>
+      <script>
+        import path from "node:path";
+
+        const nandemo_dir = process.env.APP_DIR;
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/ui.tsx")],
+          bundle: true,
+          platform: "browser",
+          outdir: path.resolve(nandemo_dir, "ui"),
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/app.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(nandemo_dir, "server/app.js"),
+          external,
+          sourcemap: "inline",
+        });
+
+        fs.cp(
+          path.resolve("../../lib/bakery/dist"),
+          path.resolve(nandemo_dir, "bakery"),
+          { recursive: true }
+        );
+
+        fs.cp(path.resolve("public"), path.resolve(nandemo_dir, "_"), {
+          recursive: true,
+        });
+
+        fs.cp(
+          path.resolve("index.html"),
+          path.resolve(nandemo_dir, "server/index.html")
+        );
+
+        fs.readdir(path.resolve("src/handlers")).then((r) => {
+          for (const handler of r)
+            esbuild.build({
+              entryPoints: [path.resolve("src/handlers", handler)],
+              bundle: true,
+              platform: "node",
+              outfile: path.resolve(
+                nandemo_dir,
+                "server/handlers",
+                handler.replace(".ts", ".js")
+              ),
+              external,
+            });
+        });
+      </script>
+    </task>
+    <task name="dev">
+      <dep task="nandemo:build" />
+      <script type="shell/bash">
+        node .
+      </script>
+    </task>
+  </task>
+</app>

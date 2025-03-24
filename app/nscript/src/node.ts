@@ -1,3 +1,4 @@
+import { get_node } from "element-store";
 import type RunnerContext from "runner-context";
 
 export default abstract class Node {
@@ -47,5 +48,13 @@ export default abstract class Node {
     return ctx;
   }
 
-  abstract Process(ctx: RunnerContext): Promise<RunnerContext>;
+  async Process(ctx: RunnerContext): Promise<RunnerContext> {
+    for (const child of this.#element.children) {
+      const handler = get_node(child);
+      if (!handler) continue;
+      ctx = await handler.Process(ctx);
+    }
+
+    return ctx;
+  }
 }

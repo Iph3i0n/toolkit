@@ -3,7 +3,6 @@ import Path from "node:path";
 import Fs from "node:fs";
 import RunnerContext from "runner-context";
 import Node from "node";
-import EnvRepository from "env-repository";
 import Task from "task";
 
 export default class ScriptsFile extends Node {
@@ -24,15 +23,6 @@ export default class ScriptsFile extends Node {
   }
 
   async Process(ctx: RunnerContext) {
-    const env_repository = new EnvRepository(this.element);
-    ctx = await env_repository.Process(ctx);
-
-    for (const ele of this.children_of_type("task")) {
-      const task = new Task(ele, "");
-      if (task.Name !== ctx.CurrentTarget) continue;
-      ctx = await task.Process(ctx);
-    }
-
-    return ctx;
+    return await super.Process(ctx);
   }
 }

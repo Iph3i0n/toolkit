@@ -3,6 +3,12 @@ import { hideBin } from "yargs/helpers";
 import ScriptsFile from "scripts-file";
 import RunnerContext from "runner-context";
 
+import "dep";
+import "import";
+import "script";
+import "task";
+import "path";
+
 yargs(hideBin(process.argv))
   .command(
     "[script] [args...]",

@@ -1,6 +1,8 @@
 import CodeRunner from "code-runner";
+import { valid_element } from "element-store";
 import RunnerContext from "runner-context";
 
+@valid_element("env")
 export default class Env extends CodeRunner {
   get Name() {
     return this.require_attribute("name");

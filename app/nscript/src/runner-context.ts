@@ -77,7 +77,7 @@ export default class RunnerContext {
     return new RunnerContext(
       task_name,
       this.#args,
-      this.#cwd,
+      process.cwd(),
       this.#env,
       this.#tasks,
       this.#running,
