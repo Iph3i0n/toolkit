@@ -25,21 +25,67 @@
   <task name="esbuild-workers" cwd="lib/esbuild-workers">
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/index.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/index.js"),
+          external: ["esbuild"],
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="url" cwd="lib/url">
+    <script type="shell/bash">
+      rm -rf dist
+    </script>
     <task name="build">
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/index.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/index.js"),
+        });
+      </script>
       <script type="shell/bash">
-        tsc
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="html" cwd="lib/html">
     <task name="build">
       <script type="shell/bash">
-        npx tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/index.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/index.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
@@ -76,6 +122,11 @@
         const esbuild = require("esbuild");
         const path = require("path");
         const fs = require("fs/promises");
+        const {
+          default: WholemealLoader,
+        } = require("@ipheion/wholemeal/dist/esbuild");
+        const { WorkerLoader } = require("@ipheion/esbuild-workers");
+        const externals = ["esbuild", "http-server"];
 
         const app_dir = process.env.APP_DIR;
 
@@ -83,7 +134,10 @@
           entryPoints: [path.resolve("src/ui.ts")],
           bundle: true,
           platform: "browser",
+          splitting: true,
           outdir: path.resolve(app_dir, "ui"),
+          format: "esm",
+          plugins: [WholemealLoader()],
         });
 
         esbuild.build({
@@ -91,7 +145,7 @@
           bundle: true,
           platform: "node",
           outfile: path.resolve(app_dir, "server/app.js"),
-          external,
+          external: externals,
           sourcemap: "inline",
         });
 
@@ -100,7 +154,7 @@
           bundle: true,
           platform: "node",
           outfile: path.resolve(app_dir, "server/wholemeal.js"),
-          external,
+          external: externals,
         });
 
         esbuild.build({
@@ -109,7 +163,7 @@
           platform: "node",
           outfile: path.resolve(app_dir, "server/setup.js"),
           plugins: [WorkerLoader()],
-          external,
+          external: externals,
         });
         esbuild.build({
           entryPoints: [path.resolve("src/build.ts")],
@@ -117,7 +171,7 @@
           platform: "node",
           outfile: path.resolve(app_dir, "server/build.js"),
           plugins: [WorkerLoader()],
-          external,
+          external: externals,
         });
 
         fs.cp(
@@ -146,7 +200,7 @@
                 "server/handlers",
                 handler.replace(".ts", ".js")
               ),
-              external,
+              external: externals,
             });
         });
       </script>
@@ -255,47 +309,138 @@
     <dep task="safe-type:build" />
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="moulding-tin" cwd="lib/moulding-tin">
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="puristee" cwd="lib/puristee">
     <dep task="fs-db:build" />
     <dep task="safe-type:build" />
+    <dep task="esbuild-workers:build" />
     <task name="build">
       <script type="shell/bash">
         rm -rf dist
       </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+        const { WorkerLoader } = require("@ipheion/esbuild-workers");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+          plugins: [WorkerLoader()],
+          external: ["esbuild"],
+        });
+      </script>
       <script type="shell/bash">
-        tsc
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="safe-type" cwd="lib/safe-type">
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="set" cwd="lib/set">
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/index.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/index.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
   <task name="js-model" cwd="lib/js-model">
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/index.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/index.js"),
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
   </task>
@@ -305,7 +450,55 @@
     <dep task="html:build" />
     <task name="build">
       <script type="shell/bash">
-        tsc
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/esbuild.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/esbuild.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/compiler.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/compiler.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/std-loader.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/std-loader.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/pss-loader.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/pss-loader.js"),
+          external: ["esbuild"],
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
       </script>
     </task>
     <task name="test">
@@ -315,7 +508,11 @@
     </task>
   </task>
   <task name="nscript" cwd="app/nscript">
+    <dep task="safe-type:build" />
     <task name="build">
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
       <script>
         const esbuild = require("esbuild");
         const path = require("path");

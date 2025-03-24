@@ -1,7 +1,7 @@
 import Path from "node:path";
 import SyncFs from "node:fs";
 import Fs from "node:fs/promises";
-import Component from "@ipheion/wholemeal/dist/xml/component";
+import { Component } from "@ipheion/wholemeal/dist/compiler";
 import ISchemaRepository from "./i-schema-repository";
 import IConfigRepository from "./i-config-repository";
 

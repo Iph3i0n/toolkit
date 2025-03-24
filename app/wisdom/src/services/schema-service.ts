@@ -1,4 +1,4 @@
-import Component from "@ipheion/wholemeal/dist/xml/component";
+import { Component } from "@ipheion/wholemeal/dist/compiler";
 import ISchemaRepository from "integrations/i-schema-repository";
 
 export default class SchemaService {

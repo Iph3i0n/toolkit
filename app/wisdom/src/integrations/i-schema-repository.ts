@@ -1,4 +1,4 @@
-import Component from "@ipheion/wholemeal/dist/xml/component";
+import { Component } from "@ipheion/wholemeal/dist/compiler";
 
 export default interface ISchemaRepository {
   is_block(name: string): Promise<boolean>;

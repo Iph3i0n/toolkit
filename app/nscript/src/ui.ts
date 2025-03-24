@@ -48,11 +48,11 @@ export default class UserInterface {
         [task.FullName, this.#difference(start, end)] as const
     );
 
-    const log_lines_full =
-      this.#ctx.Scripts.findLast((v) => true)?.Logs.split("\n") ?? [];
-    const log_lines = log_lines_full.slice(
-      log_lines_full.length - (buffer.height() - 1) - 1
-    );
+    const script = this.#ctx.Scripts.findLast((v) => true);
+    const log_lines_full = [
+      `Script ${script?.Name.trim().split("\n")[0]}`,
+      ...(script?.Logs.split("\n") ?? []),
+    ];
 
     buffer.addLine(
       new CLI.Line()

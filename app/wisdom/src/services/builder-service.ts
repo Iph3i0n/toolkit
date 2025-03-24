@@ -10,8 +10,7 @@ import EsBuild from "esbuild";
 import WholemealLoader from "@ipheion/wholemeal/dist/esbuild";
 import { Database, State } from "state";
 import HooksService from "./hooks-service";
-import { RenderResult } from "@ipheion/wholemeal/dist/xml/render-context";
-import Component from "@ipheion/wholemeal/dist/xml/component";
+import { RenderResult, Component } from "@ipheion/wholemeal/dist/compiler";
 import { v4 as Guid } from "uuid";
 import PropertiesService from "./properties-service";
 import { MediaDir } from "state/media";
@@ -269,10 +268,6 @@ export default class BuilderService {
         "@ipheion/wholemeal": Path.resolve(
           __dirname,
           "../../../../lib/wholemeal/dist/mod.js"
-        ),
-        "@ipheion/wholemeal/dist/runner/component": Path.resolve(
-          __dirname,
-          "../../../../lib/wholemeal/dist/runner/component.js"
         ),
       },
     });

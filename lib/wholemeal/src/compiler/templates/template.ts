@@ -24,11 +24,7 @@ export default class Template {
 
     return [
       !this.#data.Metadata.Base
-        ? new Js.Import(
-            "ComponentBase",
-            "@ipheion/wholemeal/dist/runner/component",
-            false
-          )
+        ? new Js.Import("ComponentBase", "@ipheion/wholemeal", false)
         : "",
       new Js.Import(
         [
