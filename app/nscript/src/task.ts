@@ -6,8 +6,19 @@ import RunnerContext from "runner-context";
 import Script from "script";
 
 export default class Task extends Node {
+  readonly #prefix: string;
+
+  constructor(ele: Element, prefix: string) {
+    super(ele);
+    this.#prefix = prefix;
+  }
+
   get Name() {
     return this.require_attribute("name");
+  }
+
+  get FullName() {
+    return [this.#prefix, this.Name].filter((t) => t).join(":");
   }
 
   get Cwd() {
@@ -23,7 +34,8 @@ export default class Task extends Node {
     return await this.map_children(
       {
         script: (ele, ctx) => new Script(ele).Process(ctx),
-        task: (ele, ctx): Promise<RunnerContext> => new Task(ele).Process(ctx),
+        task: (ele, ctx): Promise<RunnerContext> =>
+          new Task(ele, this.FullName).Process(ctx),
         // A dependency starts a new context
         dep: (ele, ctx) => new Dep(ele).Process(ctx).then(() => ctx),
         import: (ele, ctx) => new Import(ele).Process(ctx),

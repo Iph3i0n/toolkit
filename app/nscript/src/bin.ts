@@ -17,11 +17,8 @@ yargs(hideBin(process.argv))
           array: true,
           type: "string",
         }),
-    (argv) => {}
+    (argv) => {
+      
+    }
   )
-  .option("verbose", {
-    alias: "v",
-    type: "boolean",
-    description: "Run with verbose logging",
-  })
   .parse();

@@ -28,7 +28,7 @@ export default class ScriptsFile extends Node {
     ctx = await env_repository.Process(ctx);
 
     for (const ele of this.children_of_type("task")) {
-      const task = new Task(ele);
+      const task = new Task(ele, "");
       if (task.Name !== ctx.CurrentTarget) continue;
       ctx = await task.Process(ctx);
     }

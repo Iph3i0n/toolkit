@@ -3,12 +3,15 @@ import Path from "node:path";
 import type Script from "script";
 import type ScriptsFile from "scripts-file";
 import type Task from "task";
+import UserInterface from "ui";
+
+type TaskCtx = [Task, Date, Date | undefined];
 
 export default class RunnerContext {
   readonly #task_name: string;
   readonly #cwd: string;
   readonly #env: NodeJS.ProcessEnv;
-  readonly #tasks: Array<Task>;
+  readonly #tasks: Array<TaskCtx>;
   readonly #running: Array<CodeRunner>;
   readonly #scripts_file: ScriptsFile;
 
@@ -16,7 +19,7 @@ export default class RunnerContext {
     task_name: string,
     cwd: string,
     env: NodeJS.ProcessEnv,
-    tasks: Array<Task>,
+    tasks: Array<TaskCtx>,
     scripts: Array<Script>,
     scripts_file: ScriptsFile
   ) {
@@ -26,7 +29,10 @@ export default class RunnerContext {
     this.#tasks = tasks;
     this.#running = scripts;
     this.#scripts_file = scripts_file;
+    RunnerContext.#user_interface.SetCtx(this);
   }
+
+  static readonly #user_interface = new UserInterface();
 
   static Start(task_name: string, self: ScriptsFile) {
     return new RunnerContext(
@@ -53,6 +59,14 @@ export default class RunnerContext {
 
   get ScriptsFile() {
     return this.#scripts_file;
+  }
+
+  get Tasks() {
+    return [...this.#tasks];
+  }
+
+  get Scripts() {
+    return [...this.#running];
   }
 
   WithDependency(task_name: string) {
@@ -107,7 +121,23 @@ export default class RunnerContext {
       this.#task_name,
       this.#cwd,
       this.#env,
-      [...this.#tasks, task],
+      [...this.#tasks, [task, new Date(), undefined]],
+      this.#running,
+      this.#scripts_file
+    );
+  }
+
+  WithFinishedTask(task: Task) {
+    const result: Array<TaskCtx> = [];
+    for (const [t, s, e] of this.#tasks)
+      if (t === task) result.push([t, s, new Date()]);
+      else result.push([t, s, e]);
+
+    return new RunnerContext(
+      this.#task_name,
+      this.#cwd,
+      this.#env,
+      result,
       this.#running,
       this.#scripts_file
     );
@@ -133,5 +163,9 @@ export default class RunnerContext {
       this.#running,
       file
     );
+  }
+
+  Done() {
+    RunnerContext.#user_interface.Done();
   }
 }

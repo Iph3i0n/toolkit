@@ -13,11 +13,15 @@
     "htmlWhitespaceSensitivity": "ignore"
   },
   "dependencies": {
+    "cli-color": "^2.0.4",
+    "clui": "^0.3.6",
     "esbuild": "^0.25.1",
     "jsdom": "^26.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@types/cli-color": "^2.0.6",
+    "@types/clui": "^0.3.4",
     "@types/jsdom": "^21.1.7",
     "@types/yargs": "^17.0.33"
   }
