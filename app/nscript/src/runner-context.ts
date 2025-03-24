@@ -9,6 +9,7 @@ type TaskCtx = [Task, Date, Date | undefined];
 
 export default class RunnerContext {
   readonly #task_name: string;
+  readonly #args: Array<string>;
   readonly #cwd: string;
   readonly #env: NodeJS.ProcessEnv;
   readonly #tasks: Array<TaskCtx>;
@@ -17,6 +18,7 @@ export default class RunnerContext {
 
   private constructor(
     task_name: string,
+    args: Array<string>,
     cwd: string,
     env: NodeJS.ProcessEnv,
     tasks: Array<TaskCtx>,
@@ -24,6 +26,7 @@ export default class RunnerContext {
     scripts_file: ScriptsFile
   ) {
     this.#task_name = task_name;
+    this.#args = args;
     this.#cwd = cwd;
     this.#env = env;
     this.#tasks = tasks;
@@ -34,9 +37,10 @@ export default class RunnerContext {
 
   static readonly #user_interface = new UserInterface();
 
-  static Start(task_name: string, self: ScriptsFile) {
+  static Start(task_name: string, args: Array<string>, self: ScriptsFile) {
     return new RunnerContext(
       task_name,
+      args,
       process.cwd(),
       process.env,
       [],
@@ -72,6 +76,7 @@ export default class RunnerContext {
   WithDependency(task_name: string) {
     return new RunnerContext(
       task_name,
+      this.#args,
       this.#cwd,
       this.#env,
       this.#tasks,
@@ -83,6 +88,7 @@ export default class RunnerContext {
   WithCompletedSegment() {
     return new RunnerContext(
       this.#task_name.split(":").slice(1).join(":"),
+      this.#args,
       this.#cwd,
       this.#env,
       this.#tasks,
@@ -94,6 +100,7 @@ export default class RunnerContext {
   WithEnvVar(name: string, value: string) {
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       this.#cwd,
       {
         ...this.#env,
@@ -108,6 +115,7 @@ export default class RunnerContext {
   WithCwd(relative_path: string) {
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       Path.resolve(this.#cwd, relative_path),
       this.#env,
       this.#tasks,
@@ -119,6 +127,7 @@ export default class RunnerContext {
   WithTask(task: Task) {
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       this.#cwd,
       this.#env,
       [...this.#tasks, [task, new Date(), undefined]],
@@ -135,6 +144,7 @@ export default class RunnerContext {
 
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       this.#cwd,
       this.#env,
       result,
@@ -146,6 +156,7 @@ export default class RunnerContext {
   WithCode(code: CodeRunner) {
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       this.#cwd,
       this.#env,
       this.#tasks,
@@ -157,6 +168,7 @@ export default class RunnerContext {
   WithScriptsFile(file: ScriptsFile) {
     return new RunnerContext(
       this.#task_name,
+      this.#args,
       this.#cwd,
       this.#env,
       this.#tasks,
