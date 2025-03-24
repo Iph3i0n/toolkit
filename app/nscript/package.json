@@ -2,6 +2,9 @@
   "name": "@ipheion/nscript",
   "version": "0.0.1",
   "description": "",
+  "bin": {
+    "nscript": "bin/index.js"
+  },
   "scripts": {
     "build": "node ./build.js",
     "dev": "npm run build && node ."
@@ -15,7 +18,6 @@
   "dependencies": {
     "cli-color": "^2.0.4",
     "clui": "^0.3.6",
-    "esbuild": "^0.25.1",
     "jsdom": "^26.0.0",
     "yargs": "^17.7.2"
   },

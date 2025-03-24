@@ -55,7 +55,7 @@ export default abstract class CodeRunner extends Node {
   }
 
   protected run(ctx: RunnerContext): Promise<string> {
-    const code = this.require_text();
+    const code = `"${this.require_text().replace(/"/gm, '\\"')}"`;
     switch (this.#shell) {
       case "text/javascript":
         return this.#execute("node", ["-e", code], ctx);

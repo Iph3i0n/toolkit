@@ -4,9 +4,11 @@ import RunnerContext from "runner-context";
 
 @valid_element("dep")
 export default class Dep extends Node {
-  Process(ctx: RunnerContext): Promise<RunnerContext> {
-    return ctx.ScriptsFile.Process(
+  async Process(ctx: RunnerContext): Promise<RunnerContext> {
+    await ctx.ScriptsFile.Process(
       ctx.WithDependency(this.require_attribute("task"))
     );
+
+    return ctx;
   }
 }

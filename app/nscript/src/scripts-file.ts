@@ -3,7 +3,6 @@ import Path from "node:path";
 import Fs from "node:fs";
 import RunnerContext from "runner-context";
 import Node from "node";
-import Task from "task";
 
 export default class ScriptsFile extends Node {
   constructor(cwd: string, path: string) {
@@ -22,7 +21,11 @@ export default class ScriptsFile extends Node {
     super(result);
   }
 
+  readonly #run: Array<string> = [];
+
   async Process(ctx: RunnerContext) {
+    if (this.#run.includes(ctx.FullTarget)) return ctx;
+    this.#run.push(ctx.FullTarget);
     return await super.Process(ctx);
   }
 }

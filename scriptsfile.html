@@ -1,4 +1,5 @@
 <app>
+  <path location="node_modules/.bin" />
   <task name="bakery" cwd="lib/bakery">
     <dep task="safe-type:build" />
     <dep task="wholemeal:build" />
@@ -8,7 +9,7 @@
         rm -rf dist
       </script>
       <script type="shell/bash">
-        npx webpack
+        webpack
       </script>
     </task>
     <task name="dev">
@@ -17,21 +18,21 @@
         rm -rf dist
       </script>
       <script type="shell/bash">
-        npx webpack
+        webpack
       </script>
     </task>
   </task>
   <task name="esbuild-workers" cwd="lib/esbuild-workers">
     <task name="build">
       <script type="shell/bash">
-        npx tsc
+        tsc
       </script>
     </task>
   </task>
   <task name="url" cwd="lib/url">
     <task name="build">
       <script type="shell/bash">
-        npx tsc
+        tsc
       </script>
     </task>
   </task>
@@ -59,20 +60,22 @@
       <dep task="js-model:build" />
       <env name="APP_DIR" type="text/javascript">
         <!-- prettier-ignore -->
-        import path from "node:path";
+        const path = require("path");
         
         console.log(path.resolve("dist"))
       </env>
       <script>
-        import fs from "node:fs/promises";
-        import path from "node:path";
+        const path = require("path");
+        const fs = require("fs/promises");
 
         fs.rm(process.env.APP_DIR, { recursive: true })
           .catch(() => {})
           .finally(() => fs.mkdir(process.env.APP_DIR));
       </script>
       <script>
-        import path from "node:path";
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
 
         const app_dir = process.env.APP_DIR;
 
@@ -155,22 +158,25 @@
     <task name="build">
       <env name="APP_DIR" type="text/javascript">
         <!-- prettier-ignore -->
-        import path from "node:path";
+        const path = require("node:path");
         
         console.log(path.resolve("dist"))
       </env>
       <script>
-        import fs from "node:fs/promises";
-        import path from "node:path";
+        const path = require("node:path");
+        const fs = require("fs/promises");
 
         fs.rm(process.env.APP_DIR, { recursive: true })
           .catch(() => {})
           .finally(() => fs.mkdir(process.env.APP_DIR));
       </script>
       <script>
-        import path from "node:path";
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
 
         const nandemo_dir = process.env.APP_DIR;
+        const external = ["esbuild", "http-server"];
 
         esbuild.build({
           entryPoints: [path.resolve("src/ui.tsx")],
@@ -223,6 +229,127 @@
       <dep task="nandemo:build" />
       <script type="shell/bash">
         node .
+      </script>
+    </task>
+  </task>
+  <task name="pauphie-blog" cwd="app/pauphie-blog">
+    <dep task="wisdom:build" />
+    <task name="serve">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js serve
+      </script>
+    </task>
+    <task name="build">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js build
+      </script>
+    </task>
+    <task name="setup">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js setup
+      </script>
+    </task>
+  </task>
+  <task name="fs-db" cwd="lib/fs-db">
+    <dep task="moulding-tin:build" />
+    <dep task="safe-type:build" />
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="moulding-tin" cwd="lib/moulding-tin">
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="puristee" cwd="lib/puristee">
+    <dep task="fs-db:build" />
+    <dep task="safe-type:build" />
+    <task name="build">
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="safe-type" cwd="lib/safe-type">
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="set" cwd="lib/set">
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="js-model" cwd="lib/js-model">
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+  </task>
+  <task name="wholemeal" cwd="lib/wholemeal">
+    <dep task="safe-type:build" />
+    <dep task="js-model:build" />
+    <dep task="html:build" />
+    <task name="build">
+      <script type="shell/bash">
+        tsc
+      </script>
+    </task>
+    <task name="test">
+      <script type="shell/bash">
+        node --test --import tsx ./src/**/*.test.ts
+      </script>
+    </task>
+  </task>
+  <task name="nscript" cwd="app/nscript">
+    <task name="build">
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        fs.mkdir(path.relative(__dirname, "bin"))
+          .catch(() => {})
+          .finally(() =>
+            esbuild
+              .build({
+                entryPoints: [path.resolve(__dirname, "src/bin.ts")],
+                bundle: true,
+                platform: "node",
+                write: false,
+                external: ["./xhr-sync-worker.js"],
+              })
+              .then((r) => r.outputFiles[0].text)
+              .then((r) =>
+                fs.writeFile(
+                  path.relative(__dirname, "bin/index.js"),
+                  "#!/usr/bin/env node\n" + r
+                )
+              )
+          )
+          .then(() =>
+            fs.cp(
+              path.resolve(
+                __dirname,
+                "../../node_modules/jsdom/lib/jsdom/living/xhr/xhr-sync-worker.js"
+              ),
+              path.resolve(__dirname, "bin/xhr-sync-worker.js")
+            )
+          )
+          .then(() => console.log("Completed build"));
       </script>
     </task>
   </task>

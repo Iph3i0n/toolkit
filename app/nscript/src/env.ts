@@ -9,11 +9,12 @@ export default class Env extends CodeRunner {
   }
 
   async Process(ctx: RunnerContext) {
-    if (this.is_code) {
+    if (!this.is_code) {
       return ctx.WithEnvVar(this.Name, this.require_text());
     }
 
     ctx = ctx.WithCode(this);
-    return ctx.WithEnvVar(this.Name, await this.run(ctx));
+    const result = await this.run(ctx);
+    return ctx.WithEnvVar(this.Name, result.trim());
   }
 }

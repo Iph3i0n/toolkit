@@ -49,6 +49,10 @@ export default class RunnerContext {
     );
   }
 
+  get FullTarget() {
+    return this.#task_name;
+  }
+
   get CurrentTarget() {
     return this.#task_name.split(":")[0];
   }
@@ -66,11 +70,11 @@ export default class RunnerContext {
   }
 
   get Tasks() {
-    return [...this.#tasks];
+    return this.#tasks;
   }
 
   get Scripts() {
-    return [...this.#running];
+    return this.#running;
   }
 
   WithDependency(task_name: string) {

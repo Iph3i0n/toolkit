@@ -1,5 +1,3 @@
-import yargs from "yargs/yargs";
-import { hideBin } from "yargs/helpers";
 import ScriptsFile from "scripts-file";
 import RunnerContext from "runner-context";
 
@@ -7,30 +5,26 @@ import "dep";
 import "import";
 import "script";
 import "task";
-import "path";
+import "./path";
+import "env";
 
-yargs(hideBin(process.argv))
-  .command(
-    "[script] [args...]",
-    "Run a script",
-    (yargs) =>
-      yargs
-        .positional("script", {
-          describe: "The script to run",
-          demandOption: true,
-          type: "string",
-        })
-        .positional("args", {
-          describe: "Passed to the script",
-          default: [] as Array<string>,
-          array: true,
-          type: "string",
-        }),
-    async (argv) => {
-      const scripts_file = new ScriptsFile(process.cwd(), "scriptsfile.html");
-      let ctx = RunnerContext.Start(argv.script, argv.args, scripts_file);
-      ctx = await scripts_file.Process(ctx);
-      ctx.Done();
-    }
-  )
-  .parse();
+async function main() {
+  let exit_code = 0;
+  const [script, ...args] = process.argv.slice(2);
+  const scripts_file = new ScriptsFile(process.cwd(), "scriptsfile.html");
+  let ctx = RunnerContext.Start(script, args, scripts_file);
+  try {
+    ctx = await scripts_file.Process(ctx);
+  } catch (err) {
+    exit_code = 1;
+  } finally {
+    ctx.Done();
+  }
+
+  process.exit(exit_code);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

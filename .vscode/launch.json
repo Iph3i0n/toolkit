@@ -34,6 +34,14 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "task",
       "runtimeArgs": ["nandemo:dev"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch NScript Test",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "nscript",
+      "runtimeArgs": ["nandemo:build"]
     }
   ]
 }

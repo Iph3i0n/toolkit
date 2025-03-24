@@ -12,6 +12,7 @@ export default class UserInterface {
   #interval: NodeJS.Timeout;
 
   constructor() {
+    console.clear();
     this.#interval = setInterval(() => this.#render(), 10);
   }
 
@@ -59,14 +60,18 @@ export default class UserInterface {
         .column("Logs", buffer.width() - 30, [CLC.bold])
     );
 
-    for (let i = 0; i < buffer.height() - 1; i++)
+    const total = buffer.height() - 2;
+    for (let i = 0; i < total; i++)
       buffer.addLine(
         new CLI.Line()
           .column(
             tasks[i] ? `${tasks[i][0]} - ${CLC.cyan(tasks[0][1])}` : "",
             30
           )
-          .column(log_lines[i] ?? "", buffer.width() - 30)
+          .column(
+            log_lines_full[log_lines_full.length - (1 + i)] ?? "",
+            buffer.width() - 30
+          )
       );
 
     buffer.output();
