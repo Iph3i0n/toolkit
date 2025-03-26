@@ -2,10 +2,7 @@
   "name": "@ipheion/html",
   "version": "0.0.1",
   "main": "./dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc",
-    "test": "jest",
-    "prepublishOnly": "npm run build"
+  "publishConfig": {
+    "access": "public"
   }
 }

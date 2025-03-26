@@ -3,12 +3,7 @@
   "version": "0.0.1",
   "description": "A language for creating web components",
   "main": "./dist/mod.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc",
-    "test": "jest",
-    "prepublishOnly": "npm run build"
-  },
+  "scripts": {},
   "keywords": [
     "web-components"
   ],

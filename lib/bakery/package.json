@@ -6,7 +6,9 @@
     "build": "PRODUCTION=true webpack",
     "dev": "webpack"
   },
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "ejs": "^3.1.9",
     "highlight.js": "^11.8.0",
