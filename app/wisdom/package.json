@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "restricted"
   },
   "devDependencies": {
     "@types/http-server": "^0.12.4",
