@@ -24,5 +24,5 @@ jobs:
           PIPELINE: "true"
       - run: nscript all:publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
           PIPELINE: "true"
