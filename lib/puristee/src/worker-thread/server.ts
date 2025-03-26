@@ -76,14 +76,16 @@ export default function CreateServer<TSchema extends Schema>(
         const response = result instanceof Result ? result.response : result;
 
         if (state) state_manager.Write(state);
+        const body = await response.body;
+        const status = await response.status;
         return {
           request_id: request.request_id,
-          status: await response.status,
+          status,
           headers: {
             ...default_headers,
             ...response.headers,
           },
-          body: await response.body,
+          body,
           cookies: response.cookies,
         };
       } catch (err: any) {

@@ -40,4 +40,6 @@
       </l-row>
     </l-container>
   </div>
+
+  <f-code name="test">Hello Code</f-code>
 </f-form>

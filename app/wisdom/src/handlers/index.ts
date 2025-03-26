@@ -7,6 +7,6 @@ export default class extends Handler {
   readonly Url = "/";
 
   Process(request: PureRequest) {
-    return new FileResponse(Path.resolve(__dirname, "../../index.html"));
+    return new FileResponse(Path.resolve(__dirname, "../index.html"));
   }
 }

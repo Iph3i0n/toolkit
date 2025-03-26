@@ -202,7 +202,6 @@ export default class BuilderService {
 
       return web_components;
     } catch (err) {
-      debugger;
       console.log(
         `Failed to render page ${schema.Metadata.Name}. Error below.`
       );

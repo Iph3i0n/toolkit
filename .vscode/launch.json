@@ -9,17 +9,9 @@
       "request": "launch",
       "name": "Launch Wisdom Dev",
       "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "task",
-      "runtimeArgs": ["wisdom:dev"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Wisdom Build",
-      "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "task",
-      "runtimeArgs": ["pauphie-blog:build"],
-      "preLaunchTask": "build-wisdom-dev"
+      "runtimeExecutable": "nscript",
+      "runtimeArgs": ["pauphie-blog:serve"],
+      "console": "integratedTerminal"
     },
     {
       "type": "node",

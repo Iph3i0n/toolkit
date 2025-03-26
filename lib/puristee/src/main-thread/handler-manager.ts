@@ -97,32 +97,39 @@ export async function StartServer(options: StartOptions) {
   wss = new WebSocketServer(thread_pool, server);
 
   server.on("request", async (req, res) => {
-    const response = await Run(req);
-    const headers = response.headers ?? {};
-    for (const key in headers) res = res.setHeader(key, headers[key]);
+    try {
+      const response = await Run(req);
+      const headers = response.headers ?? {};
+      for (const key in headers) res = res.setHeader(key, headers[key]);
 
-    if (response.cookies)
-      for (const value of SetCookies(response.cookies))
-        res = res.setHeader("Set-Cookie", value);
+      if (response.cookies)
+        for (const value of SetCookies(response.cookies))
+          res = res.setHeader("Set-Cookie", value);
 
-    const original_body = response.body;
-    for (const type of AcceptedTypes)
-      if (original_body instanceof type) {
+      const original_body = response.body;
+      for (const type of AcceptedTypes)
+        if (original_body instanceof type) {
+          res.statusCode = response.status;
+          res.write(original_body);
+          return res.end();
+        }
+
+      if (IsString(original_body)) {
         res.statusCode = response.status;
         res.write(original_body);
         return res.end();
       }
 
-    if (IsString(original_body)) {
+      res = res.setHeader("Content-Type", "application/json");
       res.statusCode = response.status;
-      res.write(original_body);
+      res.write(JSON.stringify(original_body));
+      return res.end();
+    } catch (err) {
+      console.error(err);
+      res.statusCode = 500;
+      res.write("Internal Server Error");
       return res.end();
     }
-
-    res = res.setHeader("Content-Type", "application/json");
-    res.statusCode = response.status;
-    res.write(JSON.stringify(original_body));
-    return res.end();
   });
 
   server.listen(options.port, () =>
