@@ -10,7 +10,9 @@ import "env";
 
 async function main() {
   let exit_code = 0;
-  const [script, ...args] = process.argv.slice(2);
+  const [script, ...all_args] = process.argv.slice(2);
+  const args = all_args.filter((a) => !a.startsWith("--"));
+  const flags = all_args.filter((a) => a.startsWith("--"));
   const scripts_file = new ScriptsFile(process.cwd(), "scriptsfile.html");
   let ctx = RunnerContext.Start(script, args, scripts_file);
   try {
@@ -18,7 +20,7 @@ async function main() {
   } catch (err) {
     exit_code = 1;
   } finally {
-    ctx.Done();
+    ctx.Done(exit_code !== 0);
   }
 
   process.exit(exit_code);

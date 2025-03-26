@@ -181,7 +181,7 @@ export default class RunnerContext {
     );
   }
 
-  Done() {
-    RunnerContext.#user_interface.Done();
+  Done(error: boolean) {
+    RunnerContext.#user_interface.Done(error);
   }
 }

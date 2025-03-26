@@ -20,6 +20,9 @@ jobs:
       - run: npm install
       - run: npm install @ipheion/nscript -g
       - run: nscript all:build
+        env:
+          PIPELINE: "true"
       - run: nscript all:publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          PIPELINE: "true"

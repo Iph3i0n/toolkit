@@ -9,20 +9,41 @@ const day = hour * 24;
 
 export default class UserInterface {
   #ctx: RunnerContext | undefined;
-  #interval: NodeJS.Timeout;
+  #interval: NodeJS.Timeout | undefined;
+
+  get #is_pipeline() {
+    return process.env.PIPELINE === "true";
+  }
 
   constructor() {
-    console.clear();
-    this.#interval = setInterval(() => this.#render(), 10);
+    if (!this.#is_pipeline) {
+      console.clear();
+      this.#interval = setInterval(() => this.#render(), 10);
+    }
   }
 
   SetCtx(ctx: RunnerContext) {
     this.#ctx = ctx;
+    if (this.#is_pipeline) {
+      console.log(
+        this.#ctx.Tasks.map(([task, start, end]) =>
+          [task.FullName, this.#difference(start, end)].join(" - ")
+        ).join(", ")
+      );
+
+      const script = this.#ctx.Scripts.findLast((v) => true);
+      console.log(`Script ${script?.Name.trim().split("\n")[0]}`);
+    }
+    ``;
   }
 
-  Done() {
-    clearInterval(this.#interval);
+  Done(error: boolean) {
+    if (this.#interval) clearInterval(this.#interval);
     this.#render();
+    if (error && this.#is_pipeline) {
+      const script = this.#ctx?.Scripts.findLast((v) => true);
+      console.log(script?.Logs);
+    }
   }
 
   #difference(start: Date, end: Date | undefined) {
@@ -35,6 +56,7 @@ export default class UserInterface {
   }
 
   #render() {
+    if (this.#is_pipeline) return;
     if (!this.#ctx) return;
     const buffer = new CLI.LineBuffer({
       x: 0,
