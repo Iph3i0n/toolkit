@@ -2,6 +2,7 @@
   "name": "@ipheion/nscript",
   "version": "0.0.2",
   "description": "",
+  "main": "dist/index.js",
   "bin": {
     "nscript": "bin/index.js"
   },

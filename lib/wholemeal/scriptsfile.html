@@ -1,0 +1,88 @@
+<app>
+  <import path="../safe-type/scriptsfile.html" />
+  <import path="../js-model/scriptsfile.html" />
+  <import path="../html/scriptsfile.html" />
+  <task name="wholemeal">
+    <dep task="safe-type:build" />
+    <dep task="js-model:build" />
+    <dep task="html:build" />
+    <task name="build">
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/esbuild.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/esbuild.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/compiler.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/compiler.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/std-loader.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/std-loader.js"),
+          external: ["esbuild"],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/pss-loader.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/pss-loader.js"),
+          external: ["esbuild"],
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
+      </script>
+    </task>
+    <task name="test">
+      <script type="shell/bash">
+        node --test --import tsx ./src/**/*.test.ts
+      </script>
+    </task>
+    <task name="publish">
+      <env name="PUBLISHED_VERSION" type="shell/bash">
+        <!-- prettier-ignore -->
+        npm view @ipheion/wholemeal version
+      </env>
+      <env name="SHOULD_PUBLISH" type="text/javascript">
+        <!-- prettier-ignore -->
+        const fs = require('node:fs');
+        const child_process = require('node:child_process');
+        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        if (package.version !== process.env.PUBLISHED_VERSION)
+          console.log('TRUE');
+        else console.log('FALSE');
+      </env>
+      <script type="shell/bash">
+        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
+          npm publish
+        fi
+      </script>
+    </task>
+  </task>
+</app>

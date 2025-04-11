@@ -1,0 +1,53 @@
+<app>
+  <import path="../fs-db/scriptsfile.html" />
+  <import path="../safe-type/scriptsfile.html" />
+  <import path="../esbuild-workers/scriptsfile.html" />
+  <task name="puristee">
+    <dep task="fs-db:build" />
+    <dep task="safe-type:build" />
+    <dep task="esbuild-workers:build" />
+    <task name="build">
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+        const { WorkerLoader } = require("@ipheion/esbuild-workers");
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve("dist/mod.js"),
+          plugins: [WorkerLoader()],
+          external: ["esbuild"],
+        });
+      </script>
+      <script type="shell/bash">
+        tsc --declaration --emitDeclarationOnly
+      </script>
+    </task>
+    <task name="publish">
+      <env name="PUBLISHED_VERSION" type="shell/bash">
+        <!-- prettier-ignore -->
+        npm view @ipheion/puristee version
+      </env>
+      <env name="SHOULD_PUBLISH" type="text/javascript">
+        <!-- prettier-ignore -->
+        const fs = require('node:fs');
+        const child_process = require('node:child_process');
+        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        if (package.version !== process.env.PUBLISHED_VERSION)
+          console.log('TRUE');
+        else console.log('FALSE');
+      </env>
+      <script type="shell/bash">
+        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
+          npm publish
+        fi
+      </script>
+    </task>
+  </task>
+</app>

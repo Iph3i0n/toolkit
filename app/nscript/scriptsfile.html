@@ -1,7 +1,7 @@
 <app>
-  <path location="node_modules/.bin" />
-
-  <task name="nscript" cwd="app/nscript">
+  <import path="../../lib/safe-type/scriptsfile.html" />
+  <task name="nscript">
+    <dep task="safe-type:build" />
     <task name="build">
       <script type="shell/bash">
         rm -rf dist
@@ -61,55 +61,6 @@
           npm publish
         fi
       </script>
-    </task>
-  </task>
-
-  <import path="app/localcloud/scriptsfile.html" />
-  <import path="lib/bakery/scriptsfile.html" />
-  <import path="lib/esbuild-workers/scriptsfile.html" />
-  <import path="lib/url/scriptsfile.html" />
-  <import path="lib/html/scriptsfile.html" />
-  <import path="app/wisdom/scriptsfile.html" />
-  <import path="app/nandemo/scriptsfile.html" />
-  <import path="app/pauphie-blog/scriptsfile.html" />
-  <import path="lib/fs-db/scriptsfile.html" />
-  <import path="lib/moulding-tin/scriptsfile.html" />
-  <import path="lib/puristee/scriptsfile.html" />
-  <import path="lib/safe-type/scriptsfile.html" />
-  <import path="lib/js-model/scriptsfile.html" />
-  <import path="lib/wholemeal/scriptsfile.html" />
-  <import path="app/nscript/scriptsfile.html" />
-  <task name="all">
-    <task name="build">
-      <dep task="bakery:build" />
-      <dep task="esbuild-workers:build" />
-      <dep task="url:build" />
-      <dep task="html:build" />
-      <dep task="wisdom:build" />
-      <dep task="nandemo:build" />
-      <dep task="fs-db:build" />
-      <dep task="moulding-tin:build" />
-      <dep task="puristee:build" />
-      <dep task="safe-type:build" />
-      <dep task="set:build" />
-      <dep task="js-model:build" />
-      <dep task="wholemeal:build" />
-      <dep task="nscript:build" />
-    </task>
-    <task name="publish">
-      <dep task="all:build" />
-      <dep task="bakery:publish" />
-      <dep task="esbuild-workers:publish" />
-      <dep task="url:publish" />
-      <dep task="html:publish" />
-      <dep task="nandemo:publish" />
-      <dep task="fs-db:publish" />
-      <dep task="moulding-tin:publish" />
-      <dep task="puristee:publish" />
-      <dep task="safe-type:publish" />
-      <dep task="js-model:publish" />
-      <dep task="wholemeal:publish" />
-      <dep task="nscript:publish" />
     </task>
   </task>
 </app>

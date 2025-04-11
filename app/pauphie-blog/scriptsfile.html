@@ -1,0 +1,21 @@
+<app>
+  <import path="../wisdom/scriptsfile.html" />
+  <task name="pauphie-blog">
+    <dep task="wisdom:build" />
+    <task name="serve">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js serve
+      </script>
+    </task>
+    <task name="build">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js build
+      </script>
+    </task>
+    <task name="setup">
+      <script type="shell/bash">
+        node ../wisdom/bin/index.js setup
+      </script>
+    </task>
+  </task>
+</app>

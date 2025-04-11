@@ -1,0 +1,103 @@
+<app>
+  <import path="../../lib/safe-type/scriptsfile.html" />
+  <task name="nandemo">
+    <dep task="safe-type:build" />
+    <dep task="bakery:build" />
+    <task name="build">
+      <env name="APP_DIR" type="text/javascript">
+        <!-- prettier-ignore -->
+        const path = require("node:path");
+        
+        console.log(path.resolve("dist"))
+      </env>
+      <script>
+        const path = require("node:path");
+        const fs = require("fs/promises");
+
+        fs.rm(process.env.APP_DIR, { recursive: true })
+          .catch(() => {})
+          .finally(() => fs.mkdir(process.env.APP_DIR));
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        const nandemo_dir = process.env.APP_DIR;
+        const external = ["esbuild", "http-server"];
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/ui.tsx")],
+          bundle: true,
+          platform: "browser",
+          outdir: path.resolve(nandemo_dir, "ui"),
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/app.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(nandemo_dir, "server/app.js"),
+          external,
+          sourcemap: "inline",
+        });
+
+        fs.cp(
+          path.resolve("../../lib/bakery/dist"),
+          path.resolve(nandemo_dir, "bakery"),
+          { recursive: true }
+        );
+
+        fs.cp(path.resolve("public"), path.resolve(nandemo_dir, "_"), {
+          recursive: true,
+        });
+
+        fs.cp(
+          path.resolve("index.html"),
+          path.resolve(nandemo_dir, "server/index.html")
+        );
+
+        fs.readdir(path.resolve("src/handlers")).then((r) => {
+          for (const handler of r)
+            esbuild.build({
+              entryPoints: [path.resolve("src/handlers", handler)],
+              bundle: true,
+              platform: "node",
+              outfile: path.resolve(
+                nandemo_dir,
+                "server/handlers",
+                handler.replace(".ts", ".js")
+              ),
+              external,
+            });
+        });
+      </script>
+    </task>
+    <task name="dev">
+      <dep task="nandemo:build" />
+      <script type="shell/bash">
+        node .
+      </script>
+    </task>
+    <task name="publish">
+      <env name="PUBLISHED_VERSION" type="shell/bash">
+        <!-- prettier-ignore -->
+        npm view @ipheion/nandemo version
+      </env>
+      <env name="SHOULD_PUBLISH" type="text/javascript">
+        <!-- prettier-ignore -->
+        const fs = require('node:fs');
+        const child_process = require('node:child_process');
+        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        if (package.version !== process.env.PUBLISHED_VERSION)
+          console.log('TRUE');
+        else console.log('FALSE');
+      </env>
+      <script type="shell/bash">
+        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
+          npm publish
+        fi
+      </script>
+    </task>
+  </task>
+</app>

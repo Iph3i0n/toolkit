@@ -81,7 +81,7 @@ export default class RunnerContext {
     return new RunnerContext(
       task_name,
       this.#args,
-      process.cwd(),
+      this.#scripts_file.FileDir,
       this.#env,
       this.#tasks,
       this.#running,
@@ -173,7 +173,7 @@ export default class RunnerContext {
     return new RunnerContext(
       this.#task_name,
       this.#args,
-      this.#cwd,
+      file.FileDir,
       this.#env,
       this.#tasks,
       this.#running,

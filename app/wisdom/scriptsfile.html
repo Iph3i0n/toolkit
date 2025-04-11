@@ -1,0 +1,148 @@
+<app>
+  <import path="../../lib/puristee/scriptsfile.html" />
+  <import path="../../lib/safe-type/scriptsfile.html" />
+  <import path="../../lib/moulding-tin/scriptsfile.html" />
+  <import path="../../lib/bakery/scriptsfile.html" />
+  <import path="../../lib/esbuild-workers/scriptsfile.html" />
+  <import path="../../lib/url/scriptsfile.html" />
+  <import path="../../lib/html/scriptsfile.html" />
+  <import path="../../lib/js-model/scriptsfile.html" />
+
+  <task name="wisdom">
+    <task name="prepare-docker" cwd="../../">
+      <script type="shell/bash">
+        docker build -f Dockerfile.wisdom . --tag=wisdom:latest
+      </script>
+    </task>
+    <task name="build">
+      <dep task="puristee:build" />
+      <dep task="safe-type:build" />
+      <dep task="moulding-tin:build" />
+      <dep task="bakery:build" />
+      <dep task="esbuild-workers:build" />
+      <dep task="url:build" />
+      <dep task="html:build" />
+      <dep task="js-model:build" />
+      <env name="APP_DIR" type="text/javascript">
+        <!-- prettier-ignore -->
+        const path = require("path");
+        
+        console.log(path.resolve("dist"))
+      </env>
+      <script>
+        const path = require("path");
+        const fs = require("fs/promises");
+
+        fs.rm(process.env.APP_DIR, { recursive: true })
+          .catch(() => {})
+          .finally(() => fs.mkdir(process.env.APP_DIR));
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+        const {
+          default: WholemealLoader,
+        } = require("@ipheion/wholemeal/dist/esbuild");
+        const { WorkerLoader } = require("@ipheion/esbuild-workers");
+        const externals = ["esbuild", "http-server"];
+
+        const app_dir = process.env.APP_DIR;
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/ui.ts")],
+          bundle: true,
+          platform: "browser",
+          splitting: true,
+          outdir: path.resolve(app_dir, "ui"),
+          format: "esm",
+          plugins: [WholemealLoader()],
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/app.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/app.js"),
+          external: externals,
+          sourcemap: "inline",
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("../../lib/wholemeal/src/mod.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/wholemeal.js"),
+          external: externals,
+        });
+
+        esbuild.build({
+          entryPoints: [path.resolve("src/setup.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/setup.js"),
+          plugins: [WorkerLoader()],
+          external: externals,
+        });
+        esbuild.build({
+          entryPoints: [path.resolve("src/build.ts")],
+          bundle: true,
+          platform: "node",
+          outfile: path.resolve(app_dir, "server/build.js"),
+          plugins: [WorkerLoader()],
+          external: externals,
+        });
+
+        fs.cp(
+          path.resolve("../../lib/bakery/dist"),
+          path.resolve(app_dir, "bakery"),
+          { recursive: true }
+        );
+
+        fs.cp(path.resolve("public"), path.resolve(app_dir), {
+          recursive: true,
+        });
+
+        fs.cp(
+          path.resolve("index.html"),
+          path.resolve(app_dir, "server/index.html")
+        );
+
+        fs.readdir(path.resolve("src/handlers")).then((r) => {
+          for (const handler of r)
+            esbuild.build({
+              entryPoints: [path.resolve("src/handlers", handler)],
+              bundle: true,
+              platform: "node",
+              outfile: path.resolve(
+                app_dir,
+                "server/handlers",
+                handler.replace(".ts", ".js")
+              ),
+              external: externals,
+            });
+        });
+      </script>
+    </task>
+    <task name="publish">
+      <env name="PUBLISHED_VERSION" type="shell/bash">
+        <!-- prettier-ignore -->
+        npm view @ipheion/wisdom version
+      </env>
+      <env name="SHOULD_PUBLISH" type="text/javascript">
+        <!-- prettier-ignore -->
+        const fs = require('node:fs');
+        const child_process = require('node:child_process');
+        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        if (package.version !== process.env.PUBLISHED_VERSION)
+          console.log('TRUE');
+        else console.log('FALSE');
+      </env>
+      <script type="shell/bash">
+        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
+          npm publish
+        fi
+      </script>
+    </task>
+  </task>
+</app>

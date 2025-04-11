@@ -1,0 +1,85 @@
+<app>
+  <import path="../safe-type/scriptsfile.html" />
+  <import path="../wholemeal/scriptsfile.html" />
+  <task name="bakery">
+    <dep task="safe-type:build" />
+    <dep task="wholemeal:build" />
+    <task name="build">
+      <script type="shell/bash">
+        rm -rf dist
+      </script>
+      <script>
+        const esbuild = require("esbuild");
+        const path = require("path");
+        const fs = require("fs/promises");
+        const {
+          default: WholemealLoader,
+        } = require("@ipheion/wholemeal/dist/esbuild");
+
+        esbuild.build({
+          entryPoints: [
+            { in: path.resolve("src/index.ts"), out: "index" },
+            {
+              in: path.resolve(
+                "../../node_modules/monaco-editor/esm/vs/editor/editor.worker.js"
+              ),
+              out: "node_modules/monaco-editor/esm/vs/editor/editor.worker",
+            },
+            {
+              in: path.resolve(
+                "../../node_modules/monaco-editor/esm/vs/language/json/json.worker"
+              ),
+              out: "node_modules/monaco-editor/esm/vs/language/json/json.worker",
+            },
+            {
+              in: path.resolve(
+                "../../node_modules/monaco-editor/esm/vs/language/css/css.worker"
+              ),
+              out: "node_modules/monaco-editor/esm/vs/language/css/css.worker",
+            },
+            {
+              in: path.resolve(
+                "../../node_modules/monaco-editor/esm/vs/language/html/html.worker"
+              ),
+              out: "node_modules/monaco-editor/esm/vs/language/html/html.worker",
+            },
+            {
+              in: path.resolve(
+                "../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker"
+              ),
+              out: "node_modules/monaco-editor/esm/vs/language/typescript/ts.worker",
+            },
+          ],
+          bundle: true,
+          platform: "browser",
+          outdir: path.resolve("dist"),
+          format: "esm",
+          minify: true,
+          plugins: [WholemealLoader()],
+          splitting: true,
+          loader: { ".ttf": "file", ".css": "file" },
+        });
+      </script>
+    </task>
+    <task name="publish">
+      <env name="PUBLISHED_VERSION" type="shell/bash">
+        <!-- prettier-ignore -->
+        npm view @ipheion/bakery version
+      </env>
+      <env name="SHOULD_PUBLISH" type="text/javascript">
+        <!-- prettier-ignore -->
+        const fs = require('node:fs');
+        const child_process = require('node:child_process');
+        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        if (package.version !== process.env.PUBLISHED_VERSION)
+          console.log('TRUE');
+        else console.log('FALSE');
+      </env>
+      <script type="shell/bash">
+        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
+          npm publish
+        fi
+      </script>
+    </task>
+  </task>
+</app>

@@ -24,10 +24,12 @@ export default class Task extends Node {
   }
 
   async Process(ctx: RunnerContext) {
+    const old_dir = ctx.Cwd;
     if (ctx.CurrentTarget !== this.Name) return ctx;
     ctx = ctx.WithCompletedSegment();
     if (this.Cwd) ctx = ctx.WithCwd(this.Cwd);
     ctx = ctx.WithTask(this);
-    return await super.Process(ctx);
+    ctx = await super.Process(ctx);
+    return ctx.WithCwd(old_dir);
   }
 }
