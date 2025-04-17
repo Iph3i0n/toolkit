@@ -11,13 +11,13 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "@types/express": "^5.0.0"
   },
   "prettier": {
     "htmlWhitespaceSensitivity": "ignore"
   },
   "dependencies": {
-    "@types/node": "^22.13.4",
     "axios": "^1.8.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

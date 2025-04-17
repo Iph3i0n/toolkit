@@ -9,11 +9,6 @@
   <import path="../../lib/js-model/scriptsfile.html" />
 
   <task name="wisdom">
-    <task name="prepare-docker" cwd="../../">
-      <script type="shell/bash">
-        docker build -f Dockerfile.wisdom . --tag=wisdom:latest
-      </script>
-    </task>
     <task name="build">
       <dep task="puristee:build" />
       <dep task="safe-type:build" />
@@ -122,6 +117,9 @@
               external: externals,
             });
         });
+      </script>
+      <script type="shell/bash">
+        docker build .  -t nandemo:latest
       </script>
     </task>
     <task name="publish">

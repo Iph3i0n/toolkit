@@ -72,6 +72,9 @@
             });
         });
       </script>
+      <script type="shell/bash">
+        docker build .  -t nandemo:latest
+      </script>
     </task>
     <task name="dev">
       <dep task="nandemo:build" />
