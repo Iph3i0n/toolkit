@@ -31,7 +31,7 @@
         const fs = require('node:fs');
         const child_process = require('node:child_process');
         const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-        if (package.version !== process.env.PUBLISHED_VERSION)s
+        if (package.version !== process.env.PUBLISHED_VERSION)
           console.log('TRUE');
         else console.log('FALSE');
       </env>
