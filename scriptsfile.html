@@ -21,6 +21,7 @@
                 platform: "node",
                 write: false,
                 external: ["./xhr-sync-worker.js"],
+                packages: 'external'
               })
               .then((r) => r.outputFiles[0].text)
               .then((r) =>
@@ -41,28 +42,6 @@
           )
           .then(() => console.log("Completed build"));
       </script>
-    </task>
-    <task name="publish">
-      <env name="PUBLISHED_VERSION" type="shell/bash">
-        <!-- prettier-ignore -->
-        npm view @ipheion/nscript version
-      </env>
-      <env name="SHOULD_PUBLISH" type="text/javascript">
-        <!-- prettier-ignore -->
-        const fs = require('node:fs');
-        const child_process = require('node:child_process');
-        const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-        if (package.version !== process.env.PUBLISHED_VERSION)
-          console.log('TRUE');
-        else console.log('FALSE');
-      </env>
-      <script type="shell/bash">
-        if [ "$SHOULD_PUBLISH" == "TRUE" ]; then
-          npm publish
-        fi
-      </script>
-    </task>
-  </task>
 
   <import path="app/localcloud/scriptsfile.html" />
   <import path="lib/bakery/scriptsfile.html" />

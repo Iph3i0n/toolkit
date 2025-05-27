@@ -25,7 +25,7 @@
               .then((r) => r.outputFiles[0].text)
               .then((r) =>
                 fs.writeFile(
-                  path.relative(__dirname, "bin/index.js"),
+                  path.relative(__dirname, "bin/app.js"),
                   "#!/usr/bin/env node\n" + r
                 )
               )
