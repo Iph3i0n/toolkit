@@ -18,7 +18,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: npm install
-      - run: npm install @ipheion/nscript@0.0.3 -g
+      - run: npm install @ipheion/nscript -g
       - run: nscript all:build
         env:
           PIPELINE: "true"

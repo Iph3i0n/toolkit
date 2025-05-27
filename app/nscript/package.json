@@ -1,9 +1,9 @@
 {
   "name": "@ipheion/nscript",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "bin": {
-    "nscript": "bin/index.js"
+    "nscript": "bin/app.js"
   },
   "scripts": {
     "build": "node ./build.js"
